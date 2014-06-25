@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8EAAA859-349E-4605-A0AF-118017881212}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LevelEditorCore</RootNamespace>
+    <AssemblyName>LevelEditorCore</AssemblyName>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\lib\Debug\</OutputPath>
+    <IntermediateOutputPath>..\tmp\LevelEditorCore\Debug.vs2010\</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1591,1572,1573,1570,1571,649</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\lib\Release\</OutputPath>
+    <IntermediateOutputPath>..\tmp\LevelEditorCore\Release.vs2010\</IntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>1591,1572,1573,1570,1571,649</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Annotations\Annotations.cs" />
+    <Compile Include="Commands\DesignViewCommands.cs" />
+    <Compile Include="Commands\CameraCommands.cs" />
+    <Compile Include="Commands\GroupCommands.cs" />
+    <Compile Include="Commands\ManipulatorCommands.cs" />
+    <Compile Include="Commands\PickFilterCommands.cs" />
+    <Compile Include="Commands\ShowCommands.cs" />
+    <Compile Include="DesignViews\ArcBallCameraController.cs" />
+    <Compile Include="DesignViews\DesignView.cs" />
+    <Compile Include="DesignViews\DesignViewControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesignViews\DesignViewSettings.cs" />
+    <Compile Include="DesignViews\FlyCameraController.cs" />
+    <Compile Include="DesignViews\MayaStyleCameraController.cs" />
+    <Compile Include="DesignViews\ViewControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DesignViews\WalkCameraController.cs" />
+    <Compile Include="DisposableObject.cs" />
+    <Compile Include="Globals.cs" />
+    <Compile Include="ImageThumbnailResolver.cs" />
+    <Compile Include="Interfaces\IBoundable.cs" />
+    <Compile Include="Interfaces\IEditableResourceOwner.cs" />
+    <Compile Include="Interfaces\IFileSystemResourceFolder.cs" />
+    <Compile Include="Interfaces\IGameContext.cs" />
+    <Compile Include="Interfaces\IGameDocument.cs" />
+    <Compile Include="Interfaces\IGameDocumentRegistry.cs" />
+    <Compile Include="Interfaces\IListable.cs" />
+    <Compile Include="Interfaces\IManipulatorNotify.cs" />
+    <Compile Include="Interfaces\INameable.cs" />
+    <Compile Include="Interfaces\INativeObject.cs" />
+    <Compile Include="Interfaces\IPickFilter.cs" />
+    <Compile Include="Interfaces\IPrefab.cs" />
+    <Compile Include="Interfaces\IPropertyDescriptorTheme.cs" />
+    <Compile Include="Interfaces\IPrototype.cs" />
+    <Compile Include="Interfaces\IResourceConverter.cs" />
+    <Compile Include="Interfaces\IResourceMetadataService.cs" />
+    <Compile Include="Interfaces\ISchemaLoader.cs" />
+    <Compile Include="Interfaces\ISnapFilter.cs" />
+    <Compile Include="Interfaces\ITransformable.cs" />
+    <Compile Include="Interfaces\IVisible.cs" />
+    <Compile Include="Interfaces\ManipulatorInfo.cs" />
+    <Compile Include="Interfaces\TransformationTypes.cs" />
+    <Compile Include="Listers\LayerLister.cs" />
+    <Compile Include="Listers\ResourceLister.cs" />
+    <Compile Include="Listers\ResourceMetadataEditor.cs" />
+    <Compile Include="Listers\ThumbnailControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Listers\ThumbnailService.cs" />
+    <Compile Include="PropertyEditing\CustomPropertyEditingContext.cs" />
+    <Compile Include="Rendering\FrameTime.cs" />
+    <Compile Include="Rendering\IRenderLoop.cs" />
+    <Compile Include="Rendering\RenderLoopService.cs" />
+    <Compile Include="Interfaces\IControlPoint.cs" />
+    <Compile Include="Interfaces\IGame.cs" />
+    <Compile Include="Interfaces\ILayer.cs" />
+    <Compile Include="Interfaces\ILinear.cs" />
+    <Compile Include="Interfaces\ILockable.cs" />
+    <Compile Include="Interfaces\IManipulator.cs" />
+    <Compile Include="Interfaces\IGameObject.cs" />
+    <Compile Include="Interfaces\IGameObjectFolder.cs" />
+    <Compile Include="Interfaces\IGameObjectGroup.cs" />
+    <Compile Include="Interfaces\IGrid.cs" />
+    <Compile Include="Interfaces\ISnapSettings.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="Services\ResourceConverterService.cs" />
+    <Compile Include="Utils\Clock.cs" />
+    <Compile Include="Utils\DomNodeUtil.cs" />
+    <Compile Include="Utils\TransformUtils.cs" />
+    <Compile Include="Utils\Util.cs" />
+    <Compile Include="Interfaces\IDesignView.cs" />
+    <Compile Include="VectorMath\AABB.cs" />
+    <Compile Include="VectorMath\Bound2di.cs" />
+    <Compile Include="VectorMath\NoiseGenerator.cs" />
+    <EmbeddedResource Include="Resources\RealTime.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Asset16.png" />
+    <EmbeddedResource Include="Resources\Asset24.png" />
+    <EmbeddedResource Include="Resources\Asset32.png" />
+    <EmbeddedResource Include="Resources\Backface16.png" />
+    <EmbeddedResource Include="Resources\Backface24.png" />
+    <EmbeddedResource Include="Resources\Backface32.png" />
+    <EmbeddedResource Include="Resources\bookmark.png" />
+    <EmbeddedResource Include="Resources\cubes.png" />
+    <EmbeddedResource Include="Resources\CustomManip16.png" />
+    <EmbeddedResource Include="Resources\CustomManip24.png" />
+    <EmbeddedResource Include="Resources\CustomManip32.png" />
+    <EmbeddedResource Include="Resources\Document16.png" />
+    <EmbeddedResource Include="Resources\Document24.png" />
+    <EmbeddedResource Include="Resources\Document32.png" />
+    <EmbeddedResource Include="Resources\EditTangent16.png" />
+    <EmbeddedResource Include="Resources\EditTangent24.png" />
+    <EmbeddedResource Include="Resources\EditTangent32.png" />
+    <EmbeddedResource Include="Resources\FlyMode16.png" />
+    <EmbeddedResource Include="Resources\FlyMode24.png" />
+    <EmbeddedResource Include="Resources\FlyMode32.png" />
+    <EmbeddedResource Include="Resources\FolderReference16.png" />
+    <EmbeddedResource Include="Resources\FolderReference24.png" />
+    <EmbeddedResource Include="Resources\FolderReference32.png" />
+    <EmbeddedResource Include="Resources\FourView16.png" />
+    <EmbeddedResource Include="Resources\FourView24.png" />
+    <EmbeddedResource Include="Resources\FourView32.png" />
+    <EmbeddedResource Include="Resources\game.png" />
+    <EmbeddedResource Include="Resources\gameObject.png" />
+    <EmbeddedResource Include="Resources\gameObjectFolder.png" />
+    <EmbeddedResource Include="Resources\GridSnap16.png" />
+    <EmbeddedResource Include="Resources\GridSnap24.png" />
+    <EmbeddedResource Include="Resources\GridSnap32.png" />
+    <EmbeddedResource Include="Resources\group.png" />
+    <EmbeddedResource Include="Resources\HideSelection16.png" />
+    <EmbeddedResource Include="Resources\HideSelection24.png" />
+    <EmbeddedResource Include="Resources\HideSelection32.png" />
+    <EmbeddedResource Include="Resources\HorizontalViews16.png" />
+    <EmbeddedResource Include="Resources\HorizontalViews24.png" />
+    <EmbeddedResource Include="Resources\HorizontalViews32.png" />
+    <EmbeddedResource Include="Resources\InsertPoint16.png" />
+    <EmbeddedResource Include="Resources\InsertPoint24.png" />
+    <EmbeddedResource Include="Resources\InsertPoint32.png" />
+    <EmbeddedResource Include="Resources\instancer.png" />
+    <EmbeddedResource Include="Resources\Isolate16.png" />
+    <EmbeddedResource Include="Resources\Isolate24.png" />
+    <EmbeddedResource Include="Resources\Isolate32.png" />
+    <EmbeddedResource Include="Resources\Lighting16.png" />
+    <EmbeddedResource Include="Resources\Lighting24.png" />
+    <EmbeddedResource Include="Resources\Lighting32.png" />
+    <EmbeddedResource Include="Resources\Linear16.png" />
+    <EmbeddedResource Include="Resources\Linear24.png" />
+    <EmbeddedResource Include="Resources\Linear32.png" />
+    <EmbeddedResource Include="Resources\locator.png" />
+    <EmbeddedResource Include="Resources\MayaTrackball16.png" />
+    <EmbeddedResource Include="Resources\MayaTrackball24.png" />
+    <EmbeddedResource Include="Resources\MayaTrackball32.png" />
+    <EmbeddedResource Include="Resources\Outlined16.png" />
+    <EmbeddedResource Include="Resources\Outlined24.png" />
+    <EmbeddedResource Include="Resources\Outlined32.png" />
+    <EmbeddedResource Include="Resources\PivotManip16.png" />
+    <EmbeddedResource Include="Resources\PivotManip24.png" />
+    <EmbeddedResource Include="Resources\PivotManip32.png" />
+    <EmbeddedResource Include="Resources\polyline.png" />
+    <EmbeddedResource Include="Resources\RotateManip16.png" />
+    <EmbeddedResource Include="Resources\RotateManip24.png" />
+    <EmbeddedResource Include="Resources\RotateManip32.png" />
+    <EmbeddedResource Include="Resources\RotateOnSnap16.png" />
+    <EmbeddedResource Include="Resources\RotateOnSnap24.png" />
+    <EmbeddedResource Include="Resources\RotateOnSnap32.png" />
+    <EmbeddedResource Include="Resources\ScaleManip16.png" />
+    <EmbeddedResource Include="Resources\ScaleManip24.png" />
+    <EmbeddedResource Include="Resources\ScaleManip32.png" />
+    <EmbeddedResource Include="Resources\ShowAll16.png" />
+    <EmbeddedResource Include="Resources\ShowAll24.png" />
+    <EmbeddedResource Include="Resources\ShowAll32.png" />
+    <EmbeddedResource Include="Resources\ShowSelection16.png" />
+    <EmbeddedResource Include="Resources\ShowSelection24.png" />
+    <EmbeddedResource Include="Resources\ShowSelection32.png" />
+    <EmbeddedResource Include="Resources\SingleView16.png" />
+    <EmbeddedResource Include="Resources\SingleView24.png" />
+    <EmbeddedResource Include="Resources\SingleView32.png" />
+    <EmbeddedResource Include="Resources\SmoothShading16.png" />
+    <EmbeddedResource Include="Resources\SmoothShading24.png" />
+    <EmbeddedResource Include="Resources\SmoothShading32.png" />
+    <EmbeddedResource Include="Resources\Texture16.png" />
+    <EmbeddedResource Include="Resources\Texture24.png" />
+    <EmbeddedResource Include="Resources\Texture32.png" />
+    <EmbeddedResource Include="Resources\Trackball16.png" />
+    <EmbeddedResource Include="Resources\Trackball24.png" />
+    <EmbeddedResource Include="Resources\Trackball32.png" />
+    <EmbeddedResource Include="Resources\TranslateManip16.png" />
+    <EmbeddedResource Include="Resources\TranslateManip24.png" />
+    <EmbeddedResource Include="Resources\TranslateManip32.png" />
+    <EmbeddedResource Include="Resources\VertexSnap16.png" />
+    <EmbeddedResource Include="Resources\VertexSnap24.png" />
+    <EmbeddedResource Include="Resources\VertexSnap32.png" />
+    <EmbeddedResource Include="Resources\VerticalViews16.png" />
+    <EmbeddedResource Include="Resources\VerticalViews24.png" />
+    <EmbeddedResource Include="Resources\VerticalViews32.png" />
+    <EmbeddedResource Include="Resources\WalkMode16.png" />
+    <EmbeddedResource Include="Resources\WalkMode24.png" />
+    <EmbeddedResource Include="Resources\WalkMode32.png" />
+    <EmbeddedResource Include="Resources\Wireframe16.png" />
+    <EmbeddedResource Include="Resources\Wireframe24.png" />
+    <EmbeddedResource Include="Resources\Wireframe32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\MissingFolderReference16.png" />
+    <EmbeddedResource Include="Resources\MissingFolderReference24.png" />
+    <EmbeddedResource Include="Resources\MissingFolderReference32.png" />
+    <EmbeddedResource Include="Resources\PolyMesh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Shadow16.png" />
+    <EmbeddedResource Include="Resources\Shadow24.png" />
+    <EmbeddedResource Include="Resources\Shadow32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Interfaces\IHierarchical.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Normals16.png" />
+    <EmbeddedResource Include="Resources\Normals24.png" />
+    <EmbeddedResource Include="Resources\Normals32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ExtensionManip16.png" />
+    <EmbeddedResource Include="Resources\ExtensionManip24.png" />
+    <EmbeddedResource Include="Resources\ExtensionManip32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\TerrainManip.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ATF\Framework\Atf.Core\Atf.Core.vs2010.csproj">
+      <Project>{9D1835B6-D1C2-44BA-BAE1-05C6EC442D2F}</Project>
+      <Name>Atf.Core.vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATF\Framework\Atf.Gui.WinForms\Atf.Gui.WinForms.vs2010.csproj">
+      <Project>{7C36A258-9102-420D-B80A-5EB5717644B6}</Project>
+      <Name>Atf.Gui.WinForms.vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATF\Framework\Atf.Gui\Atf.Gui.vs2010.csproj">
+      <Project>{4765C2A7-F989-40DB-BC12-FCD67025B93F}</Project>
+      <Name>Atf.Gui.vs2010</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>rd /S /Q "$(ProjectDir)obj"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8FDEBB1D-43B9-4922-AD51-4E58A0D71FBC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RenderingInterop</RootNamespace>
+    <AssemblyName>RenderingInterop</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\lib\Debug\</OutputPath>
+    <IntermediateOutputPath>..\tmp\RenderingInterop\Debug.vs2010\</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>649</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\lib\Release\</OutputPath>
+    <IntermediateOutputPath>..\tmp\RenderingInterop\Release.vs2010\</IntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>649</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\RenderCommands.cs" />
+    <Compile Include="DomNodeAdapters\BoundableObject.cs" />
+    <Compile Include="DomNodeAdapters\GridRenderer.cs" />
+    <Compile Include="DomNodeAdapters\NativeAttributeInfo.cs" />
+    <Compile Include="DomNodeAdapters\NativeGameWorldAdapter.cs" />
+    <Compile Include="Manipulators\ExtensionManipulator.cs" />
+    <Compile Include="Manipulators\Manipulator.cs" />
+    <Compile Include="Manipulators\TranslatePivotManipulator.cs" />
+    <Compile Include="Manipulators\RotateManipulator.cs" />
+    <Compile Include="Manipulators\ScaleManipulator.cs" />
+    <Compile Include="Manipulators\TranslateManipulator.cs" />
+    <Compile Include="Manipulators\TranslatorControl.cs" />
+    <Compile Include="NativeAnnotations.cs" />
+    <Compile Include="NativeDesignControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="NativeDesignView.cs" />
+    <Compile Include="NativeGameEditor.cs" />
+    <Compile Include="NativeInterop\Enums.cs" />
+    <Compile Include="NativeInterop\GameEngine.cs" />
+    <Compile Include="DomNodeAdapters\NativeObjectAdapter.cs" />
+    <Compile Include="NativeInterop\ImageData.cs" />
+    <Compile Include="NativeInterop\RenderState.cs" />
+    <Compile Include="NativeInterop\Structs.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resolvers\AssetResolver.cs" />
+    <Compile Include="Resolvers\ResourcePreview.cs" />
+    <Compile Include="Resolvers\TextureThumbnailResolver.cs" />
+    <Compile Include="Resolvers\ThumbnailResolver.cs" />
+    <Compile Include="TextureRenderSurface.cs" />
+    <Compile Include="Util3d.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ATF\Framework\Atf.Core\Atf.Core.vs2010.csproj">
+      <Project>{9D1835B6-D1C2-44BA-BAE1-05C6EC442D2F}</Project>
+      <Name>Atf.Core.vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATF\Framework\Atf.Gui.WinForms\Atf.Gui.WinForms.vs2010.csproj">
+      <Project>{7C36A258-9102-420D-B80A-5EB5717644B6}</Project>
+      <Name>Atf.Gui.WinForms.vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ATF\Framework\Atf.Gui\Atf.Gui.vs2010.csproj">
+      <Project>{4765C2A7-F989-40DB-BC12-FCD67025B93F}</Project>
+      <Name>Atf.Gui.vs2010</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LevelEditorCore\LevelEditorCore.vs2010.csproj">
+      <Project>{8EAAA859-349E-4605-A0AF-118017881212}</Project>
+      <Name>LevelEditorCore.vs2010</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>rd /S /Q "$(ProjectDir)obj"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

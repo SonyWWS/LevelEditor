@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema
+  elementFormDefault="qualified"
+  targetNamespace="gap"
+	xmlns="gap"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"  
+  >
+
+  <xs:simpleType name="floatListType">
+    <xs:list itemType="xs:float"></xs:list>
+  </xs:simpleType>
+
+  <xs:simpleType name="vector2Type">
+    <xs:restriction base="floatListType">
+      <xs:length value="2"></xs:length>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="vector3Type">
+    <xs:restriction base="floatListType">
+      <xs:length value="3"></xs:length>
+    </xs:restriction>
+  </xs:simpleType>
+
+    <xs:simpleType name="vector4Type">
+        <xs:restriction base="floatListType">
+            <xs:length value="4"></xs:length>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="matrixType">
+    <xs:restriction base="floatListType">
+      <xs:length value="16"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="resourceReferenceType">
+      <xs:annotation>
+          <xs:appinfo>
+              <LeGe.NativeType nativeName="ResourceReference"/>
+              <LeGe.NativeProperty name="uri" nativeName="Target" nativeType="wchar_t*" access="set"/>
+          </xs:appinfo>
+      </xs:annotation>
+      <xs:attribute name="uri" type="xs:anyURI"/>
+  </xs:complexType>
+
+  <xs:complexType name="gameObjectReferenceType">
+      <xs:annotation>
+          <xs:appinfo>
+              <LeGe.NativeType nativeName="GameObjectReference"/>
+              <LeGe.NativeProperty name="ref" nativeName="Target" nativeType="GameObject*" access="set"/>
+          </xs:appinfo>
+      </xs:annotation>
+      <xs:attribute name="ref" type="xs:anyURI" />
+  </xs:complexType>
+
+
+  <xs:complexType name="gameObjectType" abstract="true">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="GameObject"/>
+        <!--LeGe.NativeProperty annotation used for tagging a property as having native counter part.
+        Name is the name of dom attribute 
+        nativeName is the name of the property on the native c++ class -->
+        <LeGe.NativeProperty name="transform" nativeName="Transform" nativeType="Matrix" access="set"/>
+        <LeGe.NativeProperty name="name" nativeName="Name" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="visible" nativeName="Visible" nativeType="bool" access="set,get"/>
+        <LeGe.NativeProperty nativeName="Bounds" nativeType="AABB" access="get"/>
+        <LeGe.NativeProperty nativeName="LocalBounds" nativeType="AABB" access="get"/>
+
+        <scea.dom.editors.attribute name="name" displayName="Name" description="Unique name of Game Object" category="General"/>
+        <scea.dom.editors.attribute name="locked" displayName="Locked" description="Lock this object" category="General" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+        <scea.dom.editors.attribute name="visible" displayName="Visibility" description="Whether item is visible in Design View" category="Display" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:attribute name="transform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+    <xs:attribute name="translate" type="vector3Type" default="0 0 0"/>
+    <xs:attribute name="rotate" type="vector3Type" default="0 0 0"/>
+    <xs:attribute name="scale" type="vector3Type" default="1 1 1"/>
+    <xs:attribute name="pivot" type="vector3Type" default="0 0 0"/>
+    <xs:attribute name="name" type="xs:ID" />
+    <xs:attribute name="visible" type="xs:boolean" default="true" />
+    <xs:attribute name="locked" type="xs:boolean" default="false" />
+    
+    <!-- see public enum TransformationTypes in LevelEditorCore -->
+    <xs:attribute name="transformationType" type="xs:integer" default="15"/>
+  </xs:complexType>
+
+  <xs:complexType name="gameObjectGroupType">
+    <xs:annotation>
+      <xs:appinfo>
+        <!-- LeGe.NativeType annotation used for tagging a type as having native counter part 
+        the id will be auto generated using crc-32 hash
+        nativeName the name of the C++ class for this type.-->
+        <LeGe.NativeType nativeName="GameObjectGroup"/>
+        <LeGe.NativeElement name="gameObject" nativeName="Child" nativeType="GameObject" />
+        <scea.dom.editors name="GameObjectGroup" category="Level Tools" image="LevelEditorCore.Resources.group.png" menuText="Game Object Group" description="Game Object Group"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType">
+        <xs:sequence>
+          <xs:element name="gameObject" type="gameObjectType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="gameObjectFolderType">
+    <xs:annotation>
+      <xs:appinfo>        
+        <scea.dom.editors name="GameObjectFolder" image="LevelEditorCore.Resources.gameObjectFolder.png" menuText="Game Object Folder" description="Game Object Folder" expand="true" category="Level Tools"/>
+        <scea.dom.editors.attribute name="name" displayName="Name" description="Unique Name of Game Object Folder" category="General"/>
+        <scea.dom.editors.attribute name="visible" displayName="Visible" description="Whether item is visible in Design View" category="Display" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+        <scea.dom.editors.attribute name="locked" displayName="Locked" description="Lock this object" category="General" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="gameObject" type="gameObjectType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="folder" type="gameObjectFolderType" minOccurs="0" maxOccurs="unbounded" />      
+    </xs:sequence>    
+    <xs:attribute name="name" type="xs:ID" />
+    <xs:attribute name="visible" type="xs:boolean" default="true" />
+    <xs:attribute name="locked" type="xs:boolean" />    
+  </xs:complexType>
+
+  
+  <!-- objectOverrideType 
+  It stores all the overridden attributes of an object.-->
+  <xs:complexType name="objectOverrideType">
+    <xs:sequence>
+      <xs:element name="attributeOverride" type="attributeOverrideType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="objectName" type="xs:string" use="required"/>        
+  </xs:complexType>
+
+  <xs:complexType name="attributeOverrideType">    
+    <xs:attribute name="name" type="xs:string" use="required"/>
+    <xs:attribute name="value" type="xs:string"/>
+  </xs:complexType>
+  
+  
+  <xs:complexType name="prefabInstanceType">
+    <xs:annotation>
+      <xs:appinfo>
+        <scea.dom.editors name="PrefabInstance"/>        
+      </xs:appinfo>
+    </xs:annotation>    
+    <xs:complexContent>
+      <xs:extension base="gameObjectGroupType">
+        <xs:sequence>
+          <xs:element name="objectOverride" type="objectOverrideType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="prefabRef" type="xs:anyURI" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="layerType">
+    <xs:annotation>
+      <xs:appinfo>
+        <scea.dom.editors description="Layer" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="gameObjectReference" type="gameObjectReferenceType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="layer" type="layerType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+
+  <!-- Corresponds to Camera class in Camera.cs, so that we can save and restore its state. -->
+  <xs:complexType name="cameraType">
+    <xs:attribute name="eye" type="vector3Type" default="1 1 1"/>
+    <xs:attribute name="lookAtPoint" type="vector3Type" default="0 0 0"/>
+    <xs:attribute name="upVector" type="vector3Type" default ="0 1 0"/>
+    <xs:attribute name="viewType" type="xs:int" default="6"/>    
+    <xs:attribute name="yFov" type="xs:float" default ="0.7853982"/>    
+    <xs:attribute name="nearZ" type="xs:float" default="0.01"/>
+    <xs:attribute name="farZ" type="xs:float" default="2048"/>
+    <xs:attribute name="focusRadius" type="xs:float" default="1"/>
+  </xs:complexType>
+
+  <!-- A named camera view that the user can save and recall from the Bookmark Lister. -->
+  <xs:complexType name="bookmarkType">
+    <xs:sequence>
+      <xs:element name="camera" type="cameraType" minOccurs="1" maxOccurs="1"/>
+      <xs:element name="bookmark" type="bookmarkType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="bookmarksType">
+    <xs:sequence>
+      <xs:element name="bookmark" type="bookmarkType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="layersType">
+    <xs:sequence>
+      <xs:element name="layer" type="layerType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="gridType">    
+    <xs:attribute name="size" type="xs:float" default="20"/>
+    <xs:attribute name="subdivisions" type="xs:int" default="20"/>
+    <xs:attribute name="height" type="xs:float" default="0" />
+    <xs:attribute name="snap" type="xs:boolean" default="false" />
+    <xs:attribute name="visible" type="xs:boolean" default="true" />
+  </xs:complexType>
+                    
+  <xs:complexType name="gameReferenceType">    
+    <xs:attribute name="name" type="xs:string" />    
+    <xs:attribute name="ref" type="xs:anyURI" />        
+    <xs:attribute name="tags" type="xs:string" />
+  </xs:complexType>
+    
+  <xs:complexType name="gameType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="GameLevel"/>
+        <LeGe.NativeProperty name="name" nativeName="Name" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="fogEnabled" nativeName="FogEnabled" nativeType="bool" access="set"/>
+        <LeGe.NativeProperty name="fogColor" nativeName="FogColor" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="fogRange" nativeName="FogRange" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="fogDensity" nativeName="FogDensity" nativeType="float" access="set"/>                        
+        <scea.dom.editors name="Game" image="LevelEditorCore.Resources.Document16.png" menuText="Game" description="Game"/>
+        <scea.dom.editors.attribute name="name" displayName="Name" description="Unique name of Game"/>
+
+        <scea.dom.editors.attribute name="fogEnabled" displayName="FogEnabled" description="Enable/Disable global fog" category="Fog" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+        <scea.dom.editors.attribute name="fogColor" displayName="FogColor" description="Fog color" category="Fog"
+                                    editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" 
+                                    converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter"/>
+        <scea.dom.editors.attribute name="fogDensity" displayName="FogDensity" description="Fog density" category="Fog"/>
+        <scea.dom.editors.attribute name="fogRange" displayName="FogRange" description="Fog range" category="Fog"/>
+        
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>          
+      <xs:element name="gameObjectFolder" type="gameObjectFolderType" minOccurs="1" maxOccurs="1" />      
+      <xs:element name="layers" type="layersType" minOccurs="0" maxOccurs="1" />
+      <xs:element name="bookmarks" type="bookmarksType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="gameReference" type="gameReferenceType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="grid" type="gridType" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:ID" />
+    <xs:attribute name="fogEnabled" type="xs:boolean" default="true"/>
+    <xs:attribute name="fogColor" type="xs:int" default="-6901028"/>
+    <xs:attribute name="fogRange" type="xs:float" default="4000"/>
+    <xs:attribute name="fogDensity" type="xs:float" default="0.33"/>
+    
+  </xs:complexType>
+
+  <xs:complexType name ="prototypeType" >
+    <xs:sequence>
+      <xs:element name="gameObject" type="gameObjectType" minOccurs="1" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name ="prefabType" >
+    <xs:sequence>      
+      <xs:element name="gameObject" type="gameObjectType" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="game" type="gameType"/>
+  <xs:element name="prototype" type="prototypeType"/>
+  <xs:element name="prefab" type="prefabType"/>
+       
+</xs:schema>

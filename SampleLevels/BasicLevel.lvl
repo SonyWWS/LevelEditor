@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<game xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Game" fogEnabled="true" fogColor="-6901028" fogRange="4000" fogDensity="0.33" xmlns="gap">
+	<gameObjectFolder name="GameObjects" visible="true" locked="false">
+		<gameObject xsi:type="cubeTestType" transform="20.0318985 0 0 0 0 1 0 0 0 0 19.7945633 0 0 0 0 1" translate="0 0 0" rotate="0 0 0" scale="20.0318985 1 19.7945633" pivot="0 0 0" name="CubeTest" visible="true" locked="false" transformationType="15" color="-1" diffuse="Textures/moss2.png" normal="Textures/moss2-NM.png" textureTransform="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1" />
+		<gameObject xsi:type="skyDomeType" transform="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1" translate="0 0 0" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="SkyDome" visible="true" locked="false" transformationType="15" cubeMap="" />
+		<gameObject xsi:type="locatorType" transform="0.639233649 0 0.7690126 0 0 1 0 0 -0.7690126 0 0.639233649 0 -0.296789169 0.3679405 0.366693377 1" translate="-0.296789169 0.3679405 0.366693377" rotate="0 -0.877295 0" scale="1 1 1" pivot="0 0 0" name="Locator" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock03.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="0.7928512 0 0.609415233 0 0 1 0 0 -0.609415233 0 0.7928512 0 3.25562978 0.3679405 3.34680581 1" translate="3.25562978 0.3679405 3.34680581" rotate="0 -0.65532285 0" scale="1 1 1" pivot="0 0 0" name="Locator_1" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock03.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="0.943199337 0 -0.332227349 0 0 1 0 0 0.332227349 0 0.943199337 0 0.1813696 0.3679405 3.77739429 1" translate="0.1813696 0.3679405 3.77739429" rotate="0 0.338664085 0" scale="1 1 1" pivot="0 0 0" name="Locator_2" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock03.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="0.948174536 0 -0.317749977 0 0 1 0 0 0.317749977 0 0.948174536 0 3.436011 0.3679405 0.965545952 1" translate="3.436011 0.3679405 0.965545952" rotate="0 0.323355526 0" scale="1 1 1" pivot="0 0 0" name="Locator_3" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock03.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 1.41276062 0.3679405 2.87934065 1" translate="1.41276062 0.3679405 2.87934065" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_4" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock03.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 1.85736549 0.5016054 2.60646152 1" translate="1.85736549 0.5016054 2.60646152" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_5" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock04.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 1.966205 0.3679405 1.00243735 1" translate="1.966205 0.3679405 1.00243735" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_6" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock03.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="0.8208825 0 -0.5710971 0 0 1 0 0 0.5710971 0 0.8208825 0 1.764797 0.5016054 1.06083691 1" translate="1.764797 0.5016054 1.06083691" rotate="0 0.60784173 0" scale="1 1 1" pivot="0 0 0" name="Locator_7" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Rocks/rock04.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 0.9136634 0.5 -2.38600373 1" translate="0.9136634 0.5 -2.38600373" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_8" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Trees/tree_03_flattened.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 -4.77395153 0.5 3.4147644 1" translate="-4.77395153 0.5 3.4147644" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_9" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Trees/tree_03_flattened.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 -4.8720994 0.5166197 -0.7673125 1" translate="-4.8720994 0.5166197 -0.7673125" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_10" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Trees/tree_04_flattened.atgi" />
+		</gameObject>
+		<gameObject xsi:type="locatorType" transform="1 0 0 0 0 1 0 0 0 0 1 0 0.2770661 0.5166197 7.73526 1" translate="0.2770661 0.5166197 7.73526" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Locator_11" visible="true" locked="false" transformationType="15">
+			<resource xsi:type="resourceReferenceType" uri="Trees/tree_04_flattened.atgi" />
+		</gameObject>
+	</gameObjectFolder>
+	<layers />
+	<bookmarks />
+	<grid size="20" subdivisions="20" height="0" snap="false" visible="true" />
+</game>

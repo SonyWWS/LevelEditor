@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema
+  targetNamespace="atfskin"
+  elementFormDefault="qualified"  
+  xmlns="atfskin"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="skinType">
+    <xs:sequence>
+      <xs:element name="style" type="styleType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="styleType">
+    <xs:sequence>
+      <xs:element name="setter" type="setterType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" />
+    <xs:attribute name="targetType" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="setterType">
+    <xs:sequence>
+      <xs:element name="valueInfo" type="valueInfoType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="listInfo" type="listInfoType" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="propertyName" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="valueInfoType">
+    <xs:sequence>
+      <xs:element name="constructorParams" type="constructorParamsType" minOccurs="0" maxOccurs="1"/>
+      <xs:element name="setter" type="setterType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="converter" type="xs:string" use="optional"/>
+    <xs:attribute name="type" type="xs:string" use="optional"/>
+    <xs:attribute name="value" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="listInfoType">
+    <xs:sequence>
+      <xs:element name="valueInfo" type="valueInfoType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="constructorParamsType">
+    <xs:sequence>
+      <xs:element name="valueInfo" type="valueInfoType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="skin" type="skinType" />
+  
+</xs:schema>

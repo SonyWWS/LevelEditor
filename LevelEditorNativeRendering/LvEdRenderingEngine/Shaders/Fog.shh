@@ -1,0 +1,23 @@
+//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
+
+#ifndef Fog_h
+#define Fog_h
+
+
+struct ExpFog
+{
+    int    enabled;
+	float  density;
+    float  range;  
+	float  fpad;  
+    float4 color;     
+};
+
+float ComputeFogFactor(ExpFog fog, float distW)
+{
+   float rdist =  distW / fog.range * 5;
+   return  exp( -fog.density * rdist);
+}
+
+
+#endif

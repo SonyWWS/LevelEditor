@@ -1,0 +1,427 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{62CA9CBA-D55B-46DA-8764-B8CFF4490481}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>LvEdRenderingEngine</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>..\..\tmp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>..\..\bin\Debug\NativePlugin\x86\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(DXSDK_DIR)Utilities\Bin\x86;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>..\..\tmp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>..\..\bin\Debug\NativePlugin\x64\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x64;$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>..\..\tmp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>..\..\bin\Release\NativePlugin\x86\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(DXSDK_DIR)Utilities\Bin\x86;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>..\..\tmp\$(Configuration)\$(Platform)\</IntDir>
+    <OutDir>..\..\bin\Release\NativePlugin\x64\</OutDir>
+    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x64;$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LVEDRENDERINGENGINE_EXPORTS;USE_XNAMATH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\DirectX\XNAMath</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11d.lib;d3dx9d.lib;dxerr.lib;DXGI.lib;dxguid.lib;winmm.lib;comctl32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LVEDRENDERINGENGINE_EXPORTS;USE_XNAMATH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\DirectX\XNAMath</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11d.lib;d3dx9d.lib;dxerr.lib;DXGI.lib;dxguid.lib;winmm.lib;comctl32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LVEDRENDERINGENGINE_EXPORTS;USE_XNAMATH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\DirectX\XNAMath</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11.lib;d3dx9.lib;dxerr.lib;DXGI.lib;dxguid.lib;winmm.lib;comctl32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LVEDRENDERINGENGINE_EXPORTS;USE_XNAMATH;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\DirectX\XNAMath</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>d3d11.lib;d3dcompiler.lib;d3dx11.lib;d3dx9.lib;dxerr.lib;DXGI.lib;dxguid.lib;winmm.lib;comctl32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="DirectX\DirectXTex\DirectXTex.inl" />
+    <None Include="DirectX\DirectXTex\ReadMe.txt" />
+    <None Include="DirectX\XNAMath\xnamathconvert.inl" />
+    <None Include="DirectX\XNAMath\xnamathmatrix.inl" />
+    <None Include="DirectX\XNAMath\xnamathmisc.inl" />
+    <None Include="DirectX\XNAMath\xnamathvector.inl" />
+    <None Include="rapidxml-1.13\license.txt" />
+    <None Include="rapidxml-1.13\manual.html" />
+    <None Include="Resources\Light.png" />
+    <None Include="Shaders\BasicShader.hlsl" />
+    <None Include="Shaders\Billboard.hlsl" />
+    <None Include="Shaders\Fog.shh" />
+    <None Include="Shaders\LineShader.hlsl" />
+    <None Include="Shaders\NormalsShader.hlsl" />
+    <None Include="Shaders\ShadowMapGen.hlsl" />
+    <None Include="Shaders\FontShader.hlsl" />
+    <None Include="Shaders\Lighting.shh" />
+    <None Include="Shaders\SkyDome.hlsl" />
+    <None Include="Shaders\SkySphere.hlsl" />
+    <None Include="Shaders\SolidWireframeHelper.shh" />
+    <None Include="Shaders\TerrainShader.hlsl" />
+    <None Include="Shaders\TexturedShader.hlsl" />
+    <None Include="Shaders\WireframeShader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bridge\GobBridge.h" />
+    <ClInclude Include="Bridge\RegisterRuntimeObjects.h" />
+    <ClInclude Include="Bridge\RegisterSchemaObjects.h" />
+    <ClInclude Include="Core\ErrorHandler.h" />
+    <ClInclude Include="Core\FileUtils.h" />
+    <ClInclude Include="Core\Hasher.h" />
+    <ClInclude Include="Core\ImageData.h" />
+    <ClInclude Include="Core\Logger.h" />
+    <ClInclude Include="Core\NonCopyable.h" />
+    <ClInclude Include="Core\Object.h" />
+    <ClInclude Include="Core\PerfTimer.h" />
+    <ClInclude Include="Core\ResUtil.h" />
+    <ClInclude Include="Core\StringBlob.h" />
+    <ClInclude Include="Core\StringUtils.h" />
+    <ClInclude Include="Core\typedefs.h" />
+    <ClInclude Include="Core\Utils.h" />
+    <ClInclude Include="Core\WinHeaders.h" />
+    <ClInclude Include="DirectX\DDSTextureLoader\DDSTextureLoader.h" />
+    <ClInclude Include="DirectX\DirectXTex\BC.h" />
+    <ClInclude Include="DirectX\DirectXTex\DDS.h" />
+    <ClInclude Include="DirectX\DirectXTex\DirectXTex.h" />
+    <ClInclude Include="DirectX\DirectXTex\DirectXTexP.h" />
+    <ClInclude Include="DirectX\DirectXTex\scoped.h" />
+    <ClInclude Include="DirectX\DXUtil.h" />
+    <ClInclude Include="DirectX\WICTextureLoader\WICTextureLoader.h" />
+    <ClInclude Include="DirectX\XNAMath\xnamath.h" />
+    <ClInclude Include="GobSystem\BillboardGob.h" />
+    <ClInclude Include="GobSystem\BoxLightGob.h" />
+    <ClInclude Include="GobSystem\ConeGob.h" />
+    <ClInclude Include="GobSystem\ControlPointGob.h" />
+    <ClInclude Include="GobSystem\CubeGob.h" />
+    <ClInclude Include="GobSystem\CurveGob.h" />
+    <ClInclude Include="GobSystem\CylinderGob.h" />
+    <ClInclude Include="GobSystem\DirLightGob.h" />
+    <ClInclude Include="GobSystem\GameLevel.h" />
+    <ClInclude Include="GobSystem\GameObject.h" />
+    <ClInclude Include="GobSystem\GameObjectGroup.h" />
+    <ClInclude Include="GobSystem\LightGob.h" />
+    <ClInclude Include="GobSystem\Locator.h" />
+    <ClInclude Include="GobSystem\OrcGob.h" />
+    <ClInclude Include="GobSystem\PlaneGob.h" />
+    <ClInclude Include="GobSystem\PointLightGob.h" />
+    <ClInclude Include="GobSystem\PrimitiveShapeGob.h" />
+    <ClInclude Include="GobSystem\SkyDome.h" />
+    <ClInclude Include="GobSystem\SphereGob.h" />
+    <ClInclude Include="GobSystem\Terrain\DecorationMap.h" />
+    <ClInclude Include="GobSystem\Terrain\LayerMap.h" />
+    <ClInclude Include="GobSystem\Terrain\TerrainGob.h" />
+    <ClInclude Include="GobSystem\Terrain\TerrainMap.h" />
+    <ClInclude Include="Model3d\AtgiModelFactory.h" />
+    <ClInclude Include="Model3d\ColladaModelFactory.h" />
+    <ClInclude Include="Model3d\XmlModelFactory.h" />
+    <ClInclude Include="Renderer\BasicRenderer.h" />
+    <ClInclude Include="Renderer\BasicShader.h" />
+    <ClInclude Include="Renderer\BillboardShader.h" />
+    <ClInclude Include="Renderer\CustomDataAttribute.h" />
+    <ClInclude Include="Renderer\LineRenderer.h" />
+    <ClInclude Include="Renderer\NormalsShader.h" />
+    <ClInclude Include="Renderer\RenderableNodeCollector.h" />
+    <ClInclude Include="Renderer\RenderableNodeSet.h" />
+    <ClInclude Include="Renderer\RenderableNodeSorter.h" />
+    <ClInclude Include="LvEdRenderingEngine.h" />
+    <ClInclude Include="LvEdUtils.h" />
+    <ClInclude Include="Model3d\Model3dBuilder.h" />
+    <ClInclude Include="Model3d\rapidxmlhelpers.h" />
+    <ClInclude Include="rapidxml-1.13\rapidxml.hpp" />
+    <ClInclude Include="rapidxml-1.13\rapidxml_iterators.hpp" />
+    <ClInclude Include="rapidxml-1.13\rapidxml_print.hpp" />
+    <ClInclude Include="rapidxml-1.13\rapidxml_utils.hpp" />
+    <ClInclude Include="Renderer\RenderContext.h" />
+    <ClInclude Include="Renderer\RenderSurface.h" />
+    <ClInclude Include="Renderer\RenderUtil.h" />
+    <ClInclude Include="Renderer\ScreenMsgPrinter.h" />
+    <ClInclude Include="Renderer\ShadowMapGen.h" />
+    <ClInclude Include="Renderer\ShapeLib.h" />
+    <ClInclude Include="Renderer\ShadowMaps.h" />
+    <ClInclude Include="Renderer\DeviceManager.h" />
+    <ClInclude Include="Renderer\Font.h" />
+    <ClInclude Include="Renderer\FontTypes.h" />
+    <ClInclude Include="Renderer\Shader.h" />
+    <ClInclude Include="Renderer\Model.h" />
+    <ClInclude Include="Renderer\Lights.h" />
+    <ClInclude Include="Renderer\Renderable.h" />
+    <ClInclude Include="Renderer\RenderBuffer.h" />
+    <ClInclude Include="Renderer\RenderEnums.h" />
+    <ClInclude Include="Renderer\Resource.h" />
+    <ClInclude Include="Renderer\RenderState.h" />
+    <ClInclude Include="Renderer\TerrainShader.h" />
+    <ClInclude Include="Renderer\Texture.h" />
+    <ClInclude Include="Renderer\TexturedShader.h" />
+    <ClInclude Include="Renderer\SwapChain.h" />
+    <ClInclude Include="Renderer\FontRenderer.h" />
+    <ClInclude Include="Renderer\TextureLib.h" />
+    <ClInclude Include="Renderer\TextureRenderSurface.h" />
+    <ClInclude Include="Renderer\WireFrameShader.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="ResourceManager\ResourceManager.h" />
+    <ClInclude Include="ResourceManager\TextureFactory.h" />
+    <ClInclude Include="Renderer\ShaderLib.h" />
+    <ClInclude Include="Renderer\SkyDomeShader.h" />
+    <ClInclude Include="VectorMath\Camera.h" />
+    <ClInclude Include="VectorMath\CollisionPrimitives.h" />
+    <ClInclude Include="VectorMath\MeshUtil.h" />
+    <ClInclude Include="VectorMath\V3dMath.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Bridge\GobBridge.cpp" />
+    <ClCompile Include="Bridge\RegisterRuntimeObjects.cpp" />
+    <ClCompile Include="Bridge\RegisterSchemaObjects.cpp" />
+    <ClCompile Include="Core\ErrorHandler.cpp" />
+    <ClCompile Include="Core\FileUtils.cpp" />
+    <ClCompile Include="Core\Hasher.cpp" />
+    <ClCompile Include="Core\ImageData.cpp" />
+    <ClCompile Include="Core\Logger.cpp" />
+    <ClCompile Include="Core\Object.cpp" />
+    <ClCompile Include="Core\ResUtil.cpp" />
+    <ClCompile Include="Core\StringUtils.cpp" />
+    <ClCompile Include="DirectX\DDSTextureLoader\DDSTextureLoader.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\BC.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\BC4BC5.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\BC6HBC7.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexCompress.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexConvert.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexD3D11.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexDDS.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexFlipRotate.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexImage.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexMipmaps.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexMisc.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexNormalMaps.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexResize.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexTGA.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexUtil.cpp" />
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexWIC.cpp" />
+    <ClCompile Include="DirectX\DXUtil.cpp" />
+    <ClCompile Include="DirectX\WICTextureLoader\WICTextureLoader.cpp" />
+    <ClCompile Include="dllmain.cpp">
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </PrecompiledHeader>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
+      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="GobSystem\BillboardGob.cpp" />
+    <ClCompile Include="GobSystem\BoxLightGob.cpp" />
+    <ClCompile Include="GobSystem\ConeGob.cpp" />
+    <ClCompile Include="GobSystem\ControlPointGob.cpp" />
+    <ClCompile Include="GobSystem\CubeGob.cpp" />
+    <ClCompile Include="GobSystem\CurveGob.cpp" />
+    <ClCompile Include="GobSystem\CylinderGob.cpp" />
+    <ClCompile Include="GobSystem\DirLightGob.cpp" />
+    <ClCompile Include="GobSystem\GameLevel.cpp" />
+    <ClCompile Include="GobSystem\GameObject.cpp" />
+    <ClCompile Include="GobSystem\GameObjectGroup.cpp" />
+    <ClCompile Include="GobSystem\LightGob.cpp" />
+    <ClCompile Include="GobSystem\Locator.cpp" />
+    <ClCompile Include="GobSystem\OrcGob.cpp" />
+    <ClCompile Include="GobSystem\PlaneGob.cpp" />
+    <ClCompile Include="GobSystem\PointLightGob.cpp" />
+    <ClCompile Include="GobSystem\PrimitiveShapeGob.cpp" />
+    <ClCompile Include="GobSystem\SkyDome.cpp" />
+    <ClCompile Include="GobSystem\SphereGob.cpp" />
+    <ClCompile Include="GobSystem\Terrain\DecorationMap.cpp" />
+    <ClCompile Include="GobSystem\Terrain\LayerMap.cpp" />
+    <ClCompile Include="GobSystem\Terrain\TerrainGob.cpp" />
+    <ClCompile Include="GobSystem\Terrain\TerrainMap.cpp" />
+    <ClCompile Include="LvEdRenderingEngine.cpp" />
+    <ClCompile Include="Model3d\AtgiModelFactory.cpp" />
+    <ClCompile Include="Model3d\ColladaModelFactory.cpp" />
+    <ClCompile Include="Model3d\Model3dBuilder.cpp" />
+    <ClCompile Include="Model3d\XmlModelFactory.cpp" />
+    <ClCompile Include="Model3d\rapidxmlhelpers.cpp" />
+    <ClCompile Include="Renderer\BasicRenderer.cpp" />
+    <ClCompile Include="Renderer\BasicShader.cpp" />
+    <ClCompile Include="Renderer\BillboardShader.cpp" />
+    <ClCompile Include="Renderer\CustomDataAttribute.cpp" />
+    <ClCompile Include="Renderer\LineRenderer.cpp" />
+    <ClCompile Include="Renderer\NormalsShader.cpp" />
+    <ClCompile Include="Renderer\RenderContext.cpp" />
+    <ClCompile Include="Renderer\RenderSurface.cpp" />
+    <ClCompile Include="Renderer\RenderUtil.cpp" />
+    <ClCompile Include="Renderer\ShadowMapGen.cpp" />
+    <ClCompile Include="Renderer\ShadowMaps.cpp" />
+    <ClCompile Include="Renderer\Lights.cpp" />
+    <ClCompile Include="Renderer\Model.cpp" />
+    <ClCompile Include="Renderer\ShapeLib.cpp" />
+    <ClCompile Include="Renderer\DeviceManager.cpp" />
+    <ClCompile Include="Renderer\Font.cpp" />
+    <ClCompile Include="Renderer\RenderBuffer.cpp" />
+    <ClCompile Include="Renderer\RenderableNodeSet.cpp" />
+    <ClCompile Include="Renderer\Resource.cpp" />
+    <ClCompile Include="Renderer\RenderState.cpp" />
+    <ClCompile Include="Renderer\TerrainShader.cpp" />
+    <ClCompile Include="Renderer\Texture.cpp" />
+    <ClCompile Include="Renderer\TexturedShader.cpp" />
+    <ClCompile Include="Renderer\SwapChain.cpp" />
+    <ClCompile Include="Renderer\FontRenderer.cpp" />
+    <ClCompile Include="Renderer\TextureLib.cpp" />
+    <ClCompile Include="Renderer\TextureRenderSurface.cpp" />
+    <ClCompile Include="Renderer\WireFrameShader.cpp" />
+    <ClCompile Include="Renderer\RenderableNodeSorter.cpp" />
+    <ClCompile Include="Renderer\ShaderLib.cpp" />
+    <ClCompile Include="Renderer\SkyDomeShader.cpp" />
+    <ClCompile Include="Renderer\ScreenMsgPrinter.cpp" />
+    <ClCompile Include="ResourceManager\ResourceManager.cpp" />
+    <ClCompile Include="ResourceManager\TextureFactory.cpp" />
+    <ClCompile Include="VectorMath\Camera.cpp" />
+    <ClCompile Include="VectorMath\CollisionPrimitives.cpp" />
+    <ClCompile Include="VectorMath\MeshUtil.cpp" />
+    <ClCompile Include="VectorMath\V3dMath.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema
+  elementFormDefault="qualified"
+  targetNamespace="gap"
+  xmlns="gap"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:include schemaLocation="gap.xsd"/>
+
+
+  <!-- reference for 3d models collada, atgi, etc  -->
+  <xs:complexType name="modelReferenceType">
+    <xs:annotation>
+      <xs:appinfo>
+        <sce.atf.referenceConstraint validResourceFileExts =".atgi;.dae"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="resourceReferenceType">
+        <xs:attribute name="tag" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+        
+  </xs:complexType>
+  
+
+  <xs:complexType name="locatorType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="Locator"/>
+        <LeGe.NativeElement name="resource" nativeName="Resource" nativeType="ResourceReference" />
+        <scea.dom.editors name="Locator" category="Level Tools" menuText="Game Objects/Locator" image="LevelEditorCore.Resources.locator.png" description="Locator"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType">
+        <xs:sequence>
+          <xs:element name="resource" type="modelReferenceType" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="stmRef" type="stateMachineRefType" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  
+    <!-- lights-->
+    <xs:complexType name="DirLight">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="DirLightGob"/>
+                <LeGe.NativeProperty name="ambient" nativeName="Ambient" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="specular" nativeName="Specular" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="direction" nativeName="Direction" nativeType="float3" access="set"/>
+                <scea.dom.editors category="Lights" name="DirLight" menuText="Lights/DirLight" description="A directional light"/>
+                <scea.dom.editors.attribute category="Light" name="ambient" displayName="Ambient" description="Ambient Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="diffuse" displayName="Diffuse" description="Diffuse Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="specular" displayName="Specular" description="Specular Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="direction" displayName="Direction" description="direction of light" editor="Sce.Atf.Controls.PropertyEditing.NumericTupleEditor,Atf.Gui.WinForms" converter="Sce.Atf.Controls.PropertyEditing.FloatArrayConverter"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="gameObjectType" >
+                <xs:attribute name="ambient" type="xs:int" default="-11776948"/>
+                <xs:attribute name="diffuse" type="xs:int" default="-1644826"/>
+                <xs:attribute name="specular" type="xs:int" default="-8355712"/>
+                <xs:attribute name="direction" type="vector3Type" default="0.258819073 -0.965925932 0"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="BoxLight">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="BoxLightGob"/>
+                <LeGe.NativeProperty name="ambient" nativeName="Ambient" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="specular" nativeName="Specular" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="direction" nativeName="Direction" nativeType="float3" access="set,get"/>
+                <LeGe.NativeProperty name="attenuation" nativeName="Attenuation" nativeType="float3" access="set"/>
+                <scea.dom.editors category="Lights" name="BoxLight" menuText="Lights/BoxLight" description="A directional light limited to its bounds"/>
+                <scea.dom.editors.attribute category="Light" name="ambient" displayName="Ambient" description="Ambient Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="diffuse" displayName="Diffuse" description="Diffuse Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="specular" displayName="Specular" description="Specular Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="direction" displayName="Direction" description="direction of light" editor="Sce.Atf.Controls.PropertyEditing.NumericTupleEditor,Atf.Gui.WinForms" converter="Sce.Atf.Controls.PropertyEditing.FloatArrayConverter"/>
+                <scea.dom.editors.attribute category="Light" name="attenuation" displayName="Attenuation" description="Attenuation factor" editor="Sce.Atf.Controls.PropertyEditing.NumericTupleEditor,Atf.Gui.WinForms" converter="Sce.Atf.Controls.PropertyEditing.FloatArrayConverter"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="gameObjectType" >
+                <xs:attribute name="ambient" type="xs:int" default="0"/>
+                <xs:attribute name="diffuse" type="xs:int" default="-1644826"/>
+                <xs:attribute name="specular" type="xs:int" default="-8355712"/>
+                <xs:attribute name="direction" type="vector3Type" default="0 1 0"/>
+                <xs:attribute name="attenuation" type="vector3Type" default="0 1 0"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="PointLight">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="PointLightGob"/>
+                <LeGe.NativeProperty name="ambient" nativeName="Ambient" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="specular" nativeName="Specular" nativeType="int" access="set"/>
+                <LeGe.NativeProperty name="attenuation" nativeName="Attenuation" nativeType="float3" access="set"/>
+                <LeGe.NativeProperty name="range" nativeName="Range" nativeType="float" access="set"/>
+                <scea.dom.editors category="Lights" name="PointLight" menuText="Lights/PointLight" description="A omnidirectional light limited to its bounds"/>
+                <scea.dom.editors.attribute category="Light" name="ambient" displayName="Ambient" description="Ambient Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="diffuse" displayName="Diffuse" description="Diffuse Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="specular" displayName="Specular" description="Specular Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+                <scea.dom.editors.attribute category="Light" name="attenuation" displayName="Attenuation" description="Attenuation factor" editor="Sce.Atf.Controls.PropertyEditing.NumericTupleEditor,Atf.Gui.WinForms" converter="Sce.Atf.Controls.PropertyEditing.FloatArrayConverter"/>
+                <scea.dom.editors.attribute category="Light" name="range" displayName="Range" description="range factor" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="gameObjectType" >
+                <xs:attribute name="ambient" type="xs:int" default="0"/>
+                <xs:attribute name="diffuse" type="xs:int" default="-1644826"/>
+                <xs:attribute name="specular" type="xs:int" default="-8355712"/>
+                <xs:attribute name="attenuation" type="vector3Type" default="0 1 0"/>
+                <xs:attribute name="range" type="xs:float" default="1"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- Linears -->
+  <xs:complexType name="controlPointType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="ControlPointGob"/>      
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType"/>
+    </xs:complexContent>
+  </xs:complexType>
+
+  
+  <!-- Linear curve  (poly lines) -->
+  <xs:complexType name="curveType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="CurveGob"/>
+        <LeGe.NativeProperty name="color" nativeName="Color" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="isClosed" nativeName="Closed" nativeType="bool" access="set"/>
+        <LeGe.NativeProperty name="steps" nativeName="Steps" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="interpolationType" nativeName="InterpolationType" nativeType="int" access="set"/>
+        <LeGe.NativeElement name="point" nativeName="Point" nativeType="ControlPointGob" access="set"/>
+        <scea.dom.editors name="PolyLine" category="Linears" image="LevelEditorCore.Resources.Polyline.png" description="Linear curve"/>
+        <scea.dom.editors.attribute category="Linear" name="color" displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+        <scea.dom.editors.attribute category="Linear" name="isClosed" displayName="Is Closed" description="Whether curve has extra edge connection first and last points" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+        <scea.dom.editors.attribute category="Linear" name="steps" displayName="Steps" description="Number of steps to take during interpolation" />        
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType">
+        <xs:sequence>
+          <xs:element name="point" type="controlPointType" minOccurs="2" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="color" type="xs:int" default="-1"/>
+        <xs:attribute name="isClosed" type="xs:boolean" default="false" />
+        <xs:attribute name="steps" type="xs:int" default="10"/>
+        <xs:attribute name="interpolationType" type="xs:int" default="0"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- CatmullRom curve -->
+  <xs:complexType name="catmullRomType">
+    <xs:annotation>
+      <xs:appinfo>
+        <scea.dom.editors name="CatmullRom spline" category="Linears" image="LevelEditorCore.Resources.Linear16.png" description="CatmullRom spline"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="curveType">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <!-- piecewise bezier spline-->
+  <xs:complexType name="bezierType">
+    <xs:annotation>
+      <xs:appinfo>
+        <scea.dom.editors name="Bezier spline" category="Linears" image="LevelEditorCore.Resources.Linear16.png" description="Piecewise bezier spline"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="curveType">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+
+<!-- examples -->
+  <xs:complexType name="skyDomeType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="SkyDome"/>
+        <LeGe.NativeProperty name="cubeMap" nativeName="CubeMap" nativeType="wchar_t*" access="set"/>
+        <scea.dom.editors name="SkyDome" category="Examples" menuText="Game Objects/SkyDome" description="SkyDome example"/>
+        <scea.dom.editors.attribute  name="cubeMap" displayName="CubeMap" description = "cube map texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.dds)|*.dds"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType">
+        <xs:attribute name="cubeMap" type="xs:anyURI"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="shapeTestType" abstract="true">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="PrimitiveShapeGob"/>
+        <LeGe.NativeProperty name="color" nativeName="Color" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="normal" nativeName="Normal" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
+        <scea.dom.editors.attribute category="Shape" name="color" displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+        <scea.dom.editors.attribute category="Shape" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+        <scea.dom.editors.attribute category="Shape" name="normal" displayName="Normal" description = "normal texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+        <scea.dom.editors.attribute category="Shape" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType" >
+        <xs:attribute name="color" type="xs:int" default="-1"/>
+        <xs:attribute name="diffuse" type="xs:anyURI"/>
+        <xs:attribute name="normal" type="xs:anyURI"/>
+        <xs:attribute name="textureTransform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="cubeTestType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="CubeGob"/>
+        <scea.dom.editors name="CubeTest" category="Examples" menuText="Game Objects/CubeTest" description="Test Cube"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+        <xs:extension base="shapeTestType" />
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="sphereTestType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="SphereGob"/>
+          <scea.dom.editors name="SphereTest" category="Examples" menuText="Game Objects/SphereTest" description="Test Sphere"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+        <xs:extension base="shapeTestType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="coneTestType">
+    <xs:annotation>
+      <xs:appinfo>
+          <LeGe.NativeType nativeName="ConeGob"/>
+          <scea.dom.editors name="ConeTest" category="Examples" menuText="Game Objects/ConeTest" description="Test Cone"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="shapeTestType" />
+  </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="cylinderTestType">
+    <xs:annotation>
+      <xs:appinfo>
+          <LeGe.NativeType nativeName="CylinderGob"/>
+          <scea.dom.editors name="CylinderTest" category="Examples" menuText="Game Objects/CylinderTest" description="Test Cylinder"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+        <xs:extension base="shapeTestType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="planeTestType">
+    <xs:annotation>
+      <xs:appinfo>
+          <LeGe.NativeType nativeName="PlaneGob"/>
+          <scea.dom.editors name="PlaneTest" category="Examples" menuText="Game Objects/PlaneTest" description="Test Plane"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+        <xs:extension base="shapeTestType" />
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="billboardTestType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="BillboardGob"/>
+        <LeGe.NativeProperty name="intensity" nativeName="Intensity" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
+        <scea.dom.editors name="BillboardTest" category="Examples" menuText="Game Objects/BillboardTest" description="Test Billboard"/>
+        <scea.dom.editors.attribute category="Billboard" name="intensity" displayName="Intensity" description = "billboard intensity" />
+        <scea.dom.editors.attribute category="Billboard" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+        <scea.dom.editors.attribute category="Billboard" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+        <xs:extension base="gameObjectType" >
+            <xs:attribute name="intensity" type="xs:float" default="1"/>
+            <xs:attribute name="diffuse" type="xs:anyURI"/>
+            <xs:attribute name="textureTransform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+        </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+ 
+  <xs:complexType name="orcType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="OrcGob"/>
+        <LeGe.NativeElement name="geometry" nativeName="Geometry" nativeType="ResourceReference" />
+        <LeGe.NativeElement name="animation" nativeName="Animation" nativeType="ResourceReference" />
+        <LeGe.NativeElement name="target" nativeName="Target" nativeType="GameObjectReference" />
+        <LeGe.NativeElement name="friends" nativeName="Friends" nativeType="GameObjectReference" />
+        <LeGe.NativeElement name="children" nativeName="Children" nativeType="OrcGob" />
+        <LeGe.NativeProperty name="weight" nativeName="Weight" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="emotion" nativeName="Emotion" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="goals" nativeName="Goals" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="color" nativeName="Color" nativeType="int" access="set"/>
+        <LeGe.NativeProperty name="toeColor" nativeName="ToeColor" nativeType="int" access="set"/>
+
+        <scea.dom.editors name="Orc" category="Examples" menuText="Game Objects/Orc" description="Orc example"/>
+        <scea.dom.editors.attribute name="name" displayName="Name" category="General" description="Name of Orc"/>
+        <scea.dom.editors.attribute name="weight" displayName="Weight" description="Weight of Orc (kg)"/>
+        <scea.dom.editors.attribute
+          name="emotion"
+          displayName="Emotion"
+          description="The orc is feeling..."
+          editor="Sce.Atf.Controls.PropertyEditing.EnumUITypeEditor,Atf.Gui.WinForms:Adequate=0,Capable=1,Enthusiastic=2,Happy=3,Thrilled=4,Annoyed=5,Angry=6,Frustrated=7,Depressed=8,Hostile=9"
+          converter="Sce.Atf.Controls.PropertyEditing.EnumTypeConverter:Adequate=0,Capable=1,Enthusiastic=2,Happy=3,Thrilled=4,Annoyed=5,Angry=6,Frustrated=7,Depressed=8,Hostile=9"/>
+        <scea.dom.editors.attribute
+           name="goals"
+           displayName="Goals"
+           description="Orc's Goals"
+           editor="Sce.Atf.Controls.PropertyEditing.FlagsUITypeEditor,Atf.Gui.WinForms:WorldDomination,Work,Eat,Sleep"
+           converter="Sce.Atf.Controls.PropertyEditing.FlagsTypeConverter:WorldDomination,Work,Eat,Sleep"/>
+        <scea.dom.editors.attribute
+          name="color"
+          displayName="Color"
+          description="Orc's color"
+          editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui"
+          converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+        <scea.dom.editors.attribute
+          name="toeColor"
+          displayName="Toenail Color"
+          description="Orc's toenail color"
+          editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms"
+          converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />        
+        <scea.dom.editors.elementCollection
+          name="children"
+          displayName="Children"
+          editor="Sce.Atf.Controls.PropertyEditing.EmbeddedCollectionEditor,Atf.Gui.WinForms:gap,orcType" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType">
+        <xs:sequence>
+          <xs:element name="geometry" type="modelReferenceType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="animation" type="resourceReferenceType" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="target" type="gameObjectReferenceType" minOccurs="0" maxOccurs="1" />
+          <xs:element name="friends" type="gameObjectReferenceType" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="children" type="orcType" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="weight" type="xs:float" />
+        <xs:attribute name="emotion" type="xs:int" />
+        <xs:attribute name="goals" type="xs:int" />
+        <xs:attribute name="color" type="xs:int" />
+        <xs:attribute name="toeColor" type="xs:int" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  
+  <!-- terrain related types  -->
+
+  <xs:complexType name="terrainMapType" abstract="true">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="TerrainMap"/>
+        <LeGe.NativeProperty name="name" nativeName="Name" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="visible" nativeName="Visible" nativeType="bool" access="set"/>
+        <LeGe.NativeProperty name="minHeight" nativeName="MinHeight" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="maxHeight" nativeName="MaxHeight" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="normal" nativeName="Normal" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="specular" nativeName="Specular" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="mask" nativeName="Mask" nativeType="wchar_t*" access="set"/>
+        
+        <scea.dom.editors.attribute name="name" displayName="Name" description="Map name"/>
+        <scea.dom.editors.attribute name="visible" displayName="Visibility" description="Whether the map is visible" category="Display" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+        <scea.dom.editors.attribute name="minHeight" 
+                                    displayName="Min Height" 
+                                    description="minimum height, lower limit of this map"/>
+        <scea.dom.editors.attribute name="maxHeight"
+                                    displayName="Max Height"
+                                    description="Maximum height, uper limit of this map"/>
+
+        <scea.dom.editors.attribute name="minSlope"
+                                    displayName="Min Slope"
+                                    description="Minimum slope, Minimum elevation for this map"/>
+
+        <scea.dom.editors.attribute name="maxSlope"
+                                    displayName="Max Slope"
+                                    description="Maximum slope, maximum elevation for this map"/>
+        <scea.dom.editors.attribute
+          name="diffuse"
+          displayName="Diffuse"
+          description = "diffuse texture"
+          category="Textures"
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
+        <scea.dom.editors.attribute
+          name="normal"
+          displayName="Normal"
+          description = "normal map texture"
+          category="Textures"
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
+        <scea.dom.editors.attribute
+          name="specular"
+          displayName="Specular"
+          description = "specular map texture"
+          category="Textures"
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
+
+        <scea.dom.editors.attribute
+          name="mask"
+          displayName="Mask"
+          description = "Mask texture"
+          category="Textures"
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.dds; *.png)|*.dds;*.png" />
+        
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:attribute name="name" type="xs:string"/>
+    <xs:attribute name="visible" type="xs:boolean" default="true" />
+    <xs:attribute name="minHeight" type="xs:float" default="-10000"/>
+    <xs:attribute name="maxHeight" type="xs:float" default="10000"/>
+    <xs:attribute name="minSlope" type="xs:float" default="0"/>
+    <xs:attribute name="maxSlope" type="xs:float" default="90"/>
+    <xs:attribute name="diffuse" type="xs:anyURI"/>
+    <xs:attribute name="normal" type="xs:anyURI"/>
+    <xs:attribute name="specular" type="xs:anyURI"/>
+    <xs:attribute name="mask" type="xs:anyURI"/>    
+  </xs:complexType>
+    
+  <xs:complexType name="decorationMapType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="DecorationMap"/>
+        <LeGe.NativeProperty name="scale" nativeName="Scale" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="numOfDecorators" nativeName="NumOfDecorators" nativeType="int32_t" access="set"/>
+        <LeGe.NativeProperty name="lodDistance" nativeName="LodDistance" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="useBillboard" nativeName="UseBillboard" nativeType="bool" access="set"/>
+        
+
+        <scea.dom.editors.attribute name="scale"
+                                    displayName="Scale"
+                                    description="scale decorator"/>
+        <scea.dom.editors.attribute name="numOfDecorators"
+                                    displayName="NumDecorators"
+                                    description="Number of decorators per mask-texel"/>
+        <scea.dom.editors.attribute name="lodDistance"
+                                    displayName="Lod Distance"
+                                    description="the distance beyond which the map will not be rendered"/>
+
+        <scea.dom.editors.attribute name="useBillboard"
+                                    displayName="Use Billboard"
+                                    description="if true, use camera facing billboards for rendering otherwise use star shaped intersection quads"
+                                    editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+
+      </xs:appinfo>
+    </xs:annotation>    
+    <xs:complexContent>
+      <xs:extension base="terrainMapType">
+        <xs:attribute name="scale" type="xs:float" default="1.0"/>                
+        <xs:attribute name="numOfDecorators" type="xs:int" default="1"/>
+        <xs:attribute name="lodDistance" type="xs:float" default="1000" />
+        <xs:attribute name="useBillboard" type="xs:boolean" default="true"/>
+      </xs:extension>           
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="layerMapType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="LayerMap"/>
+        <LeGe.NativeProperty name="lodTexture" nativeName="LodTexture" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeProperty name="textureScale" nativeName="TextureScale" nativeType="float" access="set"/>
+        
+        <scea.dom.editors.attribute name="lodTexture"
+                                    displayName="LOD Texture"
+                                    description="A low res texture used when rendering distanec terrain patch"
+                                    category="Textures"/>
+        <scea.dom.editors.attribute name="textureScale"
+                                    displayName="Texture Scale"
+                                    description="scales layer texture"
+                                    category="Textures"/>
+        
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="terrainMapType">
+        <xs:attribute name="lodTexture" type="xs:anyURI"/>
+        <xs:attribute name="textureScale" type="xs:float" default="10"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+
+  <xs:complexType name="terrainGobType">
+    <xs:annotation>
+      <xs:appinfo>
+        <LeGe.NativeType nativeName="TerrainGob"/>        
+        <LeGe.NativeProperty name="cellSize" nativeName="CellSize" nativeType="float" access="set"/>        
+        <LeGe.NativeProperty name="heightMap" nativeName="HeightMap" nativeType="wchar_t*" access="set"/>
+        <LeGe.NativeElement name="layerMap" nativeName="LayerMap" nativeType="LayerMap" />
+        <LeGe.NativeElement name="decorationMap" nativeName="DecorationMap" nativeType="DecorationMap" />
+          
+        <scea.dom.editors.attribute
+          name="cellSize"
+          displayName="CellSize"
+          description="size of terrain cell"
+          category="HieightMaps"/>
+                     
+        <scea.dom.editors.attribute
+          name="heightMap"
+          displayName="HeightMap"
+          description = "Height Map"
+          category="HieightMaps"
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.dds)|*.dds" 
+          readOnly="true"/>
+        
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="gameObjectType">
+        <xs:sequence>          
+          <xs:element name="layerMap" type="layerMapType" minOccurs="0" maxOccurs="unbounded" />
+          <xs:element name="decorationMap" type="decorationMapType" minOccurs="0" maxOccurs="unbounded"/>          
+        </xs:sequence>        
+        <xs:attribute name="cellSize" type="xs:float" default="1"/>        
+        <xs:attribute name="heightMap" type="xs:anyURI"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+    
+  <!--  sample resource (asset) meta-data types   -->
+  <xs:complexType name="resourceMetadataType">
+    <xs:annotation>
+      <xs:appinfo>
+        <ResourceMetadata  metadataFileExt =".metadata" resourceFileExts =".*"/>
+        <scea.dom.editors.attribute
+          name="uri"
+          displayName="URI"
+          description="URI"
+          category="Metadata"/>
+
+        <scea.dom.editors.attribute
+          name="keywords"
+          displayName="Keywords"
+          description="Keywords"
+          category="Metadata"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:attribute name="uri" type="xs:anyURI" />
+    <xs:attribute name="keywords" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="textureMetadataType">
+    <xs:annotation>
+      <xs:appinfo>
+        <ResourceMetadata metadataFileExt =".metadata" resourceFileExts =".dds;.tga;.jpg;.jpeg;.bmp;.png;.tif;.tiff;.gif"/>
+        <scea.dom.editors.attribute
+          name="compressionSetting"
+          displayName="Compression Setting"
+          description="Compression Setting"
+          category="Metadata"
+          editor="Sce.Atf.Controls.PropertyEditing.EnumUITypeEditor,Atf.Gui.WinForms:BC1,BC3,Normal,HDR-32bit,HDR-64bit,PVRT-2bpp,PVRT-4bpp,P4,P8,Uncompressed"/>
+        <scea.dom.editors.attribute
+          name="memoryLayout"
+          displayName="Memory Layout"
+          description="Memory Layout"
+          category="Metadata"
+          editor="Sce.Atf.Controls.PropertyEditing.EnumUITypeEditor,Atf.Gui.WinForms:Linear,Swizzled,Tiled"/>
+        <scea.dom.editors.attribute
+          name="mipMap"
+          displayName="Generate Mip Maps"
+          description="Generate Mip Maps"
+          category="Metadata"
+          editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="resourceMetadataType">
+        <xs:attribute name="compressionSetting" type="xs:string" default="BC1" />
+        <xs:attribute name="memoryLayout" type="xs:string" default="Linear" />
+        <xs:attribute name="mipMap" type="xs:boolean" default="true" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:element name="textureMetadata" type="textureMetadataType"/>
+  <xs:element name="resourceMetadata" type="resourceMetadataType"/>
+
+  <!-- end of asset metadata -->
+  
+  
+  <!-- statemachine plugin -->
+  
+  <xs:complexType name="stateMachineRefType">
+    <xs:annotation>
+      <xs:appinfo>
+        <sce.atf.referenceConstraint validResourceFileExts =".stmproj"/>
+      </xs:appinfo>
+    </xs:annotation>    
+    <xs:complexContent>
+      <xs:extension base="resourceReferenceType">
+        <xs:sequence>
+          <xs:element name="flatPropertyTable" type="flatPropertyTableType" minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- typeofProperty -->
+  <xs:simpleType name = "typeofPropertyType">
+    <xs:restriction base = "xs:string">
+      <xs:enumeration value = "Int"/>
+      <xs:enumeration value = "Float"/>
+      <xs:enumeration value = "Bool"/>
+      <xs:enumeration value = "String"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- scope -->
+  <xs:simpleType name = "scopeType">
+    <xs:restriction base = "xs:string">
+      <xs:enumeration value = "Shared"/>
+      <xs:enumeration value = "Machine"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Property Type -->
+  <xs:complexType name="propertyType">
+    <xs:attribute name="scope"         type="scopeType"          use="required"/>
+    <xs:attribute name="type"          type="typeofPropertyType" use="required"/>
+    <xs:attribute name="absolutePath"  type="xs:string"          use="optional" />
+    <xs:attribute name="propertyName"  type="xs:string"          use="required"/>
+    <xs:attribute name="defaultValue"  type="xs:string"          use="required"/>
+    <xs:attribute name="value"         type="xs:string"          use="required"/>
+    <xs:attribute name="minValue"      type="xs:string"          use="required"/>
+    <xs:attribute name="maxValue"      type="xs:string"          use="required"/>
+    <xs:attribute name="description"   type="xs:string"          use="optional"/>
+    <xs:attribute name="category"      type="xs:string"          use="optional"/>
+    <xs:attribute name="warning"       type="xs:string"          use="optional"/>
+  </xs:complexType>
+
+  <!-- property table -->
+  <xs:complexType name="flatPropertyTableType">
+    <xs:sequence>
+      <xs:element name="property" type="propertyType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- end of statemachine plugin -->
+
+</xs:schema>

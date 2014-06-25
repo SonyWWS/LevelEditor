@@ -1,0 +1,120 @@
+//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
+
+// Reference material: NVidia DX10 sample SolidWireframe 
+//                     http://developer.download.nvidia.com/SDK/10/direct3d/samples.html#SolidWireframe
+
+
+struct PS_INPUT_WIRE
+{
+    float4 posH : SV_POSITION;    
+    noperspective float4 EdgeA: TEXCOORD0;    
+};
+
+// project to screen space.
+float2 projToWindow(in float4 pos)
+{    
+	pos.xy /= pos.w;
+	return float2( Viewport.x*0.5*(pos.x + 1),Viewport.y*0.5*(1-pos.y));
+}
+
+[maxvertexcount(3)]
+void GSSolidWire( triangle GS_INPUT input[3],
+                         inout TriangleStream<PS_INPUT_WIRE> outStream )
+{
+    PS_INPUT_WIRE output;
+
+    // cull if any vertex fails NearZ test.
+    bool cullTri  = (input[0].posH.z < 0) || (input[1].posH.z < 0) || (input[2].posH.z < 0); 
+    // If case is all vertices behind viewpoint (case = 7) then cull.
+    if (cullTri) return;
+   
+   // Transform position to window space
+    float2 points[3];
+    points[0] = projToWindow(input[0].posH);
+    points[1] = projToWindow(input[1].posH);
+    points[2] = projToWindow(input[2].posH);
+
+	output.EdgeA = float4(0,0,0,0);
+	
+
+    // Compute the edges vectors of the transformed triangle
+    float2 edges[3];
+    edges[0] = points[1] - points[0];
+    edges[1] = points[2] - points[1];
+    edges[2] = points[0] - points[2];
+
+    // Store the length of the edges
+    float lengths[3];
+    lengths[0] = length(edges[0]);
+    lengths[1] = length(edges[1]);
+    lengths[2] = length(edges[2]);
+
+    // Compute the cos angle of each vertices
+    float cosAngles[3];
+    cosAngles[0] = dot( -edges[2], edges[0]) / ( lengths[2] * lengths[0] );
+    cosAngles[1] = dot( -edges[0], edges[1]) / ( lengths[0] * lengths[1] );
+    cosAngles[2] = dot( -edges[1], edges[2]) / ( lengths[1] * lengths[2] );
+
+    // The height for each vertices of the triangle
+    float heights[3];
+    heights[1] = lengths[0]*sqrt(1 - cosAngles[0]*cosAngles[0]);
+    heights[2] = lengths[1]*sqrt(1 - cosAngles[1]*cosAngles[1]);
+    heights[0] = lengths[2]*sqrt(1 - cosAngles[2]*cosAngles[2]);
+
+    float edgeSigns[3];
+    edgeSigns[0] = (edges[0].x > 0 ? 1 : -1);
+    edgeSigns[1] = (edges[1].x > 0 ? 1 : -1);
+    edgeSigns[2] = (edges[2].x > 0 ? 1 : -1);
+
+    float edgeOffsets[3];
+    edgeOffsets[0] = lengths[0]*(0.5 - 0.5*edgeSigns[0]);
+    edgeOffsets[1] = lengths[1]*(0.5 - 0.5*edgeSigns[1]);
+    edgeOffsets[2] = lengths[2]*(0.5 - 0.5*edgeSigns[2]);
+
+    output.posH = ( input[0].posH );
+    output.EdgeA[0] = 0;
+    output.EdgeA[1] = heights[0];
+    output.EdgeA[2] = 0;    
+    outStream.Append( output );
+
+    output.posH = ( input[1].posH );
+    output.EdgeA[0] = 0;
+    output.EdgeA[1] = 0;
+    output.EdgeA[2] = heights[1];    
+    outStream.Append( output );
+
+    output.posH = ( input[2].posH );
+    output.EdgeA[0] = heights[2];
+    output.EdgeA[1] = 0;
+    output.EdgeA[2] = 0;    
+    outStream.Append( output );
+   // outStream.RestartStrip();    
+}
+
+float evalMinDistanceToEdges(in PS_INPUT_WIRE input)
+{
+    float dist = min ( min (input.EdgeA.x, input.EdgeA.y), input.EdgeA.z);
+	return dist;	
+}
+
+float4 PSSolidWire( PS_INPUT_WIRE input) : SV_Target
+{
+    
+	float LineWidth = 1.7;
+	    
+    // Compute the shortest distance between the fragment and the edges.
+    float dist = evalMinDistanceToEdges(input);
+    
+    // Cull fragments too far from the edge.
+    if (dist > 0.5*LineWidth+1) discard;
+
+    // Map the computed distance to the [0,2] range on the border of the line.
+    dist = clamp((dist - (0.5*LineWidth - 1)), 0, 2);
+
+    // Alpha is computed from the function exp2(-2(x)^2).
+    dist *= dist;
+    float alpha = exp2(-2*dist);
+    
+    return float4(wirecolor.xyz, alpha);
+	//return float4(wirecolor.xyz, 1);
+}
