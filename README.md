@@ -18,14 +18,14 @@ The following LevelEditor features help you construct game levels efficiently an
 * Show or hide groups of game objects to unclutter the view as you work
 * Construct Linears (lines and curves)
 
-Prerequisites 
+Prerequisites
 -------------
 * Operating System: Microsoft Windows 7 (SP1 or later)
 * Development Environment:
-** Microsoft .Net 4.0 (or later) installed
-** DirectX SDK June 2010.
+    * Microsoft .Net 4.0 (or later) installed
+    * DirectX SDK June 2010.
 Download the SDK from http://www.microsoft.com/en-us/download/details.aspx?id=6812.
-** If you have the Platform Update for Windows 7 installed, perform the actions for Windows 7 DirectX developers, as described in the following Microsoft Knowledgebase article: http://support.microsoft.com/kb/2670838.
+    * If you have the Platform Update for Windows 7 installed, perform the actions for Windows 7 DirectX developers, as described in the following Microsoft Knowledgebase article: http://support.microsoft.com/kb/2670838.
 (That is, you need to use the Windows 8 SDK, use Visual studio 2012 (or later), or the Remote Tools for Visual Studio 2012 (x86 and X64).
 See the following Dev Center article for more information about the Platform Update for Windows 7: http://msdn.microsoft.com/en-us/library/windows/desktop/jj863687%28v=vs.85%29.aspx.
   
@@ -41,12 +41,12 @@ To build/run LevelEditor:
 
 This package contains prebuilt release versions of LvEdRenderingEngine.dll.
 To re-build LvEdRenderingEngine.dll, open \LevelEditor\build\LvEdRenderingEngine.sln.
-Change the platform from the default win32 to x64 before building it.
+Change the platform from the default Win32 to x64 before building it.
 Also make sure you have the DirectX SDK and that it is properly set up for Visual Studio 2010.
 The output goes to
 LevelEditor\bin\Debug\NativePlugin\x64 for debug,
 and
-LevelEditor\bin\Release\NativePlugin\x64 release.
+LevelEditor\bin\Release\NativePlugin\x64 for release.
 
 LevelEditor.exe dynamically loads LvEdRenderingEngine.dll under \NativePlugin\x64
 or \NativePlugin\x86, depending on the platform and OS.
