@@ -1,9 +1,6 @@
+This folder contains a small part of Authoring Tools Framework (ATF).
+For the complete ATF please visit GitHub:
+https://github.com/SonyWWS/ATF
 
-This folder contains a small part of ATF.
-For complete ATF framework please visit:
-GitHub:
-http://github.com/SonyWWS
-
-Contact:
-Ron Little
-ron_little@playstation.sony.com
+ATF contact, in English or Japanese:
+atf_info@playstation.sony.com
