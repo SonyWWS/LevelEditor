@@ -58,7 +58,7 @@ when loading levels and rendering.
 
 More Info
 ---------
-LevelEditor wiki pages
+LevelEditor wiki pages: https://github.com/SonyWWS/LevelEditor/wiki
 
 Contact:
 Alan Beckus
