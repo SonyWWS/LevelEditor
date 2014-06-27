@@ -39,17 +39,6 @@ To build/run LevelEditor:
 1. When LevelEditor starts, go to Edit->Preferences and use the Preferences dialog to set the resource root to a location that contains a few ATGI or Collada files and then restart LevelEditor. (Restart LevelEditor just in case).
 1. Drag/drop a few 3D assets from the Resources windows to either the DesignView or the project lister.
 
-This package contains prebuilt release versions of LvEdRenderingEngine.dll.
-To re-build LvEdRenderingEngine.dll, open \LevelEditor\build\LvEdRenderingEngine.sln.
-Change the platform from the default Win32 to x64 before building it.
-Also make sure you have the DirectX SDK and that it is properly set up for Visual Studio 2010.
-The output goes to
-LevelEditor\bin\Debug\NativePlugin\x64 for debug,
-and
-LevelEditor\bin\Release\NativePlugin\x64 for release.
-
-LevelEditor.exe dynamically loads LvEdRenderingEngine.dll under \NativePlugin\x64
-or \NativePlugin\x86, depending on the platform and OS.
 
 Important note about performance:
 The release build of LvEdRenderingEngine.dll is much faster than the debug build
