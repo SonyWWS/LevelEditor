@@ -60,6 +60,3 @@ More Info
 ---------
 LevelEditor wiki pages: https://github.com/SonyWWS/LevelEditor/wiki
 
-Contact:
-Alan Beckus
-alan_beckus@playstation.sony.com
