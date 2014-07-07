@@ -874,7 +874,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                 m_initialText = propertyText;
                 m_textBox.Text = propertyText;
                 m_textBox.Font = Font;
-                m_textBox.ReadOnly = m_descriptor.IsReadOnly;                
+                m_textBox.ReadOnly = m_descriptor.IsReadOnly;
                 m_textBox.ForeColor = (m_descriptor.IsReadOnly) ? SystemColors.GrayText : ForeColor;
             }
         }
@@ -1009,7 +1009,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                 base.ControlBox = false;
                 base.MinimizeBox = false;
                 base.MaximizeBox = false;
-                base.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+                base.FormBorderStyle = FormBorderStyle.None;
                 base.Visible = false;
             }
 
