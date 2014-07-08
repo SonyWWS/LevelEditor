@@ -367,7 +367,7 @@ namespace LevelEditor
             BoundPropertyDescriptor resourceRoot =
                 new BoundPropertyDescriptor(this, () => ResourceRoot,
                     Localizer.Localize("ResourceRoot"), null,
-                    Localizer.Localize("Root path for all rsources"),
+                    Localizer.Localize("Root path for all resources"),
                     new FolderNameEditor(), null);
 
             m_settingsService.RegisterSettings(this, resourceRoot);
