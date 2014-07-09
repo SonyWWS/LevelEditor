@@ -3,7 +3,7 @@ LevelEditor
 
 The LevelEditor is a software tool used to design levels (maps, campaigns, and virtual worlds) for a video game. A level editor is used by a game designer.
 
-The standalone LevelEditor for the WWS SDK is a fully functional modern level editor. Using the LevelEditor, you can design a game world for any video game engine. You can create and lay out terrain, place static game objects in the world (such as rocks, plants, street lights, or buildings), place light sources for game objects, and place Linears for dynamic game objects.
+The standalone LevelEditor is a fully functional modern level editor. Using the LevelEditor, you can design a game world for any video game engine. You can create and lay out terrain, place static game objects in the world (such as rocks, plants, street lights, or buildings), place light sources for game objects, and place Linears for dynamic game objects.
 
 The LevelEditor leverages the Authoring Tools Framework and C# for user interface and data management, and leverages the power of C++ and Microsoft® DirectX® 11 for 3D rendering.
 
@@ -20,7 +20,7 @@ The following LevelEditor features help you construct game levels efficiently an
 
 Prerequisites
 -------------
-* Operating System: Microsoft Windows 7 (SP1 or later)
+* Operating System: Microsoft Windows 7, 32-bit or 64-bit (SP1 or later)
 * Development Environment:
     * Microsoft .Net 4.0 (or later) installed
     * DirectX SDK June 2010.
@@ -34,10 +34,11 @@ Getting Started
 --------------- 
 To build/run LevelEditor:
 
-1. Open Leveleditor\build\LevelEditor.vs2010.sln.
-1. Change configuration to Release.
-1. When LevelEditor starts, go to Edit->Preferences and use the Preferences dialog to set the resource root to a location that contains a few ATGI or Collada files and then restart LevelEditor. (Restart LevelEditor just in case).
-1. Drag/drop a few 3D assets from the Resources windows to either the DesignView or the project lister.
+1. Open the solution Leveleditor\build\LevelEditor.vs2010.sln in Visual Studio 2010 or later.
+1. Change the configuration to Release and then build LevelEditor.
+1. Navigate to the directory in which LevelEditor is built and double-click the file LevelEditor.exe to start LevelEditor.
+1. After LevelEditor starts, select Edit->Preferences and use the Preferences dialog to set the resource root to a location that contains a few ATGI or Collada files and then restart LevelEditor. (Restart LevelEditor just in case).
+1. Drag/drop a few 3D assets from the Resources windows to either the DesignView or the Project lister.
 
 
 Important note about performance:
