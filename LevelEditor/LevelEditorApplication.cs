@@ -25,14 +25,12 @@ namespace LevelEditor
     /// <summary>
     /// Main application class</summary>
     public class LevelEditorApplication
-    {               
+    {
         /// <summary>
-		/// The main entry point for the application</summary>
+        /// The main entry point for the application</summary>
         [STAThread]
-		static void  Main()
-        {            
-
-          
+        static void Main()
+        {
 
 #if DEBUG
             AllocConsole();
@@ -46,10 +44,12 @@ namespace LevelEditor
 
             // Set up localization support early on, so that user-readable strings will be localized
             //  during the initialization phase below. Use XML files that are embedded resources.
-            Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.CurrentCulture;            
+            Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.CurrentCulture;
             Localizer.SetStringLocalizer(new EmbeddedResourceStringLocalizer());
 
+#if !DEBUG
             SplashForm.ShowForm(typeof(LevelEditorApplication), "LevelEditor.Resources.SplashImg.png");
+#endif
 
             // Register the embedded image resources so that they will be available for all users of ResourceUtil,
             //  such as the PaletteService.
@@ -59,7 +59,7 @@ namespace LevelEditor
             DomNodeType.BaseOfAllTypes.AddAdapterCreator(new AdapterCreator<CustomTypeDescriptorNodeAdapter>());
 
             // Add selected ATF components.
-            TypeCatalog AtfCatalog = new TypeCatalog(       
+            TypeCatalog AtfCatalog = new TypeCatalog(
                 typeof(SettingsService),                // persistent settings and user preferences dialog               
                 typeof(Outputs),                        // service that provides static methods for writing to IOutputWriter objects.
                 typeof(OutputService),                  // rich text box for displaying error and warning messages. Implements IOutputWriter.                
@@ -86,14 +86,14 @@ namespace LevelEditor
                 typeof(PaletteService),                 // global palette, for drag/drop instancing            
                 typeof(PropertyEditingCommands),        // commands for PropertyEditor and GridPropertyEditor             
                 typeof(PropertyEditor),
-                typeof(GridPropertyEditor),                
+                typeof(GridPropertyEditor),
                 typeof(WindowLayoutService),            // multiple window layout support
                 typeof(WindowLayoutServiceCommands),    // window layout commands
                 typeof(SkinService),
                 typeof(ResourceService)
                 );
 
-            TypeCatalog LECoreCatalog = new TypeCatalog(                
+            TypeCatalog LECoreCatalog = new TypeCatalog(
                 typeof(LevelEditorCore.ImageThumbnailResolver),
                 typeof(LevelEditorCore.DesignViewSettings),
                 typeof(LevelEditorCore.ResourceLister),
@@ -101,7 +101,7 @@ namespace LevelEditor
                 typeof(LevelEditorCore.ResourceMetadataEditor),
                 typeof(LevelEditorCore.LayerLister),
                 typeof(LevelEditorCore.ResourceConverterService),
-                typeof(LevelEditorCore.RenderLoopService),                
+                typeof(LevelEditorCore.RenderLoopService),
                 typeof(LevelEditorCore.Commands.PickFilterCommands),
                 typeof(LevelEditorCore.Commands.DesignViewCommands),
                 typeof(LevelEditorCore.Commands.ManipulatorCommands),
@@ -110,22 +110,22 @@ namespace LevelEditor
                 typeof(LevelEditorCore.Commands.CameraCommands)
                 );
 
-            TypeCatalog thisAssemCatalog = new TypeCatalog(                
+            TypeCatalog thisAssemCatalog = new TypeCatalog(
                 typeof(LevelEditor.GameEditor),
-                typeof(LevelEditor.BookmarkLister),                                
-                typeof(LevelEditor.GameDocumentRegistry),                
+                typeof(LevelEditor.BookmarkLister),
+                typeof(LevelEditor.GameDocumentRegistry),
                 typeof(LevelEditor.SchemaLoader),
                 typeof(LevelEditor.PrototypingService),
                 typeof(LevelEditor.PrefabService),
                 typeof(LevelEditor.GameProjectLister),
                 typeof(LevelEditor.ResourceMetadataService),
-                typeof(LevelEditor.ResourceConverter),               
+                typeof(LevelEditor.ResourceConverter),
                 typeof(LevelEditor.Terrain.TerrainEditor),
-                typeof(LevelEditor.Terrain.TerrainManipulator),                 
+                typeof(LevelEditor.Terrain.TerrainManipulator),
                 typeof(LevelEditor.SnapFilter),
                 typeof(LevelEditor.PickFilters.LocatorPickFilter),
                 typeof(LevelEditor.PickFilters.BasicShapePickFilter),
-                typeof(LevelEditor.PickFilters.NoCubePickFilter),                
+                typeof(LevelEditor.PickFilters.NoCubePickFilter),
                 typeof(LevelEditor.Commands.PaletteCommands),
                 typeof(LevelEditor.Commands.LevelEditorFileCommands),
                 typeof(LevelEditor.Commands.HelpAboutCommand),
@@ -137,7 +137,7 @@ namespace LevelEditor
                 //typeof(LevelEditor.OSC.OscClient),
                 //typeof(OscCommands),                    // Provides a GUI for configuring OSC support and to diagnose problems.
                 //typeof(OscCommandReceiver)              // Executes this app's commands in response to receiving matching OSC messages.
-                                                        // Needs to come after all the other ICommandClients in the catalog.
+                // Needs to come after all the other ICommandClients in the catalog.
                 );
 
             TypeCatalog renderingInteropCatalog = new TypeCatalog(
@@ -147,7 +147,7 @@ namespace LevelEditor
                 typeof(RenderingInterop.AssetResolver),
                 typeof(RenderingInterop.NativeDesignView),
                 typeof(RenderingInterop.ResourcePreview),
-                typeof(RenderingInterop.TranslateManipulator),  
+                typeof(RenderingInterop.TranslateManipulator),
                 typeof(RenderingInterop.ExtensionManipulator),
                 typeof(RenderingInterop.ScaleManipulator),
                 typeof(RenderingInterop.RotateManipulator),
@@ -161,27 +161,27 @@ namespace LevelEditor
             catalogs.Add(LECoreCatalog);
             catalogs.Add(renderingInteropCatalog);
             catalogs.Add(thisAssemCatalog);
-            
-                        
+
+
             // temp solution, look for statemachine plugin by name.
             string pluginDir = Application.StartupPath;
             string stmPlg = pluginDir + "\\StateMachinePlugin.dll";
-            if(File.Exists(stmPlg))
+            if (File.Exists(stmPlg))
             {
                 Assembly stmPlgAssem = Assembly.LoadFrom(stmPlg);
                 catalogs.Add(new AssemblyCatalog(stmPlgAssem));
             }
 
-            
+
             AggregateCatalog catalog = new AggregateCatalog(catalogs);
-               
-                      
+
+
             // Initialize ToolStripContainer container and MainForm
             ToolStripContainer toolStripContainer = new ToolStripContainer();
             toolStripContainer.Dock = DockStyle.Fill;
             MainForm mainForm = new MainForm(toolStripContainer);
             mainForm.Text = Localizer.Localize("LevelEditor");
-             
+
             CompositionContainer container = new CompositionContainer(catalog);
             CompositionBatch batch = new CompositionBatch();
             AttributedModelServices.AddPart(batch, mainForm);
@@ -190,33 +190,17 @@ namespace LevelEditor
             LevelEditorCore.Globals.InitializeComponents(container);
             // Initialize components 
 
-            GridPropertyEditor propGrid = container.GetExportedValue<GridPropertyEditor>();
-            propGrid.ControlInfo.Group = StandardControlGroup.Hidden;
-
-           
-
             foreach (IInitializable initializable in container.GetExportedValues<IInitializable>())
-                initializable.Initialize();           
+                initializable.Initialize();
 
             AutoDocumentService autoDocument = container.GetExportedValue<AutoDocumentService>();
             autoDocument.AutoLoadDocuments = false;
             autoDocument.AutoNewDocument = true;
-
-
             mainForm.Shown += delegate { SplashForm.CloseForm(); };
-           // string skinfile = Application.StartupPath + "\\Dark.skn";
-          //  SkinService skn = container.GetExportedValue<SkinService>();
-         //   if (skn != null && File.Exists(skinfile))
-         //  {
-         //       skn.OpenSkinFile(skinfile);                
-         //   }
-            
-            // Show the main form and start message handling. The main Form Load event provides a final chance
-            //  for components to perform initialization and configuration.
             Application.Run(mainForm); // MAIN LOOP
 
             container.Dispose();
-           
+
         }
 
         [DllImport("kernel32.dll")]
