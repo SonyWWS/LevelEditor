@@ -145,34 +145,7 @@ void TerrainGob::Invoke(wchar_t* fn, const void* arg, void** retVal)
         Bound2di box = *(Bound2di*)arg;
         ApplyDirtyRegion(box);
 
-    }
-    else if( StrUtils::Equal(fn,L"UpdateBounds"))
-    {
-        int patchCell = m_patchDim - 1;
-        uint8_t* ptr = (uint8_t*)m_heightMap->GetBufferPointer();
-                        
-        for(auto it = m_tmpPatchSet.begin(); it != m_tmpPatchSet.end(); it++)
-        {            
-            TerrainPatch* patch = &m_renderableNodes[*it];
-            int xEnd = patch->x + patchCell;
-            int yEnd = patch->y + patchCell;
-        
-            AABB bound = AABB();
-            
-            for(int y = patch->y;  y <= yEnd; y++)
-            {
-                float* scanline = (float*) (ptr + y * m_heightMap->GetRowPitch());
-                for(int x = patch->x; x <= xEnd; x++)
-                {    
-                    float3  pos(x * m_cellSize, scanline[x], y * m_cellSize);                
-                    bound.Extend(pos);
-                }                
-            }
-            patch->boundsTr = bound;
-        }        
-        InvalidateBounds();
-        m_tmpPatchSet.clear();
-    }
+    }    
     else if( StrUtils::Equal(fn,L"GetHeightMapInstanceId"))
     {
         static ObjectGUID hmInstId = 0;
@@ -217,7 +190,29 @@ void TerrainGob::ApplyDirtyRegion(const Bound2di& box)
         destRegion.front = 0;
         destRegion.back = 1;
         uint32_t rowPitch = (destRegion.right - destRegion.left) * 4;
-        cntx->UpdateSubresource( m_hn->GetTex(), 0, &destRegion, &tempBrushdata[0], rowPitch, 0 );                 
+        cntx->UpdateSubresource( m_hn->GetTex(), 0, &destRegion, &tempBrushdata[0], rowPitch, 0 );
+      
+        uint8_t* ptr = (uint8_t*)m_heightMap->GetBufferPointer();                        
+        for(auto it = m_tmpPatchSet.begin(); it != m_tmpPatchSet.end(); it++)
+        {            
+            TerrainPatch* patch = &m_renderableNodes[*it];
+            int xEnd = patch->x + patchCell;
+            int yEnd = patch->y + patchCell;
+        
+            AABB bound = AABB();
+            
+            for(int y = patch->y;  y <= yEnd; y++)
+            {
+                float* scanline = (float*) (ptr + y * m_heightMap->GetRowPitch());
+                for(int x = patch->x; x <= xEnd; x++)
+                {    
+                    float3  pos(x * m_cellSize, scanline[x], y * m_cellSize);                
+                    bound.Extend(pos);
+                }                
+            }
+            patch->boundsTr = bound;
+        }        
+        InvalidateBounds();        
     }
 }
 

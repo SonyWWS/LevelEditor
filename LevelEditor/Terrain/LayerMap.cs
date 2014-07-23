@@ -101,37 +101,6 @@ namespace LevelEditor.Terrain
             return result;
         }
              
-        //public void ApplyBrush(TerrainBrush brush, Vec3F posW, BrushOps brushOps)
-        //{
-        //    
-        //    unsafe
-        //    {
-        //        if (!brush.CanApplyTo(this)) return;
-
-        //        TerrainGob terrain = this.GetParentAs<TerrainGob>();
-        //        ImageData hmImg = terrain.GetHeightMap();
-        //        ImageData mpImg = GetMaskMap();
-        //        Point posH = terrain.WorldToHmapSpace(posW);
-
-
-        //        float dx = (float)mpImg.Width / (float)hmImg.Width;
-        //        float dy = (float)mpImg.Height / (float)hmImg.Height;
-
-        //        int tx = (int)Math.Round(posH.X * dx);
-        //        int ty = (int)Math.Round(posH.Y * dy);
-
-        //        if (tx < 0 || tx > (mpImg.Width - 1) || ty < 0 || ty > (mpImg.Height - 1))
-        //            return;
-
-        //        Point pt = WorldToMapSpace(posW);
-        //        Bound2di box;
-        //        brush.Apply(this, pt.X, pt.Y, brushOps, out box);
-        //        if (!box.isValid) return;
-
-        //        ApplyDirtyRegion(box);                
-        //    }
-        //}
-
         #region INameable Members
         public string Name
         {
@@ -172,12 +141,7 @@ namespace LevelEditor.Terrain
     }
 
     public class LayerMap : TerrainMap
-    {
-        protected override void OnNodeSet()
-        {            
-            base.OnNodeSet();           
-        }
-
+    {        
         public static LayerMap Create(Uri maskuri)
         {
             DomNode node = new DomNode(Schema.layerMapType.Type);

@@ -32,8 +32,28 @@ namespace LevelEditor.Terrain
 
         bool IManipulator.Pick(ViewControl vc, System.Drawing.Point scrPt)
         {
-            TerrainEditorControl tec = m_terrainEditor.TerrainEditorControl;            
-            return  tec.SelectedTerrain  != null;
+            
+            TerrainGob terrain = m_terrainEditor.TerrainEditorControl.SelectedTerrain;
+            TerrainBrush brush = m_terrainEditor.TerrainEditorControl.SelectedBrush;
+            if (terrain != null && brush != null)
+            {
+                FlattenBrush fbrush = brush as FlattenBrush;                
+                if (fbrush != null)
+                {
+                    Ray3F rayw = vc.GetWorldRay(scrPt);
+                    TerrainGob.RayPickRetVal retval;
+                    if (terrain.RayPick(rayw, out retval))
+                    {
+                        Point pt = terrain.WorldToHmapSpace(retval.hitpos);
+                        ImageData hm = terrain.GetHeightMap();
+                        fbrush.Height = hm.GetPixelFloat(pt.X, pt.Y);                        
+                    }
+                }
+
+                return true;
+
+            }            
+            return false;
         }
 
         void IManipulator.Render(ViewControl vc)
@@ -53,8 +73,7 @@ namespace LevelEditor.Terrain
             }
 
             System.Drawing.Point scrPt = vc.PointToClient(Control.MousePosition);
-            if (!vc.ClientRectangle.Contains(scrPt)) return;            
-            Camera camera = vc.Camera;
+            if (!vc.ClientRectangle.Contains(scrPt)) return;                       
             Ray3F rayw = vc.GetWorldRay(scrPt);            
             TerrainGob.RayPickRetVal retval;
             if (terrain.RayPick(rayw, out retval))
@@ -76,9 +95,7 @@ namespace LevelEditor.Terrain
             TerrainBrush brush = m_terrainEditor.TerrainEditorControl.SelectedBrush;
             TerrainMap terrainMap = m_terrainEditor.TerrainEditorControl.SelectedTerrainMap;
             if( brush == null || (!brush.CanApplyTo(terrain) && !brush.CanApplyTo(terrainMap))) return;
-                
-            
-            Camera camera = vc.Camera;
+                                       
             Ray3F rayw = vc.GetWorldRay(scrPt);
             TerrainGob.RayPickRetVal retval;
             if (terrain.RayPick(rayw, out retval))
@@ -122,13 +139,8 @@ namespace LevelEditor.Terrain
                         brush.Apply(terrainMap, pt.X, pt.Y);
                     }
                 }                
-            }
-
-            // update terrain bounds.
-            IntPtr retVal = IntPtr.Zero;
-            terrain.As<INativeObject>().InvokeFunction("UpdateBounds", IntPtr.Zero, out retVal);            
+            }            
             dragged = false;
-            
         }
 
         private ManipulatorInfo m_manipulatorInfo;

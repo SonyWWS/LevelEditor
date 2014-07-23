@@ -174,13 +174,13 @@ namespace LevelEditor.Terrain
 
         }
 
-       
 
+        
         public void DrawBrush(TerrainBrush brush, Vec2F drawscale, Vec3F posW)
         {
             INativeObject nobj = this.As<INativeObject>();
             unsafe
-            {
+            {                
                 DrawBrushArgs arg;
                 arg.falloff = brush.Falloff;
                 arg.radius = (float)brush.Radius;

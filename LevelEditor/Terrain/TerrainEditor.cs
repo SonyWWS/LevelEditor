@@ -17,27 +17,20 @@ namespace LevelEditor.Terrain
     [Export(typeof(IInitializable))]    
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class TerrainEditor : IInitializable
-    {
-
-        #region terrain editor interface.
+    {        
         /// <summary>
-        /// Gets currently selected terrain or null if none.
-        /// </summary>
+        /// Gets TerrainEditorControl</summary>
         public TerrainEditorControl TerrainEditorControl
         {
             get { return m_control; }
         }
-
-        #endregion
-
-
+       
         #region IInitializable Members
 
         void IInitializable.Initialize()
         {          
-
             m_control = new TerrainEditorControl();
-            ControlInfo cinfo = new ControlInfo("Terrain Editor", "Edit terrain properties", StandardControlGroup.Hidden);
+            ControlInfo cinfo = new ControlInfo("Terrain Editor", "Edit terrain properties", StandardControlGroup.Right);
             m_controlHostService.RegisterControl(m_control, cinfo, null);
             m_contextRegistry.ActiveContextChanged += ContextRegistry_ActiveContextChanged;
         }
@@ -67,31 +60,30 @@ namespace LevelEditor.Terrain
 
         void m_observableContext_ItemChanged(object sender, ItemChangedEventArgs<object> e)
         {
-            if(e.Item.Is<TerrainGob>())
-                m_control.PopulatedTerrainCmbox();
-            else if (IsTerrainChild(e.Item))
-                m_control.ReBind();          
+            UpdateTerrainControl(e.Item);            
         }
 
         void m_observableContext_ItemRemoved(object sender, ItemRemovedEventArgs<object> e)
         {
-            if (e.Item.Is<TerrainGob>())
-                m_control.PopulatedTerrainCmbox();
-            else if (IsTerrainChild(e.Item))
-                m_control.ReBind();
+            UpdateTerrainControl(e.Item);            
         }
 
         void m_observableContext_ItemInserted(object sender, ItemInsertedEventArgs<object> e)
         {
-            if (e.Item.Is<TerrainGob>())
-                m_control.PopulatedTerrainCmbox();
-            else if (IsTerrainChild(e.Item))
-                m_control.ReBind();
+            UpdateTerrainControl(e.Item);            
         }
         
         #endregion
 
-        
+
+        private void UpdateTerrainControl(object item)
+        {
+            if (item.Is<TerrainGob>())
+                m_control.PopulatedTerrainCmbox();
+            else if (IsTerrainChild(item))
+                m_control.ReBind();
+
+        }
         private bool IsTerrainChild(object item)
         {
             DomNode node = item.As<DomNode>();

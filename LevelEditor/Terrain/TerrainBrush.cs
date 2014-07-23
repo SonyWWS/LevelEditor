@@ -412,6 +412,15 @@ namespace LevelEditor.Terrain
             
         }
 
+        /// <summary>
+        /// Gets and sets the height value to flatten the terrain</summary>
+        public float Height
+        {
+            get;
+            set;
+        }
+
+
         public override bool CanApplyTo(object target)
         {
             return (target is TerrainGob);
@@ -432,8 +441,7 @@ namespace LevelEditor.Terrain
             int bx0 = x - Radius;
             int by0 = y - Radius;
 
-            int size = 2 * Radius + 1;
-            float height = *(float*)hmImg.GetPixel(x, y);
+            int size = 2 * Radius + 1;            
             for (int cy = outRect.y1; cy < outRect.y2; cy++)
             {
                 int by = cy - by0;
@@ -442,7 +450,7 @@ namespace LevelEditor.Terrain
                     int bx = cx - bx0;
                     float scrPixel = Kernel[size * by + bx];
                     float* destPixel = (float*)hmImg.GetPixel(cx, cy);
-                    *destPixel = Sce.Atf.MathUtil.Interp(scrPixel, *destPixel, height);
+                    *destPixel = Sce.Atf.MathUtil.Interp(scrPixel, *destPixel, Height);
                 }
             }
 
