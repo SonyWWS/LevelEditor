@@ -154,24 +154,23 @@ namespace LevelEditor.Terrain
 
 
             // 
-            // undo/redo
-            // - have a global list of brush-strokes.
-            //   each brush stroke defines brush properties and position and brush ops.
-            // - in OnEndDrag of TerrainManipulator DoTransaction() and push one instance 
-            //   off class ApplyBrushOperation : Operation.  
-            //   The ApplyBrushOperation hold the index of start and end index of the 
-            //   BrushStroke list. 
-            // - when creating terrain object and map object save a copy of heightmap and mask.
-            // - when undoing re-apply all the operation from the zero upto start 
-            // - when doing re-apply all the operation from zero to end index 
-            //IGameDocumentRegistry docreg = Globals.MEFContainer.GetExportedValue<IGameDocumentRegistry>();
-            //EditingContext edit = docreg.MasterDocument.As<EditingContext>();
-            //edit.DoTransaction(
+            // undo/redo implementation
+            // In TerrainManipulator.cs.
+            //   create class TerrainOP : Operation {}
+            //       TerrainOP holds dirty rect and data
+            //       performs undo/redo 
+            //   create list of weak references to track all TerrainOP instance.
+            //   Create list of TerrainOPs for the current drag.
+            //   //edit.DoTransaction(
             //    delegate
             //    {
-            //        edit.AddOperation(new BrushAppliedOperation());
-            //    }, "Apply terrain brush");
+            //        Add list of TerrainOp to context.
+            //    }, "Apply [brush name]");
 
+            //   Monitor total memory usage.
+            //   if mem usage greater than threshhold then
+            //      a- cleanup weak references.
+            //      b- disable oldest TerrainOps until mem usage is at 75% of threshhold 
         }
 
 

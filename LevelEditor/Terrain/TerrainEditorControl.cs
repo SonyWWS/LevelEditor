@@ -65,7 +65,13 @@ namespace LevelEditor.Terrain
             m_brushRiseLowRdo.Tag = new RaiseLowerBrush();
             m_brushSmoothRdo.Tag = new SmoothenBrush();
             m_noiseRdo.Tag = new NoiseBrush();
-            m_paintEraseRdo.Tag = new PaintEraseBrush();         
+            m_paintEraseRdo.Tag = new PaintEraseBrush();
+
+            SizeChanged += (sender, e) =>
+                {
+                    m_propertyGrid.Width = Width - m_propertyGrid.Left;
+                    m_brushProps.Width = Width - m_brushProps.Left;                    
+                };            
         }
 
         public TerrainGob SelectedTerrain
