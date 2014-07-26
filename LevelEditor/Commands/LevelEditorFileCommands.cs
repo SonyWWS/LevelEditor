@@ -91,13 +91,32 @@ namespace LevelEditor.Commands
                 if (result == FileDialogResult.Yes)
                 {
                     closeConfirmed = Save(document);
-                }
+                }               
                 else if (result == FileDialogResult.Cancel)
                 {
                     closeConfirmed = false;
                 }
             }
             return closeConfirmed;
+        }
+
+         /// <summary>
+        /// Checks whether the client can do the command, if it handles it</summary>
+        /// <param name="commandTag">Command to be done</param>
+        /// <returns>True iff client can do the command</returns>
+        public override bool CanDoCommand(object commandTag)
+        {
+            bool result = base.CanDoCommand(commandTag);
+            if (result == false && StandardCommand.FileSave.Equals(commandTag))
+            {
+                // external resources.
+                foreach (var obj in Util.FindAll<IEditableResourceOwner>())
+                {
+                    result = obj.Dirty;
+                    if (result) break;
+                }   
+            }
+            return result;
         }
 
         [Import(AllowDefault = false)] 
