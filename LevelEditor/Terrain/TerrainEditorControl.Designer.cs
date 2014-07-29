@@ -276,7 +276,7 @@
             this.m_noiseRdo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.m_noiseRdo.Location = new System.Drawing.Point(338, 150);
             this.m_noiseRdo.Name = "m_noiseRdo";
-            this.m_noiseRdo.Size = new System.Drawing.Size(100, 30);
+            this.m_noiseRdo.Size = new System.Drawing.Size(104, 30);
             this.m_noiseRdo.TabIndex = 13;
             this.m_noiseRdo.TabStop = true;
             this.m_noiseRdo.Text = "Noise";
@@ -326,7 +326,7 @@
             this.m_paintEraseRdo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.m_paintEraseRdo.Location = new System.Drawing.Point(338, 210);
             this.m_paintEraseRdo.Name = "m_paintEraseRdo";
-            this.m_paintEraseRdo.Size = new System.Drawing.Size(100, 30);
+            this.m_paintEraseRdo.Size = new System.Drawing.Size(104, 30);
             this.m_paintEraseRdo.TabIndex = 10;
             this.m_paintEraseRdo.TabStop = true;
             this.m_paintEraseRdo.Text = "Paint/Erase";
@@ -341,9 +341,9 @@
             this.m_flattenRdo.FlatAppearance.BorderSize = 2;
             this.m_flattenRdo.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.MenuHighlight;
             this.m_flattenRdo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.m_flattenRdo.Location = new System.Drawing.Point(337, 78);
+            this.m_flattenRdo.Location = new System.Drawing.Point(338, 78);
             this.m_flattenRdo.Name = "m_flattenRdo";
-            this.m_flattenRdo.Size = new System.Drawing.Size(101, 30);
+            this.m_flattenRdo.Size = new System.Drawing.Size(104, 30);
             this.m_flattenRdo.TabIndex = 9;
             this.m_flattenRdo.TabStop = true;
             this.m_flattenRdo.Text = "Flatten";
@@ -360,7 +360,7 @@
             this.m_brushRiseLowRdo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.m_brushRiseLowRdo.Location = new System.Drawing.Point(338, 42);
             this.m_brushRiseLowRdo.Name = "m_brushRiseLowRdo";
-            this.m_brushRiseLowRdo.Size = new System.Drawing.Size(100, 30);
+            this.m_brushRiseLowRdo.Size = new System.Drawing.Size(104, 30);
             this.m_brushRiseLowRdo.TabIndex = 8;
             this.m_brushRiseLowRdo.TabStop = true;
             this.m_brushRiseLowRdo.Text = "Raise/Lower";
@@ -377,7 +377,7 @@
             this.m_brushSmoothRdo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.m_brushSmoothRdo.Location = new System.Drawing.Point(338, 114);
             this.m_brushSmoothRdo.Name = "m_brushSmoothRdo";
-            this.m_brushSmoothRdo.Size = new System.Drawing.Size(100, 30);
+            this.m_brushSmoothRdo.Size = new System.Drawing.Size(104, 30);
             this.m_brushSmoothRdo.TabIndex = 7;
             this.m_brushSmoothRdo.TabStop = true;
             this.m_brushSmoothRdo.Text = "Smooth";
