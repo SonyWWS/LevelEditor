@@ -140,6 +140,16 @@ namespace Sce.Atf.Applications
         }
 
         /// <summary>
+        /// Gets and sets the default new file extension that the editor can handle</summary>
+        /// <remarks>If the editor supports multiple extensions, setting the default extension 
+        /// will stop ATF from prompting the user to choose the extension, when creating a new file</remarks>
+        public string DefaultExtension
+        {
+            get { return m_defaultExtension; }
+            set { m_defaultExtension = value; }
+        }
+
+        /// <summary>
         /// Gets and sets the editor's 'New' icon name, or null</summary>
         public string NewIconName
         {
@@ -197,6 +207,14 @@ namespace Sce.Atf.Applications
         }
 
         /// <summary>
+        /// Gets and sets a value indicating whether the StandardFileCommands service should automatically create commands for this client's document</summary>
+        public bool AllowStandardFileCommands
+        {
+            get { return m_allowStandardFileCommands; }
+            set { m_allowStandardFileCommands = value; }
+        }
+
+        /// <summary>
         /// Convenience method to check if file path is compatible with the extensions
         /// supported by the document client</summary>
         /// <param name="filePath">File path</param>
@@ -240,6 +258,8 @@ namespace Sce.Atf.Applications
         private string m_newDocumentName = "Untitled".Localize();
         private bool m_multiDocument;
         private string[] m_extensions;
+        private string m_defaultExtension;
         private string m_initialDirectory;
+        private bool m_allowStandardFileCommands = true;
     }
 }

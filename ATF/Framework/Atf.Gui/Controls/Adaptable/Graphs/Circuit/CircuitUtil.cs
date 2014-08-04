@@ -196,6 +196,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                                 grpPin.InternalElement.Type.Outputs[grpPin.InternalPinIndex] == circuitPin)
                             {
                                 matchedPin = grpPin;
+                                break;
                             }
                         }
                     }

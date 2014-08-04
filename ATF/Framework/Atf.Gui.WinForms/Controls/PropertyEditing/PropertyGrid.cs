@@ -132,8 +132,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                 resetAllButton.ToolTipText = "Reset all properties".Localize();
                 resetAllButton.Click += (sender, e) =>
                     {
-                        ITransactionContext transaction = m_propertyGridView.EditingContext.As<ITransactionContext>();
-                        if (transaction == null) return;
+                        ITransactionContext transaction = m_propertyGridView.EditingContext.As<ITransactionContext>();                        
                         transaction.DoTransaction(delegate
                         {
                             ResetAll();

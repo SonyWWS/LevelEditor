@@ -170,8 +170,11 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             UpdateOffset();
             Changed.Raise(this, e);
 
-            if (DomNode.Parent != null && DomNode.Parent.Is<Group>())
-                DomNode.Parent.Cast<Group>().OnChanged(e);
+            if (DomNode.Parent != null && DomNode.Parent.Is<Group>()) // immediate update its parent too
+            {  
+                DomNode.Parent.Cast<Group>().Dirty = true;
+                DomNode.Parent.Cast<Group>().Update();
+            }
         }
 
         /// <summary>
@@ -207,7 +210,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <returns></returns>
         public override ICircuitPin InputPin(int pinIndex)
         {
-            return m_inputs.First(x => x.Index == pinIndex);
+            return m_inputs.FirstOrDefault(x => x.Index == pinIndex);
         }
 
         /// <summary>
@@ -216,7 +219,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <returns></returns>
         public override ICircuitPin OutputPin(int pinIndex)
         {
-            return m_outputs.First(x => x.Index == pinIndex);
+            return m_outputs.FirstOrDefault(x => x.Index == pinIndex);
         }
 
         /// <summary>
@@ -616,8 +619,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             UpdateGroupPins(m_elements, internalConnections, externalConnections);
 
 
-            if (DomNode.Parent != null && DomNode.Parent.Is<ICircuitContainer>()) // propagate changes up for newly added or removed floating pins
-                DomNode.Parent.Cast<ICircuitContainer>().Dirty = true;
+            //if (DomNode.Parent != null && DomNode.Parent.Is<ICircuitContainer>()) // propagate changes up for newly added or removed floating pins
+            //    DomNode.Parent.Cast<ICircuitContainer>().Dirty = true;
 
 
             //ConstrainCoords();

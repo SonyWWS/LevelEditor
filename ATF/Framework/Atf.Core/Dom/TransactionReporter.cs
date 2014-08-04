@@ -219,6 +219,23 @@ namespace Sce.Atf.Dom
             None //for when a DomNode is inserted and then removed
         }
 
+        private class AttributeComparer : IEqualityComparer<Pair<DomNode, AttributeInfo>>
+        {
+            public bool Equals(Pair<DomNode, AttributeInfo> x, Pair<DomNode, AttributeInfo> y)
+            {
+                return
+                    x.First.Equals(y.First) &&
+                    x.Second.Equivalent(y.Second);
+            }
+
+            public int GetHashCode(Pair<DomNode, AttributeInfo> obj)
+            {
+                return
+                    obj.First.GetHashCode() ^
+                    obj.Second.GetEquivalentHashCode();
+            }
+        }
+
         //'m_inTransaction' is different than base.Validating because Validating is false after OnEnding() is called, but
         //  other validators (like the unique namers) will change the DOM in their OnEnding() methods. So, we
         //  need to keep track of when OnEnded() gets called.
@@ -229,9 +246,11 @@ namespace Sce.Atf.Dom
     
         // Map the DomNode and its AttributeInfo to the index of 'm_events' that contains the attribute changed event.
         private readonly Dictionary<Pair<DomNode, AttributeInfo>, int> m_attributeChanges =
-            new Dictionary<Pair<DomNode, AttributeInfo>, int>();
+            new Dictionary<Pair<DomNode, AttributeInfo>, int>(s_comparer);
 
         // Map newly inserted DomNodes (but not their children) to the index of m_events that contains the insertion event.
         private readonly Dictionary<DomNode,int> m_inserted = new Dictionary<DomNode, int>();
+
+        private static readonly IEqualityComparer<Pair<DomNode, AttributeInfo>> s_comparer = new AttributeComparer();
     }
 }

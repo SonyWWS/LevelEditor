@@ -29,10 +29,10 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
         /// <summary>
         /// Gets or sets the default pin order style</summary>
-        public Group.PinOrderStyle DefaultPinOderStyle
+        public Group.PinOrderStyle DefaultPinOrderStyle
         {
-            get { return m_defaultPinOderStyle; }
-            set { m_defaultPinOderStyle = value; }
+            get { return m_defaultPinOrderStyle; }
+            set { m_defaultPinOrderStyle = value; }
         }
 
         /// <summary>
@@ -639,7 +639,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         {
             // build the group
             var newGroup = new DomNode(GroupType).As<Group>();
-            newGroup.DefaultPinOrder = DefaultPinOderStyle;
+            newGroup.DefaultPinOrder = DefaultPinOrderStyle;
             newGroup.DomNode.Type.SetTag<ICircuitElementType>(newGroup);
             newGroup.Id = "Group".Localize("a noun");
             newGroup.Name = newGroup.Id;
@@ -871,7 +871,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         }
 
  
-        private Group.PinOrderStyle m_defaultPinOderStyle;
+        private Group.PinOrderStyle m_defaultPinOrderStyle;
         private WeakReference m_targetRef;
         private bool m_allUnconnectedHidden;
     }

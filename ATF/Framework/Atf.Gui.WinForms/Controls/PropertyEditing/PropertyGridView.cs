@@ -71,9 +71,12 @@ namespace Sce.Atf.Controls.PropertyEditing
                 m_editingControl,
                 m_scrollBar,                
             });
-            ResumeLayout();
-            //m_editingControl            
-            m_resetButton.Click += (sender, e) => SelectedProperty.Context.ResetValue();           
+            ResumeLayout();            
+            m_resetButton.Click += (sender, e) =>
+                {                    
+                    SelectedProperty.Context.ResetValue();                    
+                    Invalidate();
+                };
         }
 
         /// <summary>
@@ -1337,6 +1340,8 @@ namespace Sce.Atf.Controls.PropertyEditing
                     LastSelectedObject, property.Descriptor, null);
                 PropertyEditingControl.DrawProperty(
                     property.Descriptor, context, valueRect, font, brush, g);
+                if (property == SelectedProperty)
+                    m_editingControl.Refresh();
             }
             else
             {

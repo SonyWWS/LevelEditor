@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
-
+using System.Linq;
 using Keys = Sce.Atf.Input.Keys;
 
 namespace Sce.Atf.Applications
@@ -544,36 +544,50 @@ namespace Sce.Atf.Applications
         {
             Uri uri = null;
             string fileName = client.Info.NewDocumentName;
+            string extension = null;
+            string directoryName = null;
             if (client.Info.Extensions.Length > 1)
             {
-                // Since there are multiple possible extensions, ask the user to pick a filename.
-                string path = PromptUserForNewFilePath(client, fileName, null);
-                if (path != null)
+                if (string.IsNullOrEmpty(client.Info.DefaultExtension))
                 {
-                    try
+                    // Since there are multiple possible extensions, ask the user to pick a filename.
+                    string path = PromptUserForNewFilePath(client, fileName, null);
+                    if (path != null)
                     {
-                        if (File.Exists(path))
-                            File.Delete(path);
-                    }
-                    catch (Exception e)
-                    {
-                        string message = string.Format(
-                            "Failed to delete: {0}. Exception: {1}", path, e);
-                        Outputs.WriteLine(OutputMessageType.Warning, message);
-                    }
+                        try
+                        {
+                            if (File.Exists(path))
+                                File.Delete(path);
+                        }
+                        catch (Exception e)
+                        {
+                            string message = string.Format(
+                                "Failed to delete: {0}. Exception: {1}", path, e);
+                            Outputs.WriteLine(OutputMessageType.Warning, message);
+                        }
 
-                    m_newDocumentPaths.Add(path);
-                    uri = new Uri(path, UriKind.RelativeOrAbsolute);
+                        m_newDocumentPaths.Add(path);
+                        uri = new Uri(path, UriKind.RelativeOrAbsolute);
+                        return uri;
+                    }
+                }
+                else
+                {
+                    directoryName = client.Info.InitialDirectory;
+                    if (directoryName == null)
+                        directoryName = FileDialogService.InitialDirectory;
+                    extension = client.Info.DefaultExtension;
                 }
             }
-            else if (client.Info.Extensions.Length == 1)
+
+            if (client.Info.Extensions.Length >= 1)
             {
                 // Since there is only one possible extension, we can choose the new name (e.g., "Untitled.xml").
-                string directoryName = client.Info.InitialDirectory;
+                directoryName = client.Info.InitialDirectory;
                 if (directoryName == null)
                     directoryName = FileDialogService.InitialDirectory;
 
-                string extension = client.Info.Extensions[0];
+                extension = client.Info.Extensions[0];
 
                 if (directoryName != null && extension != null)
                 {
@@ -903,14 +917,14 @@ namespace Sce.Atf.Applications
 
         private void RegisterClientCommands()
         {
-            int clientCount = m_documentClients.Length;
+            var clientList = m_documentClients.Select(l => l.Value)
+                                .Where(dc => dc.Info.AllowStandardFileCommands)
+                                .ToList();
 
             // for each document client, build file/new and file/open commands
-            int index = 0;
-            foreach (Lazy<IDocumentClient> lazy in m_documentClients)
+            var index = 0;
+            foreach (var client in clientList)
             {
-                IDocumentClient client = lazy.Value;
-
                 Keys newShortcut = Keys.None;
                 Keys openShortcut = Keys.None;
 
@@ -929,7 +943,7 @@ namespace Sce.Atf.Applications
                             new FileCommandTag(Command.FileNew, client),
                             StandardMenu.File,
                             StandardCommandGroup.FileNew,
-                            clientCount > 1 ?
+                            clientList.Count > 1 ?
                                 "New".Localize("Name of a command") + '/' + client.Info.FileType :
                                 string.Format("New {0}".Localize(), client.Info.FileType),
                             string.Format("Creates a new {0} document".Localize("{0} is the type of document to create"), client.Info.FileType),
@@ -948,7 +962,7 @@ namespace Sce.Atf.Applications
                             new FileCommandTag(Command.FileOpen, client),
                             StandardMenu.File,
                             StandardCommandGroup.FileNew,
-                            clientCount > 1 ?
+                            clientList.Count > 1 ?
                                 "Open".Localize("Name of a command") + '/' + client.Info.FileType :
                                 string.Format("Open {0}".Localize(), client.Info.FileType),
                             string.Format("Open an existing {0} document".Localize(), client.Info.FileType),

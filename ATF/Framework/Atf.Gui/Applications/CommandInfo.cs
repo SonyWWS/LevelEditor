@@ -353,7 +353,7 @@ namespace Sce.Atf.Applications
 
         /// <summary>
         /// Image key of image resource, or null</summary>
-        public readonly object ImageKey;
+        public object ImageKey;
 
         /// <summary>
         /// Actual text displayed in menu for this command</summary>

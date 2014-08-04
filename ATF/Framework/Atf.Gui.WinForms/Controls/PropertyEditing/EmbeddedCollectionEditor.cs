@@ -98,7 +98,7 @@ namespace Sce.Atf.Controls.PropertyEditing
 
             /// <summary>
             /// Gets or sets a human-friendly type name of the item to be inserted.
-            /// Doesn't have to correspond to a sytem type.</summary>
+            /// Doesn't have to correspond to a system type.</summary>
             public string ItemTypeName { get; set; }
 
             /// <summary>
@@ -285,22 +285,20 @@ namespace Sce.Atf.Controls.PropertyEditing
             /// <returns>True iff the key was processed by the control</returns>
             protected override bool ProcessDialogKey(Keys keyData)
             {
-                Control focusControl = null;
-                for (int i = 1; i < Controls.Count; i++)
+                // Note, this code is duplicated in ArrayEditingControl.
+                int index = 0; //0 means "no child item has focus".
+                for (int i = 1; i < Controls.Count; i++) // Controls[0] is the toolstrip
                 {
                     if (Controls[i].ContainsFocus)
                     {
-                        focusControl = Controls[i];
+                        index = i;
                         break;
                     }
-
                 }
-                int index = focusControl == null ? 0 : Controls.IndexOf(focusControl);
-                if (keyData == Keys.Tab)
+                if (keyData == Keys.Tab || keyData == Keys.Enter)
                 {
                     // if on last item then don't process tab
-                    Control last = Controls[Controls.Count - 1];
-                    if (focusControl != last)
+                    if (index < Controls.Count - 1)
                     {
                         Controls[index + 1].Select();
                         return true;
@@ -308,11 +306,10 @@ namespace Sce.Atf.Controls.PropertyEditing
                 }
                 else if (keyData == (Keys.Tab | Keys.Shift))
                 {
-                    Control first = Controls[1];
-                    if (focusControl != first && index != 0)
+                    if (index > 1)
                     {
                         Controls[index - 1].Select();
-                        return true;                        
+                        return true;
                     }
                 }
                 return base.ProcessDialogKey(keyData);
@@ -416,16 +413,16 @@ namespace Sce.Atf.Controls.PropertyEditing
 
             private void OnItemInserted(object item)
             {                
-                // If an item is removed and then inserted again in the same transaction
-                // it was just moved, so we just need to update its position
+                // If an item is removed and then inserted again in the same transaction, then
+                // it was just moved, so we just need to update its position.
                 // If it was modified as well it will already be in the changed list
-                // and will have to be rebuilt
+                // and will have to be rebuilt.
                 if (m_pendingItemsRemoved.Contains(item))
                     m_pendingItemsRemoved.Remove(item);
                 else
                     m_pendingItemsInserted.Add(item);
 
-                // If we're not in a transaction we have to process all changes right away
+                // If we're not in a transaction we have to process all changes right away.
                 if (!m_inTransaction)
                     ProcessPendingChanges();
             }
@@ -443,13 +440,13 @@ namespace Sce.Atf.Controls.PropertyEditing
             private void OnItemRemoved(object item)
             {                
                 // If added and removed in the same transaction, add & remove
-                // cancel each other out and we don't need to process them
-                if (m_pendingItemsRemoved.Contains(item))
-                    m_pendingItemsRemoved.Remove(item);
+                // cancel each other out and we don't need to process them.
+                if (m_pendingItemsInserted.Contains(item))
+                    m_pendingItemsInserted.Remove(item);
                 else
                     m_pendingItemsRemoved.Add(item);
 
-                // If we're not in a transaction we have to process all changes right away
+                // If we're not in a transaction we have to process all changes right away.
                 if (!m_inTransaction)
                     ProcessPendingChanges();
             }
@@ -500,9 +497,7 @@ namespace Sce.Atf.Controls.PropertyEditing
             void validationContext_Ended(object sender, EventArgs e)
             {
                 m_inTransaction = false;
-                // This is causing a race condition where m_pendingItemsRemoved is accessed in ProcessPendingChanges while being modified elsewhere.
-                // This is happening on Hakan and Willem's machines, at least.  Ricky to investigate.
-                //ProcessPendingChanges();         
+                ProcessPendingChanges();
             }
 
             private bool m_processingPendingChanges;
@@ -531,7 +526,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                         int itemCount = items.Cast<object>().Count();
 
                         // Enable singleton mode iff the collection will always have exactly 1 item
-                        // in this case we can hide toolbar and the item's index collumn
+                        // in this case we can hide toolbar and the item's index column
                         m_singletonMode =
                             (m_editor.GetItemInsertersFunc == null || !m_editor.GetItemInsertersFunc(m_context).Any()) // can't insert
                             && m_editor.RemoveItemFunc == null // can't remove
@@ -553,14 +548,14 @@ namespace Sce.Atf.Controls.PropertyEditing
                         }
                         m_itemControls.Clear();
 
-                        // Add items for insertion
+                        // Add items for insertion.
                         foreach (object item in items)
                             m_pendingItemsInserted.Add(item);
 
                         UpdateAddButton();
                     }
 
-                    // Hide controls for removed items
+                    // Hide controls for removed items.
                     int smallestRemovedIndex = int.MaxValue;
                     foreach (object item in m_pendingItemsRemoved)
                     {
@@ -579,7 +574,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                         }
                     }
 
-                    // Set new item selection after any deletes
+                    // Set new item selection after any deletes.
                     if (smallestRemovedIndex != int.MaxValue)
                     {
                         int i = m_itemControls.Count - 1;
@@ -595,7 +590,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                         }
                     }
 
-                    // Refresh controls for items that have changed
+                    // Refresh controls for items that have changed.
                     foreach (object item in m_pendingItemsChanged)
                     {
                         ItemControl itemControl;
@@ -606,7 +601,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                                       
                     // Reorder controls for items that have moved, either
                     // because a lower index item was deleted, or because they've been
-                    // (directly or indirectly) been moved up or down
+                    // (directly or indirectly) been moved up or down.
                     int index = 0;
                     int top = m_singletonMode ? 0 : m_toolStrip.Height;
                     foreach (object item in GetItemsFromContext())
@@ -622,9 +617,9 @@ namespace Sce.Atf.Controls.PropertyEditing
                         }
                     }
 
-                    // Add controls for added items
+                    // Add controls for added items.
                     // Currently only adding at the end is supported. If we ever want to support 
-                    // inserting in the middle, then we'd probably want to have this step before 
+                    // inserting in the middle, then we'd probably want to have this step before .
                     // the index-reordering one.
                     foreach (object item in m_pendingItemsInserted)
                     {
@@ -671,12 +666,12 @@ namespace Sce.Atf.Controls.PropertyEditing
                 }
                 catch (Win32Exception ex)
                 {
-                    // For very large collections (with 1000+ items) it is possible that Windows runs out of Window handles
+                    // For very large collections (with 1000+ items) it is possible that Windows runs out of Window handles.
                     // Such collections are currently not usable with this editor. To support such collections we'd have to
                     // implement some kind of virtual mode (i.e. stream items in and out) but that would pose some new
-                    // challengs for editing operations (add, remove, move)
+                    // challenges for editing operations (add, remove, move).
 
-                    // Clean up to release some window handles and keep the application running smoothly
+                    // Clean up to release some window handles and keep the application running smoothly.
                     foreach (ItemControl control in m_itemControls.Values)
                     {
                         if (Controls.Contains(control))
@@ -936,22 +931,20 @@ namespace Sce.Atf.Controls.PropertyEditing
             /// <param name="e">Event args</param>
             void addButton_Click(object sender, EventArgs e)
             {
-                ToolStripItem toolStripItem = sender as ToolStripItem;
+                var toolStripItem = sender as ToolStripItem;
                 if (toolStripItem == null)
                     return;
 
-                ItemInserter inserter = toolStripItem.Tag as ItemInserter;
+                var inserter = toolStripItem.Tag as ItemInserter;
                 if (inserter == null)
                     return;
 
-                object item = null;
                 m_context.TransactionContext.DoTransaction(
-                    delegate { item = inserter.InsertItemFunc(); }, "Insert child".Localize());
-
-                // If we have an ObservableContext, we'll get an ItemInserted event back and handle it there
-                // without an ObsverbableContext, we need to trigger the same logic from here
-                if (ObservableContext == null)
-                    OnItemInserted(item);
+                    delegate
+                    {
+                        object item = inserter.InsertItemFunc();
+                        OnItemInserted(item);
+                    }, "Insert child".Localize());
 
                 if (m_addSplitButton.Visible && m_addSplitButton.DropDownItems.Count > 1)
                     SetDefaultInserter(inserter);
@@ -985,8 +978,6 @@ namespace Sce.Atf.Controls.PropertyEditing
                 MoveSelectedItems(1);
             }
 
-            
-
             /// <summary>
             /// Deletes the selected items</summary>
             private void DeleteSelectedItems()
@@ -1012,16 +1003,11 @@ namespace Sce.Atf.Controls.PropertyEditing
                     delegate
                     {
                         foreach (object deleteItem in deleteItems)
+                        {
                             m_editor.RemoveItemFunc(m_context, deleteItem);
+                            OnItemRemoved(deleteItem);
+                        }
                     }, "Remove children".Localize());
-
-                // If we have an ObservableContext, we'll get ItemRemoved event back and handle it there
-                // without an ObsverbableContext, we need to trigger the same logic from here
-                if (ObservableContext == null)
-                {
-                    foreach (object deleteItem in deleteItems)
-                        OnItemRemoved(deleteItem);
-                }
             }
 
             /// <summary>
@@ -1054,7 +1040,10 @@ namespace Sce.Atf.Controls.PropertyEditing
                     delegate
                     {
                         foreach (var movePair in movePairs)
+                        {
                             m_editor.MoveItemFunc(m_context, movePair.Key, direction);
+                            OnItemChanged(movePair.Key);
+                        }
                     }, "Move children".Localize());
 
 

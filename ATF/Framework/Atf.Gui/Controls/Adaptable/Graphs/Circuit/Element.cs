@@ -173,7 +173,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         public virtual Pair<Element, ICircuitPin> MatchPinTarget(PinTarget pinTarget, bool inputSide)
         {
             var result = new Pair<Element, ICircuitPin>();
-            if (pinTarget.LeafDomNode == DomNode) // an element must be a leaf node in a circut hiearchy
+            if (pinTarget != null &&  pinTarget.LeafDomNode == DomNode) // an element must be a leaf node in a circut hiearchy
             {
                 bool validPinIndex = inputSide
                                          ? pinTarget.LeafPinIndex < Type.Inputs.Count
@@ -220,7 +220,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
 
         /// <summary>
-        /// Gets or sets the local bounds information</summary>
+        /// Gets or sets the local bounds information, in world coordinates</summary>
         public virtual Rectangle Bounds
         {
             get

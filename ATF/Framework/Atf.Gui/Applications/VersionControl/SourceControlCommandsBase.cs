@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Sce.Atf.Adaptation;
 using Keys = Sce.Atf.Input.Keys;
 
@@ -379,8 +380,8 @@ namespace Sce.Atf.Applications
         {
             get
             {
-                return m_contextRegistry != null
-                    ? m_contextRegistry.GetMostRecentContext<ISourceControlContext>()
+                return ContextRegistry != null
+                    ? ContextRegistry.GetMostRecentContext<ISourceControlContext>()
                     : null;
             }
         }
@@ -512,7 +513,7 @@ namespace Sce.Atf.Applications
 
         protected virtual bool DoCheckIn(bool doing)
         {
-            if (SourceControlService == null || m_contextRegistry == null ||
+            if (SourceControlService == null || ContextRegistry == null ||
                 SourceControlContext == null || !SourceControlService.AllowCheckIn)
                 return false;
 
@@ -608,7 +609,7 @@ namespace Sce.Atf.Applications
                         MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (dialogResult == MessageBoxResult.Yes)
                 {
-                    foreach (IResource resource in SourceControlContext.Resources)
+                    foreach (IResource resource in SourceControlContext.Resources.ToArray())
                     {
                         SourceControlStatus status = GetStatus(resource);
                         if (status == SourceControlStatus.CheckedOut || status == SourceControlStatus.Added)
@@ -728,7 +729,11 @@ namespace Sce.Atf.Applications
         private CommandVisibility m_commandVisibility = CommandVisibility.Menu | CommandVisibility.Toolbar;
 
         [Import(AllowDefault = true)]
-        private IContextRegistry m_contextRegistry = null;
+        protected IContextRegistry ContextRegistry
+        {
+            get;
+            private set;
+        }
 
         [ImportMany]
         private Lazy<IDocumentClient>[] m_documentClients = null;

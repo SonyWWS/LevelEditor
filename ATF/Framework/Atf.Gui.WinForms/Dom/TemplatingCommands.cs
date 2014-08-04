@@ -288,7 +288,7 @@ namespace Sce.Atf.Dom
         /// Rescan all referenced template documents </summary>
         protected virtual void ReloadExternalTemplates()
         {
-            //
+            // client code to override
         }
 
         

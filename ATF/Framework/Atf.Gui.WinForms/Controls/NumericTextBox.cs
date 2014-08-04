@@ -172,10 +172,38 @@ namespace Sce.Atf.Controls
         protected override void OnLostFocus(EventArgs e)
         {
             Flush();
-
             base.OnLostFocus(e);
         }
 
+        private bool m_selectAll;
+        protected override void OnEnter(EventArgs e)
+        {
+            base.OnEnter(e);
+            m_selectAll = MouseButtons == MouseButtons.Left;
+
+            if (MouseButtons == MouseButtons.None)
+            {// select all, when tabbing into this control.
+                SelectAll();
+            }
+        }
+
+        protected override void OnLeave(EventArgs e)
+        {
+            base.OnLeave(e);
+            m_selectAll = false;
+        }
+
+        protected override void OnMouseUp(MouseEventArgs mevent)
+        {
+            base.OnMouseUp(mevent);
+            if (m_selectAll && SelectionLength == 0)
+            {
+                m_selectAll = false;
+                SelectAll();
+                Focus();
+            }
+
+        }
        
         /// <summary>
         /// Performs custom actions on MouseDown events.
