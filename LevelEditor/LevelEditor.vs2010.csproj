@@ -137,6 +137,7 @@
     <Compile Include="Terrain\CreateTerrainMapDlg.Designer.cs">
       <DependentUpon>CreateTerrainMapDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Terrain\ITerrainSurface.cs" />
     <Compile Include="Terrain\LayerMap.cs" />
     <Compile Include="Terrain\TerrainBrush.cs" />
     <Compile Include="Terrain\TerrainEditor.cs" />

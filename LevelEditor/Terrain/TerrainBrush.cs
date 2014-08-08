@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using System.ComponentModel;
 using System.Windows.Forms;
-
+using LevelEditorCore;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
@@ -21,11 +21,14 @@ namespace LevelEditor.Terrain
     /// Base class for all Terrain brushes.</summary>
     public abstract class TerrainBrush : IPropertyEditingContext 
     {
-        public TerrainBrush()
+        /// <summary>
+        /// Consruct brush with the given name.</summary>
+        public TerrainBrush(string name)
         {            
             m_radius = 3;
             m_falloff = 0.5f;
             CreateKernel();
+            Name = name;
         }
 
         #region IPropertyEditingContext Members
@@ -46,12 +49,28 @@ namespace LevelEditor.Terrain
 
         #endregion
 
-        public abstract bool CanApplyTo(object target);
+        /// <summary>
+        /// Gets brush name.</summary>
+        public string Name
+        {
+            get;
+            private set;
+        }
 
-        public abstract void Apply(object target, int x, int y);         
+        /// <summary>
+        /// Gets whether this brush can be applied to target. </summary>        
+        public abstract bool CanApplyTo(ITerrainSurface target);
+
+        /// <summary>
+        /// Apply this brush to target at the given coordinate
+        /// output TerrainOp for undo/redo
+        /// </summary>        
+        public abstract void Apply(ITerrainSurface target, int x, int y, out TerrainOp op);       
 
 
-        protected void ComputeBound(ImageData hmImg,
+        /// <summary>
+        /// Computes brush bound in imgdata space.</summary>        
+        protected void ComputeBound(ImageData imgData,
                     int x,
                     int y,                    
                     out Bound2di outRect)
@@ -61,7 +80,7 @@ namespace LevelEditor.Terrain
             outRect.y1 = 0;
             outRect.y2 = 0;
 
-            bool valid = hmImg != null && hmImg.IsValid;
+            bool valid = imgData != null && imgData.IsValid;
             System.Diagnostics.Debug.Assert(valid);
             if (!valid) return;
 
@@ -73,14 +92,12 @@ namespace LevelEditor.Terrain
             kernelRect.x2 = x + Radius + 1;
             kernelRect.y2 = y + Radius + 1;
 
-
             Bound2di destRect;
             destRect.x1 = 0;
             destRect.y1 = 0;
-            destRect.x2 = hmImg.Width;
-            destRect.y2 = hmImg.Height;
+            destRect.x2 = imgData.Width;
+            destRect.y2 = imgData.Height;
             Bound2di.Intersect(kernelRect, destRect, out outRect);
-
         }         
 
                 
@@ -116,7 +133,12 @@ namespace LevelEditor.Terrain
             return BrushOps.None;
         }
 
+        /// <summary>
+        /// Event that is raised when brush kernel is changed</summary>
         protected event EventHandler KernelMaskChanged = delegate { };
+
+        /// <summary>
+        /// Creates brush kernel</summary>
         private void CreateKernel()
         {            
             float falloff = Falloff;
@@ -189,12 +211,15 @@ namespace LevelEditor.Terrain
        
     }
 
+    /// <summary>
+    /// Paint/Erase layer and decoration map</summary>
     unsafe public class PaintEraseBrush : TerrainBrush
     {
-        public PaintEraseBrush()
+        public PaintEraseBrush(string name)
+            : base(name)
         {
             Falloff = 0.75f;
-            m_strength = 1.0f;         
+            m_strength = 1.0f;
         }
 
         private float m_strength;
@@ -204,10 +229,10 @@ namespace LevelEditor.Terrain
             set { m_strength = MathUtil.Clamp(value, 0.0f, 1.0f); }
             
         }
-        public override bool CanApplyTo(object target)
+        public override bool CanApplyTo(ITerrainSurface target)
         {
             TerrainMap map = target.As<TerrainMap>();
-            return map != null && map.GetMaskInstanceId() != 0;            
+            return map != null && map.GetSurfaceInstanceId() != 0;            
         }
 
         public override BrushOps GetBrushOp()
@@ -216,26 +241,27 @@ namespace LevelEditor.Terrain
         }
 
 
-        
-        public override void Apply(object target, int x,  int y)                 
-        {           
+        public override void Apply(ITerrainSurface target, int x, int y, out TerrainOp op)
+        {
+            op = null;
             if (!CanApplyTo(target)) return;
 
             Bound2di outRect;
             TerrainMap tmap = target.As<TerrainMap>();
-            ImageData mask = tmap.GetMaskMap();
+            ImageData mask = tmap.GetSurface();
             ComputeBound(mask, x, y, out outRect);
             bool validArgs = outRect.isValid && mask.Format == ImageDataFORMAT.R8_UNORM;
             System.Diagnostics.Debug.Assert(validArgs);
             if (validArgs == false) return;
-            
+
+            op = new TerrainOp(target, outRect);
             var brushOp = GetBrushOp();
 
             float minheight = tmap.MinHeight;
             float maxheight = tmap.MaxHeight;
             float minslope = tmap.MinSlope;
             float maxslope = tmap.MaxSlope;
-            ImageData hmImg = tmap.Parent.GetHeightMap();
+            ImageData hmImg = tmap.Parent.GetSurface();
 
             float dx = (float)hmImg.Width / (float)mask.Width;
             float dy = (float)hmImg.Height / (float)mask.Height;
@@ -325,18 +351,17 @@ namespace LevelEditor.Terrain
                 return m_propertyDescriptor;
             }
         }
-
     }
-
 
     unsafe public class SmoothenBrush : TerrainBrush
     {
-        public SmoothenBrush()
+        public SmoothenBrush(string name)
+            : base(name)
         {
             Falloff = 0.0f;
         }
 
-        public override bool CanApplyTo(object target)
+        public override bool CanApplyTo(ITerrainSurface target)
         {
             return target.Is<TerrainGob>();
                 
@@ -344,15 +369,17 @@ namespace LevelEditor.Terrain
 
         private List<float> m_templist = new List<float>();
 
-        public override void Apply(object target, int x, int y)                 
-        {            
+        public override void Apply(ITerrainSurface target, int x, int y, out TerrainOp op)
+        {
+            op = null;
             if (!CanApplyTo(target)) return;
             TerrainGob terrain = target.As<TerrainGob>();
-            ImageData hmImg = terrain.GetHeightMap();
+            ImageData hmImg = terrain.GetSurface();
             Bound2di outRect;
             ComputeBound(hmImg, x, y, out outRect);
             if (!outRect.isValid || hmImg.Format != ImageDataFORMAT.R32_FLOAT)
                 return;
+            op = new TerrainOp(target, outRect);
             
 
             Func<int,int,float> getPixel = (px, py) =>
@@ -406,7 +433,8 @@ namespace LevelEditor.Terrain
 
     unsafe public class FlattenBrush : TerrainBrush
     {
-        public FlattenBrush()
+        public FlattenBrush(string name)
+            : base(name)
         {
             Falloff = 0.2f;
             
@@ -420,23 +448,23 @@ namespace LevelEditor.Terrain
             set;
         }
 
-
-        public override bool CanApplyTo(object target)
+        public override bool CanApplyTo(ITerrainSurface target)
         {
             return (target is TerrainGob);
         }
 
-        public override void Apply(object target, int x, int y)                  
+        public override void Apply(ITerrainSurface target, int x, int y, out TerrainOp op)
         {
-            
+            op = null;
             if (!CanApplyTo(target)) return;
             TerrainGob terrain = target.As<TerrainGob>();
-            ImageData hmImg = terrain.GetHeightMap();
+            ImageData hmImg = terrain.GetSurface();
             Bound2di outRect;
             ComputeBound(hmImg, x, y, out outRect);            
             if (!outRect.isValid || hmImg.Format != ImageDataFORMAT.R32_FLOAT)
                 return;
 
+            op = new TerrainOp(target, outRect);
             // start point in kernel space.
             int bx0 = x - Radius;
             int by0 = y - Radius;
@@ -450,7 +478,7 @@ namespace LevelEditor.Terrain
                     int bx = cx - bx0;
                     float scrPixel = Kernel[size * by + bx];
                     float* destPixel = (float*)hmImg.GetPixel(cx, cy);
-                    *destPixel = Sce.Atf.MathUtil.Interp(scrPixel, *destPixel, Height);
+                    *destPixel = MathUtil.Interp(scrPixel, *destPixel, Height);
                 }
             }
 
@@ -464,27 +492,29 @@ namespace LevelEditor.Terrain
         /// <summary>
         /// create brush with defult size and falloff.
         /// </summary>
-        public RaiseLowerBrush()
+        public RaiseLowerBrush(string name)
+            : base(name)
         {
             m_height = 0.5f;            
         }
 
-        public override bool CanApplyTo(object target)
+        public override bool CanApplyTo(ITerrainSurface target)
         {
             return (target is TerrainGob);
         }
 
-        public override void Apply(object target, int x, int y)                   
+        public override void Apply(ITerrainSurface target, int x, int y, out TerrainOp op)
         {
-            
+            op = null;
             if (!CanApplyTo(target)) return;
             Bound2di outRect;
             TerrainGob terrain = target.As<TerrainGob>();
-            ImageData hmImg = terrain.GetHeightMap();
+            ImageData hmImg = terrain.GetSurface();
             ComputeBound(hmImg, x, y, out outRect);            
             if (!outRect.isValid || hmImg.Format != ImageDataFORMAT.R32_FLOAT)
                 return;
 
+            op = new TerrainOp(target, outRect);
             var brushOp = GetBrushOp();
 
             Func<float, float, float> ops = null;
@@ -512,8 +542,7 @@ namespace LevelEditor.Terrain
                     float* destPixel = (float*)hmImg.GetPixel(cx, cy);
                     *destPixel = ops(*destPixel, scrPixel);
                 }
-            }
-
+            }            
             terrain.ApplyDirtyRegion(outRect);
         }
         
@@ -550,7 +579,8 @@ namespace LevelEditor.Terrain
 
     unsafe public class NoiseBrush : TerrainBrush
     {
-        public NoiseBrush()
+        public NoiseBrush(string name)
+            : base(name)
         {
             Falloff = 0.0f;
             Radius = 16;
@@ -567,21 +597,23 @@ namespace LevelEditor.Terrain
             
         }
 
-        public override bool CanApplyTo(object target)
+        public override bool CanApplyTo(ITerrainSurface target)
         {
             return (target is TerrainGob);
         }
 
-        public override void Apply(object target, int x, int y)
+        public override void Apply(ITerrainSurface target, int x, int y, out TerrainOp op)
         {
+            op = null;
             if (!CanApplyTo(target)) return;
             Bound2di outRect;
             TerrainGob terrain = target.As<TerrainGob>();
-            ImageData hmImg = terrain.GetHeightMap();
+            ImageData hmImg = terrain.GetSurface();
             ComputeBound(hmImg, x, y, out outRect);
             if (!outRect.isValid || hmImg.Format != ImageDataFORMAT.R32_FLOAT)
                 return;
 
+            op = new TerrainOp(target, outRect);
 
             // start point in kernel space.
             int bx0 = x - Radius;
@@ -702,5 +734,68 @@ namespace LevelEditor.Terrain
         Sub,
         Paint,
         Erase,
+    }
+
+    /// <summary>
+    /// Terrain operation used for undo/redo
+    /// </summary>
+    public class TerrainOp : Sce.Atf.Dom.TransactionContext.Operation
+    {        
+        public TerrainOp(ITerrainSurface target, Bound2di bound)
+        {
+            m_target = target;
+            m_bound = bound;
+            Perform();
+        }
+
+        /// <summary>
+        /// Free the data used for undo/redo.</summary>
+        public void FreeData()
+        {
+            m_data = null;
+            m_dataFreed = true;
+        }
+        /// <summary>
+        /// Does the transaction operation</summary>
+        public override void Do()
+        {
+            Perform();            
+        }
+
+        /// <summary>
+        /// Rolls back the transaction operation</summary>
+        public override void Undo()
+        {
+            Perform();            
+        }
+
+        private void Perform()
+        {
+            if (m_dataFreed) return;
+            ImageData img = m_target.GetSurface();            
+            // toggle between data stored in img and m_data.                
+            var data = new byte[m_bound.Width * m_bound.Height * img.BytesPerPixel];            
+            
+            img.CopyRegion(m_bound, data);            
+            if (m_data != null)
+            {                
+                img.ApplyRegion(m_bound, m_data);                             
+                m_target.ApplyDirtyRegion(m_bound);                
+            }
+            m_data = data;            
+        }
+
+        /// <summary>
+        /// Gets the size of this operation in bytes.
+        /// Used to keep track of memory usage.</summary>
+        public int SizeInBytes
+        {
+            get { return m_data == null ? 0 : m_data.Length; }
+        }
+
+        private ITerrainSurface m_target;
+        private byte[] m_data;
+        private Bound2di m_bound; // in map space.
+        private bool m_dataFreed;
     }
 }

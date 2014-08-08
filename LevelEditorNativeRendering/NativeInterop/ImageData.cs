@@ -1,7 +1,9 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System;
+using System.Diagnostics;
 using System.IO;
+using LevelEditorCore.VectorMath;
 
 
 namespace RenderingInterop
@@ -187,7 +189,70 @@ namespace RenderingInterop
             base.Dispose(disposing);
         }
 
-        unsafe private void RefreshCachedProperties()
+        /// <summary>
+        /// Apply the data to the given bound</summary>
+        /// <param name="bound"></param>
+        /// <param name="data">data to be applied</param>
+        public void ApplyRegion(Bound2di bound, byte[] data)
+        {
+            int dataSize = bound.Width * bound.Height * BytesPerPixel;
+            bool valid = bound.isValid
+                && bound.x1 >= 0
+                && bound.x2 <= Width
+                && bound.y1 >= 0
+                && bound.y2 <= Height
+                && data != null
+                && data.Length == dataSize;
+            Debug.Assert(valid);
+            if (!valid) return;
+
+            // restore 
+            int rowPitch = bound.Width * BytesPerPixel;
+            fixed (byte* srcptr = data)
+            {
+                byte* src = srcptr;
+                for (int cy = bound.y1; cy < bound.y2; cy++)
+                {
+                    byte* destPtr = GetPixel(bound.x1, cy);
+                    for (int i = 0; i < rowPitch; i++)
+                        *destPtr++ = *src++;
+                }
+            }
+
+        }
+
+
+        /// <summary>
+        /// Copy region to outData</summary>
+        /// <param name="bound">The region to be copied</param>
+        /// <param name="outData">copy to outData</param>
+        public void CopyRegion(Bound2di bound, byte[] outData)
+        {
+            int dataSize = bound.Width * bound.Height * BytesPerPixel;
+            bool valid = bound.isValid
+                && bound.x1 >= 0
+                && bound.x2 <= Width
+                && bound.y1 >= 0
+                && bound.y2 <= Height
+                && outData != null
+                && outData.Length == dataSize;
+            Debug.Assert(valid);
+            if (!valid) return;
+
+            int rowPitch = bound.Width * BytesPerPixel;
+            fixed (byte* dest = outData)
+            {
+                byte* ds = dest;
+                for (int cy = bound.y1; cy < bound.y2; cy++)
+                {
+                    byte* scrPtr = GetPixel(bound.x1, cy);
+                    for (int i = 0; i < rowPitch; i++)
+                        *ds++ = *scrPtr++;
+                }
+            }
+        }
+
+        private void RefreshCachedProperties()
         {            
             // data pointer.
             int datasize;

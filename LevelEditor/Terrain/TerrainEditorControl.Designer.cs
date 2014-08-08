@@ -279,7 +279,7 @@
             this.m_noiseRdo.Size = new System.Drawing.Size(104, 30);
             this.m_noiseRdo.TabIndex = 13;
             this.m_noiseRdo.TabStop = true;
-            this.m_noiseRdo.Text = "Noise";
+            
             this.m_noiseRdo.UseVisualStyleBackColor = true;
             this.m_noiseRdo.CheckedChanged += new System.EventHandler(this.BrushRdoCheckedChanged);
             // 
@@ -329,7 +329,7 @@
             this.m_paintEraseRdo.Size = new System.Drawing.Size(104, 30);
             this.m_paintEraseRdo.TabIndex = 10;
             this.m_paintEraseRdo.TabStop = true;
-            this.m_paintEraseRdo.Text = "Paint/Erase";
+            
             this.m_paintEraseRdo.UseVisualStyleBackColor = true;
             this.m_paintEraseRdo.CheckedChanged += new System.EventHandler(this.BrushRdoCheckedChanged);
             // 
@@ -345,8 +345,7 @@
             this.m_flattenRdo.Name = "m_flattenRdo";
             this.m_flattenRdo.Size = new System.Drawing.Size(104, 30);
             this.m_flattenRdo.TabIndex = 9;
-            this.m_flattenRdo.TabStop = true;
-            this.m_flattenRdo.Text = "Flatten";
+            this.m_flattenRdo.TabStop = true;            
             this.m_flattenRdo.UseVisualStyleBackColor = true;
             this.m_flattenRdo.CheckedChanged += new System.EventHandler(this.BrushRdoCheckedChanged);
             // 
@@ -363,7 +362,7 @@
             this.m_brushRiseLowRdo.Size = new System.Drawing.Size(104, 30);
             this.m_brushRiseLowRdo.TabIndex = 8;
             this.m_brushRiseLowRdo.TabStop = true;
-            this.m_brushRiseLowRdo.Text = "Raise/Lower";
+            
             this.m_brushRiseLowRdo.UseVisualStyleBackColor = true;
             this.m_brushRiseLowRdo.CheckedChanged += new System.EventHandler(this.BrushRdoCheckedChanged);
             // 
@@ -380,7 +379,7 @@
             this.m_brushSmoothRdo.Size = new System.Drawing.Size(104, 30);
             this.m_brushSmoothRdo.TabIndex = 7;
             this.m_brushSmoothRdo.TabStop = true;
-            this.m_brushSmoothRdo.Text = "Smooth";
+            
             this.m_brushSmoothRdo.UseVisualStyleBackColor = true;
             this.m_brushSmoothRdo.Click += new System.EventHandler(this.BrushRdoCheckedChanged);
             // 

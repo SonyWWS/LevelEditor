@@ -22,7 +22,10 @@ using PropertyDescriptor = System.ComponentModel.PropertyDescriptor;
 
 namespace LevelEditor.Terrain
 {
-    public class TerrainGob : DomNodeAdapter, IPropertyEditingContext, IEditableResourceOwner
+    public unsafe class TerrainGob : DomNodeAdapter
+        ,IPropertyEditingContext 
+        ,IEditableResourceOwner
+        ,ITerrainSurface
     {
         public static TerrainGob Create(string name, string hmPath, float cellSize)
         {            
@@ -80,18 +83,18 @@ namespace LevelEditor.Terrain
 
         public int HeightMapHeight
         {
-            get 
+            get
             {
-                var hm = GetHeightMap();
+                var hm = GetSurface();
                 return hm != null ? hm.Height : 0;
             }
         }
 
         public int HeightMapWidth
         {
-            get 
+            get
             {
-                var hm = GetHeightMap();
+                var hm = GetSurface();
                 return hm != null ? hm.Width : 0;
             }
         }
@@ -103,92 +106,29 @@ namespace LevelEditor.Terrain
 
         public bool RayPick(Ray3F rayw, out RayPickRetVal retval)
         {
-            INativeObject nobj = this.As<INativeObject>();            
-            unsafe
-            {
-                IntPtr retvalPtr = IntPtr.Zero;
-                IntPtr rayptr = new IntPtr(&rayw);
-                nobj.InvokeFunction("RayPick", rayptr, out retvalPtr);
-                if (retvalPtr != IntPtr.Zero)
-                    retval = *(RayPickRetVal*)retvalPtr;
-                else
-                    retval = new RayPickRetVal();
-            }
+            INativeObject nobj = this.As<INativeObject>();
+            IntPtr retvalPtr = IntPtr.Zero;
+            IntPtr rayptr = new IntPtr(&rayw);
+            nobj.InvokeFunction("RayPick", rayptr, out retvalPtr);
+            if (retvalPtr != IntPtr.Zero)
+                retval = *(RayPickRetVal*)retvalPtr;
+            else
+                retval = new RayPickRetVal();
+
             return retval.picked;
         }
-        public ImageData GetHeightMap()
-        {
-
-            unsafe
-            {
-                INativeObject nobj = this.As<INativeObject>();
-                IntPtr retVal = IntPtr.Zero;
-                nobj.InvokeFunction("GetHeightMapInstanceId", IntPtr.Zero, out retVal);
-                if (retVal == IntPtr.Zero) return null;
-                ulong hmInstId = *(ulong*)retVal.ToPointer();
-                return hmInstId != 0 ? new ImageData(hmInstId) : null;
-            }
-        }
-        /// <summary>
-        ///  Transform the give position in world space 
-        ///  to position in heighmap space.</summary>        
-        public Point WorldToHmapSpace(Vec3F posW)
-        {
-            // convert posW from world space to heightmap space.                
-            Matrix4F xform = TransformUtils.ComputeWorldTransform(this.As<ITransformable>());
-            Vec3F posH = posW - xform.Translation;
-            return new Point((int)Math.Round(posH.X / CellSize),(int)Math.Round(posH.Z / CellSize));            
-        }
-
-
-        public void ApplyDirtyRegion(Bound2di box)
-        {
-            unsafe
-            {
-                INativeObject nobj = this.As<INativeObject>();
-                IntPtr argPtr = new IntPtr(&box);
-                IntPtr retVal = IntPtr.Zero;
-                nobj.InvokeFunction("ApplyDirtyRegion", argPtr, out retVal);
-                Dirty = true;
-            }
-
-
-            // 
-            // undo/redo implementation
-            // In TerrainManipulator.cs.
-            //   create class TerrainOP : Operation {}
-            //       TerrainOP holds dirty rect and data
-            //       performs undo/redo 
-            //   create list of weak references to track all TerrainOP instance.
-            //   Create list of TerrainOPs for the current drag.
-            //   //edit.DoTransaction(
-            //    delegate
-            //    {
-            //        Add list of TerrainOp to context.
-            //    }, "Apply [brush name]");
-
-            //   Monitor total memory usage.
-            //   if mem usage greater than threshhold then
-            //      a- cleanup weak references.
-            //      b- disable oldest TerrainOps until mem usage is at 75% of threshhold 
-        }
-
-
-        
+      
         public void DrawBrush(TerrainBrush brush, Vec2F drawscale, Vec3F posW)
         {
             INativeObject nobj = this.As<INativeObject>();
-            unsafe
-            {                
-                DrawBrushArgs arg;
-                arg.falloff = brush.Falloff;
-                arg.radius = (float)brush.Radius;
-                arg.posW = posW;
-                arg.drawscale = drawscale;
-                IntPtr argPtr = new IntPtr(&arg);
-                IntPtr retval;
-                nobj.InvokeFunction("DrawBrush", argPtr, out retval);                
-            }
+            DrawBrushArgs arg;
+            arg.falloff = brush.Falloff;
+            arg.radius = (float)brush.Radius;
+            arg.posW = posW;
+            arg.drawscale = drawscale;
+            IntPtr argPtr = new IntPtr(&arg);
+            IntPtr retval;
+            nobj.InvokeFunction("DrawBrush", argPtr, out retval);                            
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -282,7 +222,7 @@ namespace LevelEditor.Terrain
         {
             if (Dirty)
             {
-                ImageData hmImg = GetHeightMap();
+                ImageData hmImg = GetSurface();
                 hmImg.Save(HeightMapUri);
                 Dirty = false;
             }            
@@ -290,6 +230,41 @@ namespace LevelEditor.Terrain
 
         #endregion
 
-    }
+        #region ITerrainSurface Members
 
+        public ulong GetSurfaceInstanceId()
+        {
+            INativeObject nobj = this.As<INativeObject>();
+            IntPtr retVal = IntPtr.Zero;
+            nobj.InvokeFunction("GetHeightMapInstanceId", IntPtr.Zero, out retVal);
+            if (retVal == IntPtr.Zero) return 0;
+            return (*(ulong*)retVal.ToPointer());
+        }
+
+        public ImageData GetSurface()
+        {
+            ulong surfaceId = GetSurfaceInstanceId();
+            return surfaceId != 0 ? new ImageData(surfaceId) : null;
+        }
+
+        public Point WorldToSurfaceSpace(Vec3F posW)
+        {
+            // convert posW from world space to heightmap space.
+            Matrix4F xform = TransformUtils.ComputeWorldTransform(this.As<ITransformable>());
+            Vec3F posH = posW - xform.Translation;
+            return new Point((int)Math.Round(posH.X / CellSize), (int)Math.Round(posH.Z / CellSize));
+
+        }
+
+        public void ApplyDirtyRegion(Bound2di box)
+        {
+            INativeObject nobj = this.As<INativeObject>();
+            IntPtr argPtr = new IntPtr(&box);
+            IntPtr retVal = IntPtr.Zero;
+            nobj.InvokeFunction("ApplyDirtyRegion", argPtr, out retVal);
+            Dirty = true;            
+        }
+
+        #endregion
+    }
 }
