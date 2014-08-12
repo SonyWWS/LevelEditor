@@ -47,18 +47,18 @@ namespace LevelEditor
         {
             get
             {
-                bool dirty = m_gameDocumentRegistry.MasterDocument.Dirty;
-                foreach (IGameDocument subdoc in m_gameDocumentRegistry.SubDocuments)
+                bool dirty = false;
+                foreach (IGameDocument doc in m_gameDocumentRegistry.Documents)
                 {
-                    dirty |= subdoc.Dirty;
+                    dirty = doc.Dirty;
+                    if (dirty) break;                    
                 }
-
 
                 foreach (var obj in Util.FindAll<IEditableResourceOwner>())
                 {
                     dirty |= obj.Dirty;
+                    if (dirty) break;
                 }
-
 
                 return dirty;
             }

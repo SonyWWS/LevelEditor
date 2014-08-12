@@ -433,15 +433,7 @@
           displayName="Specular"
           description = "specular map texture"
           category="Textures"
-          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
-
-        <scea.dom.editors.attribute
-          name="mask"
-          displayName="Mask"
-          description = "Mask texture"
-          category="Textures"
-          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.dds; *.png)|*.dds;*.png" />
-        
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>               
       </xs:appinfo>
     </xs:annotation>
     <xs:attribute name="name" type="xs:string"/>
@@ -533,16 +525,7 @@
           name="cellSize"
           displayName="CellSize"
           description="size of terrain cell"
-          category="HieightMaps"/>
-                     
-        <scea.dom.editors.attribute
-          name="heightMap"
-          displayName="HeightMap"
-          description = "Height Map"
-          category="HieightMaps"
-          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.dds)|*.dds" 
-          readOnly="true"/>
-        
+          category="HieightMaps"/>                                   
       </xs:appinfo>
     </xs:annotation>
     <xs:complexContent>

@@ -68,21 +68,9 @@ namespace LevelEditor.Commands
             GameDocument gameDcument = document as GameDocument;
             if (gameDcument == null)
                 return base.ConfirmClose(document);
-
-            bool dirty = false;
-            foreach (IGameDocument doc in m_gameDocumentRegistry.Documents)
-            {
-                dirty |= doc.Dirty;
-            }
-
-            // external resources.
-            foreach (var obj in Util.FindAll<IEditableResourceOwner>())
-            {
-                dirty |= obj.Dirty;                
-            }
-
+          
             bool closeConfirmed = true;
-            if (dirty)
+            if (gameDcument.AnyDirty)
             {
                 string message = "One or more level and/or external resource is dirty"
                     + Environment.NewLine + "Save Changes?";
@@ -117,9 +105,6 @@ namespace LevelEditor.Commands
                 }   
             }
             return result;
-        }
-
-        [Import(AllowDefault = false)] 
-        private IGameDocumentRegistry m_gameDocumentRegistry = null;
+        }        
     }
 }

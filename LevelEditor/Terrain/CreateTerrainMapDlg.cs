@@ -8,6 +8,8 @@ using RenderingInterop;
 
 namespace LevelEditor.Terrain
 {
+    /// <summary>
+    /// UI for Creating terrain map</summary>
     public partial class CreateTerrainMapDlg : Form
     {
         public CreateTerrainMapDlg(string resourceRoot,int hmWidth, int hmHeight)

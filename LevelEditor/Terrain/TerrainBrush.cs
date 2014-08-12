@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 using System.ComponentModel;
 using System.Windows.Forms;
-using LevelEditorCore;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
@@ -116,8 +115,7 @@ namespace LevelEditor.Terrain
         }
         
         /// <summary>
-        /// Gets/Sets brush falloff.
-        /// </summary>
+        /// Gets/Sets brush falloff.</summary>
         public float Falloff
         {
             get { return m_falloff; }
@@ -128,11 +126,7 @@ namespace LevelEditor.Terrain
             }
         }
 
-        public virtual BrushOps GetBrushOp()
-        {
-            return BrushOps.None;
-        }
-
+      
         /// <summary>
         /// Event that is raised when brush kernel is changed</summary>
         protected event EventHandler KernelMaskChanged = delegate { };
@@ -207,8 +201,6 @@ namespace LevelEditor.Terrain
         private float m_falloff;
         private int m_radius;
         protected float[] Kernel;
-        
-       
     }
 
     /// <summary>
@@ -223,6 +215,8 @@ namespace LevelEditor.Terrain
         }
 
         private float m_strength;
+        /// <summary>
+        /// Gets and sets brush strength.</summary>
         public float Strength
         {
             get { return m_strength; }
@@ -235,7 +229,7 @@ namespace LevelEditor.Terrain
             return map != null && map.GetSurfaceInstanceId() != 0;            
         }
 
-        public override BrushOps GetBrushOp()
+        public BrushOps GetBrushOp()
         {
             return (Control.ModifierKeys == Keys.Control) ? BrushOps.Erase : BrushOps.Paint;
         }
@@ -371,6 +365,8 @@ namespace LevelEditor.Terrain
 
         public override void Apply(ITerrainSurface target, int x, int y, out TerrainOp op)
         {
+            //todo: optimze this function.
+
             op = null;
             if (!CanApplyTo(target)) return;
             TerrainGob terrain = target.As<TerrainGob>();
@@ -490,8 +486,7 @@ namespace LevelEditor.Terrain
     unsafe public class RaiseLowerBrush : TerrainBrush
     {
         /// <summary>
-        /// create brush with defult size and falloff.
-        /// </summary>
+        /// create brush with defult size and falloff.</summary>
         public RaiseLowerBrush(string name)
             : base(name)
         {
@@ -546,13 +541,15 @@ namespace LevelEditor.Terrain
             terrain.ApplyDirtyRegion(outRect);
         }
         
+        /// <summary>
+        /// Gets and sets value used to scale the brush.</summary>
         public float Height
         {
             get { return m_height; }
             set { m_height = value; }
         }
 
-        public override BrushOps GetBrushOp()
+        public BrushOps GetBrushOp()
         {
             return (Control.ModifierKeys == Keys.Control) ? BrushOps.Sub : BrushOps.Add;            
         }
@@ -666,6 +663,10 @@ namespace LevelEditor.Terrain
             }
         }
 
+        /// <summary>
+        /// Gets and sets number of noise functions
+        /// that will be applied to generate final ouput.
+        /// Each octave have the twice frequency of the previous one</summary>
         public int NumberOfOctaves
         {
             get { return m_noiseGen.NumberOfOctaves; }
@@ -676,6 +677,11 @@ namespace LevelEditor.Terrain
             }
         }
 
+        /// <summary>
+        /// Gets and sets base value used for computing
+        /// amplitude at each octave.
+        /// amplitude = Persistence^i where i [0  NumberOfOctaves-1]
+        /// </summary>
         public float Persistence
         {
             get { return m_noiseGen.Persistence; }
@@ -686,6 +692,9 @@ namespace LevelEditor.Terrain
             }
         }
 
+
+        /// <summary>
+        /// Gets and sets number of features</summary>        
         public int NumFeatures
         {
             get { return (int)m_noiseGen.NumFeatures;}
@@ -696,6 +705,8 @@ namespace LevelEditor.Terrain
             }
         }
 
+        /// <summary>
+        /// Gets and sets value to scale feature.</summary>
         public float FeatureScale
         {
             get { return m_scale; }
@@ -737,10 +748,11 @@ namespace LevelEditor.Terrain
     }
 
     /// <summary>
-    /// Terrain operation used for undo/redo
-    /// </summary>
+    /// Terrain operation used for undo/redo</summary>
     public class TerrainOp : Sce.Atf.Dom.TransactionContext.Operation
     {        
+        /// <summary>
+        /// Construct TerrainOp with the give target and bound</summary>        
         public TerrainOp(ITerrainSurface target, Bound2di bound)
         {
             m_target = target;

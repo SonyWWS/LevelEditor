@@ -17,6 +17,8 @@ using RenderingInterop;
 namespace LevelEditor.Terrain
 {
 
+    /// <summary>
+    /// Base class for terrain map</summary>
     public abstract class TerrainMap : DomNodeAdapter, 
         INameable, 
         IEditableResourceOwner,
@@ -138,7 +140,7 @@ namespace LevelEditor.Terrain
 
         #endregion
 
-        public virtual IEnumerable<TerrainMapTextureInfo> TextureInfos
+        public IEnumerable<TerrainMapTextureInfo> TextureInfos
         {
             get { return m_textureInfos; }
         }
@@ -146,6 +148,8 @@ namespace LevelEditor.Terrain
         private List<TerrainMapTextureInfo> m_textureInfos = new List<TerrainMapTextureInfo>();
     }
 
+    /// <summary>
+    /// Terrain texture layer.</summary>
     public class LayerMap : TerrainMap
     {        
         public static LayerMap Create(Uri maskuri)
@@ -157,9 +161,10 @@ namespace LevelEditor.Terrain
             map.Name = "LayerMap";
             return map;
         }
-                
     }
 
+    /// <summary>
+    /// Terrain decoration layer</summary>
     public class DecorationMap : TerrainMap
     {
         public static DecorationMap Create(Uri maskuri)
