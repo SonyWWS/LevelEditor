@@ -19,28 +19,24 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\lib\Debug\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFGui\Debug.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\tmp\ATFGui\Debug\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;CS_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>
-    </NoWarn>
-    <DocumentationFile>
-    </DocumentationFile>
+    <NoWarn></NoWarn>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\lib\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFGui\Release.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\tmp\ATFGui\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE;CS_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile></DocumentationFile>
+    <NoWarn></NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
