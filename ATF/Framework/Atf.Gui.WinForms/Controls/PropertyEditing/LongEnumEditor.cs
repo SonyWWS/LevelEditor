@@ -141,6 +141,7 @@ namespace Sce.Atf.Controls.PropertyEditing
 
                 SetDropDownWidth();
                 FontChanged += (sender, e) => SetDropDownWidth();
+                RefreshValue();
             }
 
             protected override void OnDrawItem(DrawItemEventArgs e)
@@ -197,7 +198,19 @@ namespace Sce.Atf.Controls.PropertyEditing
 
             protected override void OnLostFocus(EventArgs e)
             {
-                SetProperty();
+                object value = m_context.GetValue();
+                string txtVal = null;
+                var converter = m_context.Descriptor.Converter;
+                if (converter != null && converter.CanConvertTo(typeof(string)))
+                    txtVal = IdToDisplayName((string)converter.ConvertTo(value, typeof(string)));
+                else
+                    txtVal = IdToDisplayName((string)value);
+
+                if (txtVal != Text)
+                {
+                    SetProperty();
+                }
+                
                 base.OnLostFocus(e);
             }
 
@@ -210,18 +223,14 @@ namespace Sce.Atf.Controls.PropertyEditing
             private void SetProperty()
             {
                 if (!m_refreshing)
-                {
-                    if (Text != m_lastEdit)
-                    {
-                        m_lastEdit = Text;
-                        string val = DisplayNameToId(Text);
-                        //Note: m_context.SetValue(val) use converter,
-                        // so there is no need to use Converter here.                        
-                        // however, m_context.GetValue(); doesn't use converter that is why
-                        // we need to use converter in the method RefreshValue().
-                        // This is inconsistent behavior.
-                        m_context.SetValue(val);
-                    }
+                {                    
+                    string val = DisplayNameToId(Text);
+                    //Note: m_context.SetValue(val) use converter,
+                    // so there is no need to use Converter here.                        
+                    // however, m_context.GetValue(); doesn't use converter that is why
+                    // we need to use converter in the method RefreshValue().
+                    // This is inconsistent behavior.
+                    m_context.SetValue(val);
                 }
             }
 
@@ -245,13 +254,8 @@ namespace Sce.Atf.Controls.PropertyEditing
                         if (converter != null && converter.CanConvertTo(typeof(string)))
                             txtVal = IdToDisplayName((string)converter.ConvertTo(value, typeof(string)));
                         else
-                            txtVal = IdToDisplayName((string)value);
-                        
-                        if (txtVal != m_lastEdit)
-                        {
-                            Text = txtVal;
-                            m_lastEdit = txtVal;
-                        }
+                            txtVal = IdToDisplayName((string)value);                                                
+                        Text = txtVal;
                         Enabled = !m_context.IsReadOnly;
                     }
 
@@ -332,8 +336,7 @@ namespace Sce.Atf.Controls.PropertyEditing
             }
 
             #endregion
-            
-            private string m_lastEdit;
+                        
             private string[] m_names;
             private string[] m_displayNames;
             private Image[] m_images;

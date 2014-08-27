@@ -133,8 +133,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
         /// <summary>
         /// Gets the input pin for the given pin index</summary>
-        /// <param name="pinIndex"></param>
-        /// <returns></returns>
+        /// <param name="pinIndex">Pin index</param>
+        /// <returns>Input pin for pin index</returns>
         public virtual ICircuitPin InputPin(int pinIndex)
         {
             return Type.Inputs[pinIndex];
@@ -142,8 +142,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
         /// <summary>
         /// Gets the output pin for the given pin index</summary>
-        /// <param name="pinIndex"></param>
-        /// <returns></returns>
+        /// <param name="pinIndex">Pin index</param>
+        /// <returns>Output pin for pin index</returns>
         public virtual ICircuitPin OutputPin(int pinIndex)
         {
             return Type.Outputs[pinIndex];

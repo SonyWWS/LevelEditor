@@ -41,6 +41,9 @@ namespace Sce.Atf
         [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool GlobalMemoryStatusEx(MEMORYSTATUSEX lpBuffer);
 
+        /// <summary>
+        /// Get number of megabytes of physical memory</summary>
+        /// <returns>Number of megabytes of physical memory</returns>
         public static int GetPhysicalMemoryMB()
         {
             // Available from Windows 2000 and onward; i.e., Environment.OSVersion.Version.Major >= 5 .

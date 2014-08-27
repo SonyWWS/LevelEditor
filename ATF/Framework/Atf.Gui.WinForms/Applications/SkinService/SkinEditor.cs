@@ -791,6 +791,9 @@ namespace Sce.Atf.Applications
 
             public override void SetValue(object component, object value)
             {
+                if (m_font != null && m_font.Equals(value))
+                    return;
+                                
                 if (m_font != null) m_font.Dispose();
                 m_font = (Font)value;
 
@@ -836,7 +839,7 @@ namespace Sce.Atf.Applications
             }
 
             /// <summary>
-            /// Convert from color to string. </summary>            
+            /// Convert from color to string</summary>            
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
                 if (value is Color)

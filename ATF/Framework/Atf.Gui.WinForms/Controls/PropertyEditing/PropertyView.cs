@@ -103,7 +103,16 @@ namespace Sce.Atf.Controls.PropertyEditing
             if (BoldFont != null)
                 BoldFont.Dispose();
 
-            BoldFont = new Font(base.Font, FontStyle.Bold);
+            if (base.Font.FontFamily.IsStyleAvailable(FontStyle.Bold))
+            {
+                BoldFont = new Font(base.Font, FontStyle.Bold);
+            }
+            else
+            {
+                // if FontStyle.Bold is not supported,
+                // create new Font instead of cloning.                
+                BoldFont = new Font(base.Font, base.Font.Style);
+            }
         }
 
         /// <summary>
@@ -268,7 +277,10 @@ namespace Sce.Atf.Controls.PropertyEditing
             UpdatePropertySorting();
 
             ResumeLayout(true);
-         
+
+            // some property control need to be refreshed
+            // when assigning new editing-context.
+            RefreshEditingControls(); 
             Invalidate();
         }
 
@@ -1479,6 +1491,8 @@ namespace Sce.Atf.Controls.PropertyEditing
         /// Size of category expanders, in pixels</summary>
         protected const int ExpanderSize = Sce.Atf.GdiUtil.ExpanderSize;
 
+        /// <summary>
+        /// Attribute used to set default column attributes for property editing</summary>
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
         public class CustomizeAttribute : Sce.Atf.Controls.PropertyEditing.CustomizeAttribute
         {

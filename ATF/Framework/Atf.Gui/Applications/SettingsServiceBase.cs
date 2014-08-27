@@ -56,7 +56,7 @@ namespace Sce.Atf.Applications
 
         /// <summary>
         /// Gets or sets a value indicating if the user can edit settings</summary>
-        /// <remarks>default is true</remarks>
+        /// <remarks>Default is true</remarks>
         public bool AllowUserEdits
         {
             get { return m_allowUserEdits; }
@@ -65,7 +65,7 @@ namespace Sce.Atf.Applications
 
         /// <summary>
         /// Gets or sets a value indicating if the user can load and save settings files</summary>
-        /// <remarks>default is true</remarks>
+        /// <remarks>Default is true</remarks>
         public bool AllowUserLoadSave
         {
             get { return m_allowUserLoadSave; }
@@ -271,6 +271,8 @@ namespace Sce.Atf.Applications
 
         #endregion
 
+        /// <summary>
+        /// Initialize MEF component by registering commands with Command service and load settings</summary>
         protected virtual void Initialize()
         {
             // register our menu commands
@@ -404,7 +406,10 @@ namespace Sce.Atf.Applications
             }
         }
 
-        // for use by SettingsLoadSaveDialog only
+        /// <summary>
+        /// Serialize settings values and write to given Stream</summary>
+        /// <remarks>For use by SettingsLoadSaveDialog only</remarks>
+        /// <param name="stream">Stream settings values written to</param>
         protected void Serialize(Stream stream)
         {
             Saving.Raise(this, EventArgs.Empty);
@@ -454,9 +459,9 @@ namespace Sce.Atf.Applications
 
         /// <summary>
         /// Pull out persisted settings and set property descriptor values</summary>
-        /// <remarks>marked 'internal' for use by SettingsLoadSaveDialog only</remarks>
-        /// <param name="stream">Persisted settings</param>
-        /// <returns>true if successful otherwise false</returns>
+        /// <remarks>Marked 'internal' for use by SettingsLoadSaveDialog only</remarks>
+        /// <param name="stream">Persisted settings Stream</param>
+        /// <returns>True iff successful</returns>
         protected bool Deserialize(Stream stream)
         {
             // create XML DOM from stream
@@ -529,10 +534,16 @@ namespace Sce.Atf.Applications
             Reloaded.Raise(this, EventArgs.Empty);
         }
 
-        // for use by SettingsDialog only
+        /// <summary>
+        /// Get user settings tree</summary>
+        /// <remarks>For use by SettingsDialog only</remarks>
         protected virtual ITreeView UserSettings { get { return null; } }
 
-        // for use by SettingsDialog only
+        /// <summary>
+        /// Return list of setting PropertyDescriptors</summary>
+        /// <remarks>For use by SettingsDialog only</remarks>
+        /// <param name="tree">Tree of user editable settings</param>
+        /// <returns>List of setting PropertyDescriptors</returns>
         protected List<PropertyDescriptor> GetProperties(Tree<object> tree)
         {
             UserSettingsInfo info = tree.Value as UserSettingsInfo;
@@ -542,7 +553,11 @@ namespace Sce.Atf.Applications
             return null;
         }
 
-        // for use by SettingsDialog only
+        /// <summary>
+        /// Return path of values associated with settings path</summary>
+        /// <remarks>For use by SettingsDialog only</remarks>
+        /// <param name="pathName">Path to settings</param>
+        /// <returns>Path of values associated with settings path</returns>
         protected Path<object> GetSettingsPath(string pathName)
         {
             string[] pathSegments = pathName.Split(s_delimiters, 16);
@@ -776,13 +791,22 @@ namespace Sce.Atf.Applications
             return safeName;
         }
 
+        /// <summary>
+        /// Class for handling information in a group of settings</summary>
         protected class SettingsInfo
         {
+            /// <summary>
+            /// Constructor with name</summary>
+            /// <param name="name">Name associated with this group of settings</param>
             public SettingsInfo(string name)
             {
                 Name = name;
             }
 
+            /// <summary>
+            /// Add a setting to group of settings as a name and value, replacing the previous value if present</summary>
+            /// <param name="name">Setting name</param>
+            /// <param name="valueString">Setting value</param>
             public void Add(string name, string valueString)
             {
                 Setting setting;
@@ -796,6 +820,9 @@ namespace Sce.Atf.Applications
                 }
             }
 
+            /// <summary>
+            /// Add a setting to group of settings as a PropertyDescriptor, replacing the previous value if present</summary>
+            /// <param name="descriptor">PropertyDescriptor describing setting</param>
             public void Add(PropertyDescriptor descriptor)
             {
                 Setting setting;
@@ -809,22 +836,39 @@ namespace Sce.Atf.Applications
                 }
             }
 
+            /// <summary>
+            /// Name associated with this group of settings</summary>
             public readonly string Name;
+            /// <summary>
+            /// Dictionary for names and values of settings in group</summary>
             public readonly SortedDictionary<string, Setting> Settings = new SortedDictionary<string, Setting>();
 
+            /// <summary>
+            /// Class for handling individual setting information</summary>
             public class Setting
             {
+                /// <summary>
+                /// Constructor with PropertyDescriptor</summary>
+                /// <param name="descriptor">PropertyDescriptor describing setting</param>
                 public Setting(PropertyDescriptor descriptor)
                 {
                     PropertyDescriptor = descriptor;
                 }
 
+                /// <summary>
+                /// Constructor with name and value of setting</summary>
+                /// <param name="name">Setting name</param>
+                /// <param name="valueString">Setting value</param>
                 public Setting(string name, string valueString)
                 {
                     Name = name;
                     ValueString = valueString;
                 }
 
+                /// <summary>
+                /// Set a setting's value with name and value of setting</summary>
+                /// <param name="name">Setting name</param>
+                /// <param name="valueString">Setting value</param>
                 public void Set(string name, string valueString)
                 {
                     Name = name;
@@ -835,6 +879,9 @@ namespace Sce.Atf.Applications
                     }
                 }
 
+                /// <summary>
+                /// Set a setting's value with PropertyDescriptor</summary>
+                /// <param name="descriptor">PropertyDescriptor describing setting</param>
                 public void Set(PropertyDescriptor descriptor)
                 {
                     PropertyDescriptor = descriptor;
@@ -853,28 +900,44 @@ namespace Sce.Atf.Applications
                     PropertyDescriptor.SetValue(null, value);
                 }
 
+                /// <summary>
+                /// Setting name</summary>
                 public string Name;
+                /// <summary>
+                /// Setting value</summary>
                 public string ValueString;
+                /// <summary>
+                /// Setting PropertyDescriptor</summary>
                 public PropertyDescriptor PropertyDescriptor;
             }
 
             /// <summary>
-            /// Sets whether property descriptors are allowed to make changes</summary>
+            /// Set whether property descriptors are allowed to make changes</summary>
             /// <remarks>Used when persisted settings are being loaded from disk
-            /// to prevent property descriptors from being set multiple times like
+            /// to prevent property descriptors from being set multiple times as
             /// in the case where DefaultSettings.xml and AppSettings.xml both exist</remarks>
             public static bool CanMakeChanges { private get; set; }
         }
 
+        /// <summary>
+        /// Class for group of user settings</summary>
         protected class UserSettingsInfo
         {
+            /// <summary>
+            /// Constructor with name and PropertyDescriptors</summary>
+            /// <param name="name">Name of group of user settings</param>
+            /// <param name="settings">PropertyDescriptors with settings</param>
             public UserSettingsInfo(string name, PropertyDescriptor[] settings)
             {
                 Name = name;
                 Settings = new List<PropertyDescriptor>(settings);
             }
 
+            /// <summary>
+            /// Name of group of user settings</summary>
             public readonly string Name;
+            /// <summary>
+            /// PropertyDescriptors with settings</summary>
             public readonly List<PropertyDescriptor> Settings;
         }
 

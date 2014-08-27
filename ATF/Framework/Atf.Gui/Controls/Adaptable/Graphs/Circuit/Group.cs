@@ -206,8 +206,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
         /// <summary>
         /// Gets the input pin for the given pin index</summary>
-        /// <param name="pinIndex"></param>
-        /// <returns></returns>
+        /// <param name="pinIndex">Pin index</param>
+        /// <returns>Input pin for pin index</returns>
         public override ICircuitPin InputPin(int pinIndex)
         {
             return m_inputs.FirstOrDefault(x => x.Index == pinIndex);
@@ -215,8 +215,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
         /// <summary>
         /// Gets the output pin for the given pin index</summary>
-        /// <param name="pinIndex"></param>
-        /// <returns></returns>
+        /// <param name="pinIndex">Pin index</param>
+        /// <returns>Output pin for pin index</returns>
         public override ICircuitPin OutputPin(int pinIndex)
         {
             return m_outputs.FirstOrDefault(x => x.Index == pinIndex);

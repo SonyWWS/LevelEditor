@@ -17,6 +17,9 @@ namespace Sce.Atf.Collections
         where T : class
         where U : class
     {
+        /// <summary>
+        /// Constructor with collection</summary>
+        /// <param name="collection">Collection to observe</param>
         public AdaptableObservableCollection(IObservableCollection<T> collection)
             : base(collection)
         {

@@ -89,8 +89,7 @@ namespace Sce.Atf
         /// <summary>
         /// Removes the first occurrence of a specific object from the collection</summary>
         /// <param name="item">The object to remove from the collection</param>
-        /// <returns>
-        /// True if item was successfully removed from the collection</returns>
+        /// <returns>True iff item was successfully removed from the collection</returns>
         public bool Remove(U item)
         {
             T t = Convert(item);
