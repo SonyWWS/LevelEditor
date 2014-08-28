@@ -12,14 +12,14 @@ namespace Sce.Atf.Controls.PropertyEditing
     /// <summary>
     /// Property editor for choosing from a list of predefined values, like from an enumerated
     /// type. The values can be long and the drop-down list will resize itself to accommodate the
-    /// longest display names. If TestEditEnabled is true, the user can enter an arbitrary string.</summary>
+    /// longest display names. If TextEditEnabled is true, the user can enter an arbitrary string.</summary>
     /// <remarks>
     /// It is recommended that you use Sce.Atf.Controls.PropertyEditing.IntEnumTypeConverter
     /// as the TypeConverter for this editor's property, to support enum stored as int.
     /// A LongEnumEditor is created for each PropertyDescriptor, for each
     /// selection change. PropertyDescriptors are shared between property editors,
     /// such as GridView and PropertyGridView.
-    /// TestEditEnabled will be ignored if TypeConverter is used</remarks>
+    /// TextEditEnabled will be ignored if TypeConverter is used</remarks>
     public class LongEnumEditor : IPropertyEditor, IAnnotatedParams
     {
         /// <summary>
@@ -44,7 +44,7 @@ namespace Sce.Atf.Controls.PropertyEditing
         /// Gets or sets whether the user can set the value of the property to an
         /// arbitrary text string, rather than only choosing from the list.
         /// The default is false.
-        /// This property will be ignred if TypeCoverter is used</summary>
+        /// This property will be ignored if TypeCoverter is used.</summary>
         public bool TextEditEnabled { get; set; }
 
         private int m_maxDropDownItems = 6;

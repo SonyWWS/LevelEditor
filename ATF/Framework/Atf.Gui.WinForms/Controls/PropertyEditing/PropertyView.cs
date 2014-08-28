@@ -414,6 +414,8 @@ namespace Sce.Atf.Controls.PropertyEditing
                         PropertyUtils.ResetProperty(SelectedObjects, p.Descriptor);
                 }
 
+                if (!EditingContext.Is<IObservableContext>())
+                    RefreshEditingControls();
                 Invalidate();
             }
         }

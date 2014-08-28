@@ -1,7 +1,6 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,7 +8,6 @@ using System.Windows.Forms;
 using System.Xml;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
-using Sce.Atf.Dom;
 using PropertyDescriptor = System.ComponentModel.PropertyDescriptor;
 
 namespace Sce.Atf.Controls.PropertyEditing
@@ -61,23 +59,22 @@ namespace Sce.Atf.Controls.PropertyEditing
             PropertyExpanderPen = new Pen(SystemColors.ControlDarkDark);
             PropertyLinePen = new Pen(SystemColors.Control);
 
-           
-            
             EditingContext = null;
             Font = new Font("Segoe UI", 9.0f);
             ShowResetButton = true;
             ShowCopyButton = true;
-            Controls.AddRange(new Control[]{                
+            Controls.AddRange(new Control[]{
                 m_editingControl,
-                m_scrollBar,                
+                m_scrollBar,
             });
-            ResumeLayout();            
+            ResumeLayout();
             m_resetButton.Click += (sender, e) =>
-                {                    
+                {
                     SelectedProperty.Context.ResetValue();
-                    ITransactionContext transaction = EditingContext.As<ITransactionContext>();
-                    if (transaction == null)
-                        RefreshEditingControls();                    
+                    // The base class, PropertyView, will call RefreshEditingControls() if an IObservableContext
+                    //  is available. If not, we should call it.
+                    if (!EditingContext.Is<IObservableContext>())
+                        RefreshEditingControls();
                 };
         }
 
