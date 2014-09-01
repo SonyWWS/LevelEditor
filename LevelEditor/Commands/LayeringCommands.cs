@@ -52,8 +52,8 @@ namespace LevelEditor.Commands
                     CommandTag.AddLayerFolder,
                     null,
                     null,
-                    Localizer.Localize("Add Layer"),
-                    Localizer.Localize("Creates a new layer folder")),
+                    "Add Layer".Localize(),
+                    "Creates a new layer folder".Localize()),
                 this);
         }
 
@@ -75,7 +75,7 @@ namespace LevelEditor.Commands
             if (CommandTag.AddLayerFolder.Equals(commandTag))
             {
                 ILayer newLayer = new DomNode(Schema.layerType.Type).As<ILayer>();
-                newLayer.Name = Localizer.Localize("New Layer");
+                newLayer.Name = "New Layer".Localize();
 
                 IList<ILayer> layerList = null;
                 object target = m_targetRef.Target;
@@ -102,7 +102,7 @@ namespace LevelEditor.Commands
                         {
                             layerList.Add(newLayer);
                         },
-                        Localizer.Localize("Add Layer"));
+                        "Add Layer".Localize());
                 }
             }
         }

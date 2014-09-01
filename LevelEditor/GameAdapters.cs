@@ -96,21 +96,21 @@ namespace LevelEditor
                       new PropertyDescriptor[]
                     {
                         new ChildAttributePropertyDescriptor(
-                            Localizer.Localize("Height"),
+                            "Height".Localize(),
                             Schema.gridType.heightAttribute,
                             Schema.gameType.gridChild,
                             category,
                             "Grid's height (along the world's up vector)".Localize(),
                             false),
                         new ChildAttributePropertyDescriptor(
-                            Localizer.Localize("Size"),
+                            "Size".Localize(),
                             Schema.gridType.sizeAttribute,
                             Schema.gameType.gridChild,
                             category,
                             "the size of grid step".Localize(),
                             false),
                         new ChildAttributePropertyDescriptor(
-                            Localizer.Localize("Subdivisions"),
+                            "Subdivisions".Localize(),
                             Schema.gridType.subdivisionsAttribute,
                             Schema.gameType.gridChild,
                             category,
@@ -118,7 +118,7 @@ namespace LevelEditor
                             false),
                         
                         new ChildAttributePropertyDescriptor(
-                            Localizer.Localize("snap"),
+                            "snap".Localize(),
                             Schema.gridType.snapAttribute,
                             Schema.gameType.gridChild,
                             category,
@@ -126,7 +126,7 @@ namespace LevelEditor
                             false),
 
                         new ChildAttributePropertyDescriptor(
-                            Localizer.Localize("Visible"),
+                            "Visible".Localize(),
                             Schema.gridType.visibleAttribute,
                             Schema.gameType.gridChild,
                             category,

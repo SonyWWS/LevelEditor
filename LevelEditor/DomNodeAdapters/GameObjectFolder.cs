@@ -144,7 +144,7 @@ namespace LevelEditor.DomNodeAdapters
         public static IGameObjectFolder Create()
         {
             GameObjectFolder gobFolder = new DomNode(Schema.gameObjectFolderType.Type).Cast<GameObjectFolder>();
-            gobFolder.Name = "GameObjectFolder".Localize();
+            gobFolder.Name = "GameObjectFolder".Localize("this is the name of a folder in the project lister");
             return gobFolder;
         }
     }

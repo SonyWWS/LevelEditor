@@ -71,7 +71,7 @@ namespace LevelEditor.DomNodeAdapters
         public static Locator Create()
         {
             Locator locator = new DomNode(Schema.locatorType.Type).As<Locator>();
-            locator.Name = Localizer.Localize("Locator");
+            locator.Name = "Locator".Localize();
             return locator;
         }
     }

@@ -162,7 +162,7 @@ namespace LevelEditor
             {
                 // create the game object folder
                 rootFolder = (GameObjectFolder)GameObjectFolder.Create();
-                rootFolder.Name = "GameObjects".Localize();
+                rootFolder.Name = "GameObjects".Localize("this is the name of a folder in the project lister");
                 rootNode.SetChild(Schema.gameType.gameObjectFolderChild, rootFolder.DomNode);
             }
             

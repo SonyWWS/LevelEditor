@@ -47,8 +47,8 @@
   <StringItem id="Prototypes" context="" translation="プロトタイプ" />
   <StringItem id="Creates new instances from prototypes" context="" translation="プロトタイプから新しいインスタンスを作成します。" />
   <StringItem id="Copy items from the document and paste them here to create prototypes that can be dragged and dropped onto a canvas." context="" translation="ドキュメントからアイテムをコピーしてここに貼り付け、プロトタイプを作成します。プロトタイプはキャンバスにドラッグアンドドロップできます。" />
-  <StringItem id="Resources" context="" translation="参考資料" />
-  <StringItem id="Resources" context="" translation="参考資料" />
+  <StringItem id="Resources" context="" translation="リソース" />
+  <StringItem id="Resources" context="" translation="リソース" />
   <StringItem id="Lists available resources" context="" translation="使用可能なりソースをリストします。" />
   <StringItem id="Details View" context="" translation="詳細表示" />
   <StringItem id="Switch to details view" context="" translation="詳細表示に切り替えます。" />
@@ -269,7 +269,7 @@
   <StringItem id="Snap" context="" translation="スナップ" />
   <StringItem id="Snap" context="" translation="スナップ" />
   <StringItem id="Move" context="" translation="移動" />
-  <StringItem id="Scale" context="" translation="拡大/縮小" />
+  <StringItem id="Scale" context="" translation="スケール" />
   <StringItem id="Resize Curve Limit" context="could be phrased as 'resize the boundary of the curve'" translation="曲線境界のサイズ変更" />
   <StringItem id="Undo" context="" translation="元に戻す" />
   <StringItem id="Redo" context="" translation="やり直し" />

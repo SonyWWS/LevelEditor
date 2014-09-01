@@ -181,7 +181,7 @@ namespace LevelEditor
             ToolStripContainer toolStripContainer = new ToolStripContainer();
             toolStripContainer.Dock = DockStyle.Fill;
             MainForm mainForm = new MainForm(toolStripContainer);
-            mainForm.Text = Localizer.Localize("LevelEditor");
+            mainForm.Text = "LevelEditor".Localize("the name of this application, on the title bar");
              
             CompositionContainer container = new CompositionContainer(catalog);
             CompositionBatch batch = new CompositionBatch();
@@ -197,7 +197,20 @@ namespace LevelEditor
             AutoDocumentService autoDocument = container.GetExportedValue<AutoDocumentService>();
             autoDocument.AutoLoadDocuments = false;
             autoDocument.AutoNewDocument = true;
-            mainForm.Shown += delegate { SplashForm.CloseForm(); };          
+            mainForm.Shown += delegate { SplashForm.CloseForm(); };
+
+            // The settings file is incompatible between languages that LevelEditor and ATF are localized to.
+            // For example, the LayoutService saves different Control names depending on the language and so
+            //  the Windows layout saved in one language can't be loaded correctly in another language.
+            string language = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName; //"en" or "ja"
+            if (language == "ja")
+            {
+                var settingsService = container.GetExportedValue<SettingsService>();
+                string nonEnglishPath = settingsService.SettingsPath;
+                nonEnglishPath = Path.Combine(Path.GetDirectoryName(nonEnglishPath), "AppSettings_" + language + ".xml");
+                settingsService.SettingsPath = nonEnglishPath;
+            }
+
             Application.Run(mainForm); // MAIN LOOP
 
             container.Dispose();
