@@ -18,6 +18,8 @@ The following LevelEditor features help you construct game levels efficiently an
 * Show or hide groups of game objects to unclutter the view as you work
 * Construct Linears (lines and curves)
 
+![LevelEditor Design View](/LevelEditor.wiki/images/LE_Lights.png?raw=true "LevelEditor Design View")
+
 Prerequisites
 -------------
 * Operating System: Microsoft Windows 7, 32-bit or 64-bit (SP1 or later)
