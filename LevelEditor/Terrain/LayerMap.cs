@@ -17,7 +17,12 @@ using RenderingInterop;
 namespace LevelEditor.Terrain
 {
 
-    public abstract class TerrainMap : DomNodeAdapter, INameable, IEditableResourceOwner
+    /// <summary>
+    /// Base class for terrain map</summary>
+    public abstract class TerrainMap : DomNodeAdapter, 
+        INameable, 
+        IEditableResourceOwner,
+        ITerrainSurface
     {
         protected override void OnNodeSet()
         {
@@ -31,7 +36,8 @@ namespace LevelEditor.Terrain
 
         }
 
-        public ulong GetMaskInstanceId()
+        #region ITerrainSurface Members
+        public ulong GetSurfaceInstanceId()
         {
             unsafe
             {
@@ -42,9 +48,9 @@ namespace LevelEditor.Terrain
                 return (*(ulong*)retVal.ToPointer());               
             }
         }
-        public ImageData GetMaskMap()
+        public ImageData GetSurface()
         {
-            ulong instId = GetMaskInstanceId();
+            ulong instId = GetSurfaceInstanceId();
             return instId != 0 ? new ImageData(instId) : null;            
         }
 
@@ -58,8 +64,24 @@ namespace LevelEditor.Terrain
                 nobj.InvokeFunction("ApplyDirtyRegion", argPtr, out retVal);
                 Dirty = true;
             }
-
         }
+
+        public Point WorldToSurfaceSpace(Vec3F posW)
+        {
+            Point result = new Point();
+            TerrainGob terrain = this.GetParentAs<TerrainGob>();
+            ImageData hmImg = terrain.GetSurface();
+            ImageData mpImg = GetSurface();
+            Point posH = terrain.WorldToSurfaceSpace(posW);
+
+            float dx = (float)mpImg.Width / (float)hmImg.Width;
+            float dy = (float)mpImg.Height / (float)hmImg.Height;
+
+            result.X = (int)Math.Round(posH.X * dx);
+            result.Y = (int)Math.Round(posH.Y * dy);
+            return result;
+        }
+        #endregion
 
         public float MinHeight
         {
@@ -85,53 +107,8 @@ namespace LevelEditor.Terrain
         {
             get { return this.GetParentAs<TerrainGob>(); }
         }
-        public Point WorldToMapSpace(Vec3F posW)
-        {
-            Point result = new Point();
-            TerrainGob terrain = this.GetParentAs<TerrainGob>();
-            ImageData hmImg = terrain.GetHeightMap();
-            ImageData mpImg = GetMaskMap();
-            Point posH = terrain.WorldToHmapSpace(posW);
-
-            float dx = (float)mpImg.Width / (float)hmImg.Width;
-            float dy = (float)mpImg.Height / (float)hmImg.Height;
-
-            result.X = (int)Math.Round(posH.X * dx);
-            result.Y = (int)Math.Round(posH.Y * dy);
-            return result;
-        }
+        
              
-        //public void ApplyBrush(TerrainBrush brush, Vec3F posW, BrushOps brushOps)
-        //{
-        //    
-        //    unsafe
-        //    {
-        //        if (!brush.CanApplyTo(this)) return;
-
-        //        TerrainGob terrain = this.GetParentAs<TerrainGob>();
-        //        ImageData hmImg = terrain.GetHeightMap();
-        //        ImageData mpImg = GetMaskMap();
-        //        Point posH = terrain.WorldToHmapSpace(posW);
-
-
-        //        float dx = (float)mpImg.Width / (float)hmImg.Width;
-        //        float dy = (float)mpImg.Height / (float)hmImg.Height;
-
-        //        int tx = (int)Math.Round(posH.X * dx);
-        //        int ty = (int)Math.Round(posH.Y * dy);
-
-        //        if (tx < 0 || tx > (mpImg.Width - 1) || ty < 0 || ty > (mpImg.Height - 1))
-        //            return;
-
-        //        Point pt = WorldToMapSpace(posW);
-        //        Bound2di box;
-        //        brush.Apply(this, pt.X, pt.Y, brushOps, out box);
-        //        if (!box.isValid) return;
-
-        //        ApplyDirtyRegion(box);                
-        //    }
-        //}
-
         #region INameable Members
         public string Name
         {
@@ -153,7 +130,7 @@ namespace LevelEditor.Terrain
             if (Dirty)
             {
                 Uri maskuri = GetAttribute<Uri>(Schema.terrainMapType.maskAttribute);
-                using (ImageData img = GetMaskMap())
+                using (ImageData img = GetSurface())
                 {
                     img.Save(maskuri);
                 }                
@@ -163,7 +140,7 @@ namespace LevelEditor.Terrain
 
         #endregion
 
-        public virtual IEnumerable<TerrainMapTextureInfo> TextureInfos
+        public IEnumerable<TerrainMapTextureInfo> TextureInfos
         {
             get { return m_textureInfos; }
         }
@@ -171,13 +148,10 @@ namespace LevelEditor.Terrain
         private List<TerrainMapTextureInfo> m_textureInfos = new List<TerrainMapTextureInfo>();
     }
 
+    /// <summary>
+    /// Terrain texture layer.</summary>
     public class LayerMap : TerrainMap
-    {
-        protected override void OnNodeSet()
-        {            
-            base.OnNodeSet();           
-        }
-
+    {        
         public static LayerMap Create(Uri maskuri)
         {
             DomNode node = new DomNode(Schema.layerMapType.Type);
@@ -187,9 +161,10 @@ namespace LevelEditor.Terrain
             map.Name = "LayerMap";
             return map;
         }
-                
     }
 
+    /// <summary>
+    /// Terrain decoration layer</summary>
     public class DecorationMap : TerrainMap
     {
         public static DecorationMap Create(Uri maskuri)

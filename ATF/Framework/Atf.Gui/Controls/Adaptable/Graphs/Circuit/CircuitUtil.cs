@@ -24,8 +24,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <param name="outgoingConnections">Collection of all outgoing connections, filled by method</param>
         public static void GetSubGraph(
             ICircuitContainer graphContainer,
-            IEnumerable<object> objects,
-            HashSet<Element> modules,
+            IEnumerable<object> objects, // [in] selected objects, edges possible
+            HashSet<Element> modules, // [out] elements in the selected objects
             ICollection<Wire> internalConnections,
             ICollection<Wire> incomingConnections,
             ICollection<Wire> outgoingConnections)
@@ -108,7 +108,10 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             return node.Is<IReference<Group>>();
         }
 
-  
+        /// <summary>
+        /// Check if a template's target is missing</summary>
+        /// <param name="node">Template node</param>
+        /// <returns>True iff target is missing</returns>
         static public bool IsTemplateTargetMissing(object node)
         {
             var reference = node.As<IReference<DomNode>>();
@@ -196,6 +199,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                                 grpPin.InternalElement.Type.Outputs[grpPin.InternalPinIndex] == circuitPin)
                             {
                                 matchedPin = grpPin;
+                                break;
                             }
                         }
                     }

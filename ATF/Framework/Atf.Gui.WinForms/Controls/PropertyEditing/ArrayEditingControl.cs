@@ -64,22 +64,20 @@ namespace Sce.Atf.Controls.PropertyEditing
         /// <returns>True iff the key was processed by the control</returns>
         protected override bool ProcessDialogKey(Keys keyData)
         {
-            Control focusControl = null;
-            for (int i = 1; i < Controls.Count; i++)
+            // Note, this code is duplicated in EmbeddedCollectionEditor.
+            int index = 0; //0 means "no child item has focus".
+            for (int i = 1; i < Controls.Count; i++) // Controls[0] is the toolstrip
             {
                 if (Controls[i].ContainsFocus)
                 {
-                    focusControl = Controls[i];
+                    index = i;
                     break;
                 }
-
             }
-            int index = focusControl == null ? 0 : Controls.IndexOf(focusControl);
             if (keyData == Keys.Tab || keyData == Keys.Enter)
             {
                 // if on last item then don't process tab
-                Control last = Controls[Controls.Count - 1];
-                if (focusControl != last)
+                if (index < Controls.Count - 1)
                 {
                     Controls[index + 1].Select();
                     return true;                   
@@ -87,8 +85,7 @@ namespace Sce.Atf.Controls.PropertyEditing
             }            
             else if (keyData == (Keys.Tab | Keys.Shift))
             {
-                Control first = Controls[1];
-                if (focusControl != first && index != 0)
+                if (index > 1)
                 {
                     Controls[index - 1].Select();                    
                     return true;

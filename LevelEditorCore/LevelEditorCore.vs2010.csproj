@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\lib\Debug\</OutputPath>
-    <IntermediateOutputPath>..\tmp\LevelEditorCore\Debug.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\tmp\LevelEditorCore\Debug\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\lib\Release\</OutputPath>
-    <IntermediateOutputPath>..\tmp\LevelEditorCore\Release.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\tmp\LevelEditorCore\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -285,8 +285,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent></PreBuildEvent>
     <PostBuildEvent>rd /S /Q "$(ProjectDir)obj"</PostBuildEvent>
   </PropertyGroup>
 </Project>

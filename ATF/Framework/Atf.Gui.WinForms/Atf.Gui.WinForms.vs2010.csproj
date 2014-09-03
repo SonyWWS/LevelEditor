@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\lib\Debug\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFGuiWinForm\Debug.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\tmp\ATFGuiWinForm\Debug\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;CS_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\lib\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFGuiWinForm\Release.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\..\tmp\ATFGuiWinForm\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE;CS_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

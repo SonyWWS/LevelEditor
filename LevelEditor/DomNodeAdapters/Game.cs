@@ -103,7 +103,7 @@ namespace LevelEditor.DomNodeAdapters
                 if (rootFolder == null)
                 {
                     rootFolder = (GameObjectFolder)GameObjectFolder.Create();
-                    rootFolder.Name = "GameObjects".Localize();
+                    rootFolder.Name = "GameObjects".Localize("this is the name of a folder in the project lister");
                     SetChild(Schema.gameType.gameObjectFolderChild, rootFolder);
                 }
                 return rootFolder;              
@@ -114,7 +114,7 @@ namespace LevelEditor.DomNodeAdapters
         public IGameObjectGroup CreateGameObjectGroup()
         {
             GameObjectGroup gobGroup = new DomNode(Schema.gameObjectGroupType.Type).As<GameObjectGroup>();
-            gobGroup.Name = "GameObjectGroup".Localize();
+            gobGroup.Name = "GameObjectGroup".Localize("this is the name of a folder in the project lister");
             return gobGroup;
         }
        

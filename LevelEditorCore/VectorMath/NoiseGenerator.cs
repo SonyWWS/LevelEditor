@@ -30,6 +30,9 @@ namespace LevelEditorCore.VectorMath
         }
 
         private float m_numFeatures = 4;
+
+        /// <summary>
+        /// Gets and sets number of features</summary>        
         public float NumFeatures
         {
             get { return m_numFeatures; }
@@ -40,6 +43,12 @@ namespace LevelEditorCore.VectorMath
             }
         }
         private float m_persistence = 0.5f;
+
+        /// <summary>
+        /// Gets and sets base value used for computing
+        /// amplitude at each octave.
+        /// amplitude = Persistence^i where i [0  NumberOfOctaves-1]
+        /// </summary>
         public float Persistence
         {
             get { return m_persistence; }
@@ -51,6 +60,11 @@ namespace LevelEditorCore.VectorMath
         }
 
         private int m_numberOfOctaves = 4;
+
+        /// <summary>
+        /// Gets and sets number of noise functions
+        /// that will be applied to generate final ouput.
+        /// Each octave have the twice frequency of the previous one</summary>
         public int NumberOfOctaves
         {
             get { return m_numberOfOctaves; }

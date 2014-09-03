@@ -20,7 +20,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <IntermediateOutputPath>..\tmp\LevelEditor\Debug.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\tmp\LevelEditor\Debug\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -34,7 +34,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\bin\Release\</OutputPath>
-    <IntermediateOutputPath>..\tmp\LevelEditor\Release.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\tmp\LevelEditor\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
@@ -137,6 +137,7 @@
     <Compile Include="Terrain\CreateTerrainMapDlg.Designer.cs">
       <DependentUpon>CreateTerrainMapDlg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Terrain\ITerrainSurface.cs" />
     <Compile Include="Terrain\LayerMap.cs" />
     <Compile Include="Terrain\TerrainBrush.cs" />
     <Compile Include="Terrain\TerrainEditor.cs" />
@@ -157,8 +158,7 @@
       <DependentUpon>CreateTerrainDlg.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="schemas\gap.xsd">
-      <SubType>
-      </SubType>
+      <SubType></SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Terrain\CreateTerrainMapDlg.resx">
       <DependentUpon>CreateTerrainMapDlg.cs</DependentUpon>
@@ -168,8 +168,7 @@
     </EmbeddedResource>
     <None Include="schemas\GenSchemaDef.bat" />
     <EmbeddedResource Include="schemas\level_editor.xsd">
-      <SubType>
-      </SubType>
+      <SubType></SubType>
     </EmbeddedResource>
     <Compile Include="SchemaLoader.cs" />
     <Compile Include="schemas\Schema.cs" />
@@ -202,6 +201,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SplashImg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ja\Localization.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

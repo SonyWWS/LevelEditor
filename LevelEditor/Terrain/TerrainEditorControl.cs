@@ -34,8 +34,6 @@ namespace LevelEditor.Terrain
             m_decoList.DrawItem2 += DrawItem;
             m_layerList.DrawItem2 += DrawItem;
             
-            m_layerList.DrawItem += delegate { };
-
             m_addBtn.Image = ResourceUtil.GetImage16(ATFResources.AddImage);
             m_deleteBtn.Image = ResourceUtil.GetImage16(ATFResources.RemoveImage);
             m_moveUpBtn.Image = ResourceUtil.GetImage16(ATFResources.ArrowUpImage);
@@ -61,11 +59,28 @@ namespace LevelEditor.Terrain
             strFormat.Dispose();
             g.Dispose();
 
-            m_flattenRdo.Tag = new FlattenBrush();            
-            m_brushRiseLowRdo.Tag = new RaiseLowerBrush();
-            m_brushSmoothRdo.Tag = new SmoothenBrush();
-            m_noiseRdo.Tag = new NoiseBrush();
-            m_paintEraseRdo.Tag = new PaintEraseBrush();         
+
+            m_flattenRdo.Text = "Flatten".Localize();
+            m_flattenRdo.Tag = new FlattenBrush(m_flattenRdo.Text);
+
+            m_brushRiseLowRdo.Text = "Raise/Lower".Localize();
+            m_brushRiseLowRdo.Tag = new RaiseLowerBrush(m_brushRiseLowRdo.Text);
+
+            m_brushSmoothRdo.Text = "Smooth".Localize();
+            m_brushSmoothRdo.Tag = new SmoothenBrush(m_brushSmoothRdo.Text);
+
+            m_noiseRdo.Text = "Noise".Localize();
+            m_noiseRdo.Tag = new NoiseBrush(m_noiseRdo.Text);
+            
+            m_paintEraseRdo.Text = "Paint/Erase".Localize();
+            m_paintEraseRdo.Tag = new PaintEraseBrush(m_paintEraseRdo.Text);
+
+
+            SizeChanged += (sender, e) =>
+                {
+                    m_propertyGrid.Width = Width - m_propertyGrid.Left;
+                    m_brushProps.Width = Width - m_brushProps.Left;                    
+                };            
         }
 
         public TerrainGob SelectedTerrain
@@ -233,7 +248,7 @@ namespace LevelEditor.Terrain
             TerrainGob gob = (TerrainGob)m_cmboxTerrain.SelectedItem;
             ListBox listbox = GetActiveList();
             if (gob == null) return;
-            ImageData hmImg = gob.GetHeightMap();
+            ImageData hmImg = gob.GetSurface();
 
             using (var dlg = new CreateTerrainMapDlg(Globals.ResourceRoot.LocalPath, hmImg.Width, hmImg.Height))
             {
@@ -401,6 +416,8 @@ namespace LevelEditor.Terrain
             
         }
     }
+
+    
     public class DoubleBufferedListBox : ListBox
     {
         [Browsable(true)]

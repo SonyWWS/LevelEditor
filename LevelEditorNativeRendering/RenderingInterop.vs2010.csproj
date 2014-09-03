@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\lib\Debug\</OutputPath>
-    <IntermediateOutputPath>..\tmp\RenderingInterop\Debug.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\tmp\RenderingInterop\Debug\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\lib\Release\</OutputPath>
-    <IntermediateOutputPath>..\tmp\RenderingInterop\Release.vs2010\</IntermediateOutputPath>
+    <IntermediateOutputPath>..\tmp\RenderingInterop\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

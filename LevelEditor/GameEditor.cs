@@ -364,19 +364,21 @@ namespace LevelEditor
       
         private void RegisterSettings()
         {
-            BoundPropertyDescriptor resourceRoot =
+            var resourceRoot =
                 new BoundPropertyDescriptor(this, () => ResourceRoot,
-                    Localizer.Localize("ResourceRoot"), null,
-                    Localizer.Localize("Root path for all resources"),
+                    "ResourceRoot".Localize("A user preference and the name of the preference in the settings file"),
+                    null,
+                    "Root path for all resources".Localize(),
                     new FolderNameEditor(), null);
 
             m_settingsService.RegisterSettings(this, resourceRoot);
-            m_settingsService.RegisterUserSettings(Localizer.Localize("Resources"), resourceRoot);
+            m_settingsService.RegisterUserSettings("Resources".Localize(), resourceRoot);
 
-            BoundPropertyDescriptor resolveOnLoad =
+            var resolveOnLoad =
                 new BoundPropertyDescriptor(this, () => ResolveOnLoad,
-                    Localizer.Localize("Resolve on load"), null,
-                    Localizer.Localize("Resolve sub-documents on load"));
+                    "Resolve on load".Localize("A user preference and the name of the preference in the settings file"),
+                    null,
+                    "Resolve sub-documents on load".Localize());
                     
             m_settingsService.RegisterSettings("Documents".Localize(), resolveOnLoad);
             m_settingsService.RegisterUserSettings("Documents".Localize(), resolveOnLoad);

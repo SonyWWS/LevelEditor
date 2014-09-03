@@ -45,3 +45,4 @@
 *.tif  binary
 *.tiff binary
 *.tga  binary
+*.chm  binary

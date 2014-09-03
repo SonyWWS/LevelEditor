@@ -159,7 +159,7 @@ namespace LevelEditor
             {
                 DomNode node = new DomNode(Schema.layerType.Type);
                 ILayer subLayer = node.As<ILayer>();
-                subLayer.Name = Localizer.Localize("New Layer");
+                subLayer.Name = "New Layer".Localize();
                 Layers.Add(subLayer);
                 layer = subLayer;
             }

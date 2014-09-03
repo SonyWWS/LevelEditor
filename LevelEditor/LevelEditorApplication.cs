@@ -30,9 +30,7 @@ namespace LevelEditor
 		/// The main entry point for the application</summary>
         [STAThread]
 		static void  Main()
-        {            
-
-          
+        {
 
 #if DEBUG
             AllocConsole();
@@ -49,8 +47,10 @@ namespace LevelEditor
             Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.CurrentCulture;            
             Localizer.SetStringLocalizer(new EmbeddedResourceStringLocalizer());
 
+#if !DEBUG
             SplashForm.ShowForm(typeof(LevelEditorApplication), "LevelEditor.Resources.SplashImg.png");
-
+#endif
+          
             // Register the embedded image resources so that they will be available for all users of ResourceUtil,
             //  such as the PaletteService.
             ResourceUtil.Register(typeof(Resources));
@@ -89,6 +89,7 @@ namespace LevelEditor
                 typeof(GridPropertyEditor),                
                 typeof(WindowLayoutService),            // multiple window layout support
                 typeof(WindowLayoutServiceCommands),    // window layout commands
+                typeof(HistoryLister),                  // visual undo/redo
                 typeof(SkinService),
                 typeof(ResourceService)
                 );
@@ -180,7 +181,7 @@ namespace LevelEditor
             ToolStripContainer toolStripContainer = new ToolStripContainer();
             toolStripContainer.Dock = DockStyle.Fill;
             MainForm mainForm = new MainForm(toolStripContainer);
-            mainForm.Text = Localizer.Localize("LevelEditor");
+            mainForm.Text = "LevelEditor".Localize("the name of this application, on the title bar");
              
             CompositionContainer container = new CompositionContainer(catalog);
             CompositionBatch batch = new CompositionBatch();
@@ -189,30 +190,27 @@ namespace LevelEditor
 
             LevelEditorCore.Globals.InitializeComponents(container);
             // Initialize components 
-
-            GridPropertyEditor propGrid = container.GetExportedValue<GridPropertyEditor>();
-            propGrid.ControlInfo.Group = StandardControlGroup.Hidden;
-
-           
-
+            
             foreach (IInitializable initializable in container.GetExportedValues<IInitializable>())
                 initializable.Initialize();           
 
             AutoDocumentService autoDocument = container.GetExportedValue<AutoDocumentService>();
             autoDocument.AutoLoadDocuments = false;
             autoDocument.AutoNewDocument = true;
-
-
             mainForm.Shown += delegate { SplashForm.CloseForm(); };
-           // string skinfile = Application.StartupPath + "\\Dark.skn";
-          //  SkinService skn = container.GetExportedValue<SkinService>();
-         //   if (skn != null && File.Exists(skinfile))
-         //  {
-         //       skn.OpenSkinFile(skinfile);                
-         //   }
-            
-            // Show the main form and start message handling. The main Form Load event provides a final chance
-            //  for components to perform initialization and configuration.
+
+            // The settings file is incompatible between languages that LevelEditor and ATF are localized to.
+            // For example, the LayoutService saves different Control names depending on the language and so
+            //  the Windows layout saved in one language can't be loaded correctly in another language.
+            string language = Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName; //"en" or "ja"
+            if (language == "ja")
+            {
+                var settingsService = container.GetExportedValue<SettingsService>();
+                string nonEnglishPath = settingsService.SettingsPath;
+                nonEnglishPath = Path.Combine(Path.GetDirectoryName(nonEnglishPath), "AppSettings_" + language + ".xml");
+                settingsService.SettingsPath = nonEnglishPath;
+            }
+
             Application.Run(mainForm); // MAIN LOOP
 
             container.Dispose();

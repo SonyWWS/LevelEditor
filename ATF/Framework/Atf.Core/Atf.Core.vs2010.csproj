@@ -20,7 +20,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\..\lib\Debug\</OutputPath>
     <IntermediateOutputPath>..\..\tmp\ATFCore\Debug.vs2010\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;CS_4;PUBLIC </DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CS_4;PUBLIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -30,12 +30,11 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\lib\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFCore\Release.vs2010\</IntermediateOutputPath>
-    <DefineConstants>TRACE;CS_4;PUBLIC </DefineConstants>
+    <IntermediateOutputPath>..\..\tmp\ATFCore\Release\</IntermediateOutputPath>
+    <DefineConstants>TRACE;CS_4;PUBLIC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>649</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

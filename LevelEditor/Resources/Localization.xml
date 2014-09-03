@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<StringLocalizationTable>
+  <StringItem id="Add Layer" context="" translation="Add Layer" />
+  <StringItem id="Creates a new layer folder" context="" translation="Creates a new layer folder" />
+  <StringItem id="New Layer" context="" translation="New Layer" />
+  <StringItem id="Add Layer" context="" translation="Add Layer" />
+  <StringItem id="Select all instances" context="" translation="Select all instances" />
+  <StringItem id="Selects all instances of the selected type" context="" translation="Selects all instances of the selected type" />
+  <StringItem id="Show all instances" context="" translation="Show all instances" />
+  <StringItem id="Show all instances of the selected type" context="" translation="Show all instances of the selected type" />
+  <StringItem id="Hide all instances" context="" translation="Hide all instances" />
+  <StringItem id="Hide all instances of the selected type" context="" translation="Hide all instances of the selected type" />
+  <StringItem id="Move Pivot" context="" translation="Move Pivot" />
+  <StringItem id="New Layer" context="" translation="New Layer" />
+  <StringItem id="Game" context="" translation="Game" />
+  <StringItem id="GameObjects" context="" translation="GameObjects" />
+  <StringItem id="Invalid GameObject name" context="" translation="Invalid GameObject name" />
+  <StringItem id="GameObjects" context="" translation="GameObjects" />
+  <StringItem id="GameObjectGroup" context="" translation="GameObjectGroup" />
+  <StringItem id="GameObjectFolder" context="" translation="GameObjectFolder" />
+  <StringItem id="Transform" context="" translation="Transform" />
+  <StringItem id="Translation of Game Object along X, Y, and Z axes" context="" translation="Translation of Game Object along X, Y, and Z axes" />
+  <StringItem id="Rotation" context="" translation="Rotation" />
+  <StringItem id="Origin of Rotation transform relative to Game Object Translation" context="" translation="Origin of Rotation transform relative to Game Object Translation" />
+  <StringItem id="Scale" context="" translation="Scale" />
+  <StringItem id="Scale of Game Object along X, Y, and Z axes" context="" translation="Scale of Game Object along X, Y, and Z axes" />
+  <StringItem id="Scale" context="" translation="Scale" />
+  <StringItem id="Scale of Game Object along X, Y, and Z axes" context="" translation="Scale of Game Object along X, Y, and Z axes" />
+  <StringItem id="Pivot" context="" translation="Pivot" />
+  <StringItem id="Origin of Rotation and scale transform relative to Game Object Translation" context="" translation="Origin of Rotation and scale transform relative to Game Object Translation" />
+  <StringItem id="Locator" context="" translation="Locator" />
+  <StringItem id="Grid" context="" translation="Grid" />
+  <StringItem id="Height" context="" translation="Height" />
+  <StringItem id="Grid's height (along the world's up vector)" context="" translation="Grid's height (along the world's up vector)" />
+  <StringItem id="Size" context="" translation="Size" />
+  <StringItem id="the size of grid step" context="" translation="the size of grid step" />
+  <StringItem id="Subdivisions" context="" translation="Subdivisions" />
+  <StringItem id="Number of sub-divisions" context="" translation="Number of sub-divisions" />
+  <StringItem id="snap" context="" translation="snap" />
+  <StringItem id="Snap to grid vertex" context="" translation="Snap to grid vertex" />
+  <StringItem id="Visible" context="" translation="Visible" />
+  <StringItem id="Grid visibility" context="" translation="Grid visibility" />
+  <StringItem id="ResourceRoot" context="" translation="ResourceRoot" />
+  <StringItem id="Root path for all resources" context="" translation="Root path for all resources" />
+  <StringItem id="Resources" context="" translation="Resources" />
+  <StringItem id="Resolve on load" context="" translation="Resolve on load" />
+  <StringItem id="Resolve sub-documents on load" context="" translation="Resolve sub-documents on load" />
+  <StringItem id="Documents" context="" translation="Documents" />
+  <StringItem id="Documents" context="" translation="Documents" />
+  <StringItem id="LevelEditor" context="" translation="LevelEditor" />
+  <StringItem id="Bookmarks" context="" translation="Bookmarks" />
+  <StringItem id="Edits document bookmarks" context="" translation="Edits document bookmarks" />
+  <StringItem id="Add Bookmark" context="" translation="Add Bookmark" />
+  <StringItem id="Adds a new bookmark" context="" translation="Adds a new bookmark" />
+  <StringItem id="New bookmark" context="" translation="New bookmark" />
+  <StringItem id="Add bookmark" context="" translation="Add bookmark" />
+  <StringItem id=" Click on a camera bookmark to set the camera to the stored settings." context="" translation=" Click on a camera bookmark to set the camera to the stored settings." />
+  <StringItem id="Add new SubGame" context="" translation="Add new SubGame" />
+  <StringItem id="Add new SubGame" context="" translation="Add new SubGame" />
+  <StringItem id="Add existing SubGame" context="" translation="Add existing SubGame" />
+  <StringItem id="Add existing SubGame" context="" translation="Add existing SubGame" />
+  <StringItem id="Exclude SubGame" context="" translation="Exclude SubGame" />
+  <StringItem id="Exlude from master level" context="" translation="Exlude from master level" />
+  <StringItem id="Resolve SubGame" context="" translation="Resolve SubGame" />
+  <StringItem id="Resolve SubGame" context="" translation="Resolve SubGame" />
+  <StringItem id="Unresolve SubGame" context="" translation="Unresolve SubGame" />
+  <StringItem id="Unresolve SubGame" context="" translation="Unresolve SubGame" />
+  <StringItem id="Project Lister" context="" translation="Project Lister" />
+  <StringItem id="Lists objects in the current document" context="" translation="Lists objects in the current document" />
+  <StringItem id="OSC Input" context="The name of a command" translation="OSC Input" />
+  <StringItem id="OSC Input" context="The name of a command" translation="OSC Input" />
+  <StringItem id="OSC Input" context="The name of a command" translation="OSC Input" />
+  <StringItem id="OSC Input" context="The name of a command" translation="OSC Input" />
+  <StringItem id="OSC Input" context="The name of a command" translation="OSC Input" />
+  <StringItem id="Create Prefab ..." context="" translation="Create Prefab ..." />
+  <StringItem id="Create prefab from selected GameObjects" context="" translation="Create prefab from selected GameObjects" />
+  <StringItem id="Create Prototype ..." context="" translation="Create Prototype ..." />
+  <StringItem id="Create prototype from selected GameObjects" context="" translation="Create prototype from selected GameObjects" />
+  <StringItem id="Flatten" context="" translation="Flatten" />
+  <StringItem id="Raise/Lower" context="" translation="Raise/Lower" />
+  <StringItem id="Smooth" context="" translation="Smooth" />
+  <StringItem id="Noise" context="" translation="Noise" />
+  <StringItem id="Paint/Erase" context="" translation="Paint/Erase" />
+  <StringItem id="Terrain" context="" translation="Terrain" />
+  <StringItem id="Activate Terrain editing" context="" translation="Activate Terrain editing" />
+</StringLocalizationTable>

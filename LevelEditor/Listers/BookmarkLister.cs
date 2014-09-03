@@ -89,8 +89,8 @@ namespace LevelEditor
                  Commands.AddBookmark,
                  null,
                  null,
-                 Localizer.Localize("Add Bookmark"),
-                 Localizer.Localize("Adds a new bookmark")),
+                 "Add Bookmark".Localize(),
+                 "Adds a new bookmark".Localize()),
              this);
         }
 
@@ -157,7 +157,7 @@ namespace LevelEditor
                 if (bookmarkList != null)
                 {
                     Bookmark newBookmark = new DomNode(Schema.bookmarkType.Type).As<Bookmark>();
-                    newBookmark.Name = Localizer.Localize("New bookmark");
+                    newBookmark.Name = "New bookmark".Localize();
                     newBookmark.Camera = m_designView.ActiveView.Camera;
 
                     ITransactionContext transactionContext = Adapters.As<ITransactionContext>(m_bookmarkContext);
@@ -167,7 +167,7 @@ namespace LevelEditor
                         {
                             bookmarkList.Add(newBookmark);
                         },
-                        Localizer.Localize("Add bookmark"));
+                        "Add bookmark".Localize());
                 }
             }
         }

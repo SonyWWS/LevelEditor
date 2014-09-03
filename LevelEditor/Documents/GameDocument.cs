@@ -47,18 +47,18 @@ namespace LevelEditor
         {
             get
             {
-                bool dirty = m_gameDocumentRegistry.MasterDocument.Dirty;
-                foreach (IGameDocument subdoc in m_gameDocumentRegistry.SubDocuments)
+                bool dirty = false;
+                foreach (IGameDocument doc in m_gameDocumentRegistry.Documents)
                 {
-                    dirty |= subdoc.Dirty;
+                    dirty = doc.Dirty;
+                    if (dirty) break;                    
                 }
-
 
                 foreach (var obj in Util.FindAll<IEditableResourceOwner>())
                 {
                     dirty |= obj.Dirty;
+                    if (dirty) break;
                 }
-
 
                 return dirty;
             }
@@ -162,7 +162,7 @@ namespace LevelEditor
             {
                 // create the game object folder
                 rootFolder = (GameObjectFolder)GameObjectFolder.Create();
-                rootFolder.Name = "GameObjects".Localize();
+                rootFolder.Name = "GameObjects".Localize("this is the name of a folder in the project lister");
                 rootNode.SetChild(Schema.gameType.gameObjectFolderChild, rootFolder.DomNode);
             }
             

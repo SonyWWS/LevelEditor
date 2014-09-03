@@ -68,21 +68,9 @@ namespace LevelEditor.Commands
             GameDocument gameDcument = document as GameDocument;
             if (gameDcument == null)
                 return base.ConfirmClose(document);
-
-            bool dirty = false;
-            foreach (IGameDocument doc in m_gameDocumentRegistry.Documents)
-            {
-                dirty |= doc.Dirty;
-            }
-
-            // external resources.
-            foreach (var obj in Util.FindAll<IEditableResourceOwner>())
-            {
-                dirty |= obj.Dirty;                
-            }
-
+          
             bool closeConfirmed = true;
-            if (dirty)
+            if (gameDcument.AnyDirty)
             {
                 string message = "One or more level and/or external resource is dirty"
                     + Environment.NewLine + "Save Changes?";
@@ -91,7 +79,7 @@ namespace LevelEditor.Commands
                 if (result == FileDialogResult.Yes)
                 {
                     closeConfirmed = Save(document);
-                }
+                }               
                 else if (result == FileDialogResult.Cancel)
                 {
                     closeConfirmed = false;
@@ -100,7 +88,23 @@ namespace LevelEditor.Commands
             return closeConfirmed;
         }
 
-        [Import(AllowDefault = false)] 
-        private IGameDocumentRegistry m_gameDocumentRegistry = null;
+         /// <summary>
+        /// Checks whether the client can do the command, if it handles it</summary>
+        /// <param name="commandTag">Command to be done</param>
+        /// <returns>True iff client can do the command</returns>
+        public override bool CanDoCommand(object commandTag)
+        {
+            bool result = base.CanDoCommand(commandTag);
+            if (result == false && StandardCommand.FileSave.Equals(commandTag))
+            {
+                // external resources.
+                foreach (var obj in Util.FindAll<IEditableResourceOwner>())
+                {
+                    result = obj.Dirty;
+                    if (result) break;
+                }   
+            }
+            return result;
+        }        
     }
 }

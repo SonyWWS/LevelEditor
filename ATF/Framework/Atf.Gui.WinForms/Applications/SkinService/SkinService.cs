@@ -9,10 +9,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Schema;
 #if TRACE_SKINSERVICE
 using System.Diagnostics;
 #endif
@@ -34,11 +32,6 @@ namespace Sce.Atf.Applications
         /// Skin changed or applied event</summary>
         public static event EventHandler SkinChangedOrApplied;
 
-        internal static SkinService Instance
-        {
-            private set;
-            get;
-        }
         /// <summary>
         /// Initialize instance</summary>
         void IInitializable.Initialize()
@@ -49,11 +42,10 @@ namespace Sce.Atf.Applications
                 m_settingsService.RegisterSettings(this,
                                 new BoundPropertyDescriptor(this, () => MruSkinFile, "Most Recently Used Skin File".Localize(), null, null));
             }
-            Instance = this;          
         }
 
         /// <summary>
-        /// Common intialization</summary>
+        /// Common initialization</summary>
         protected void CommonInit()
         {
             if(ShowCommands)
@@ -109,8 +101,6 @@ namespace Sce.Atf.Applications
                 "Load Skin...".Localize("Load and apply a skin file."),
                 "Load and apply a skin file.".Localize());
 
-        
-
         /// <summary>
         /// SkinReset command</summary>
         public static CommandInfo SkinReset =
@@ -130,16 +120,21 @@ namespace Sce.Atf.Applications
             if (!(commandTag is SkinCommands))
                 return false;
 
+            // The skin editor edits the active skin, so we can't change the current skin while
+            //  the editor is running and we can't launch a second editor either.
+            if (m_skinEditor != null)
+                return false;
+
             bool enabled = false;
 
             switch((SkinCommands)commandTag)
             {
                 case SkinCommands.SkinEdit:
-                    enabled = m_skinEditor == null;
+                    enabled = true;
                     break;
                 
                 case SkinCommands.SkinLoad:
-                    enabled = (FileDialogService != null);
+                    enabled = FileDialogService != null;
                     break;
 
                 case SkinCommands.SkinReset:
@@ -170,6 +165,7 @@ namespace Sce.Atf.Applications
                             m_skinEditor.OpenSkin(ActiveSkin.SkinFile);
                         }
                         m_skinEditor.FormClosed += SkinEditor_FormClosed;
+                        m_skinEditor.SkinChanged += SkinEditor_SkinChanged;
                         m_mainForm.FormClosing += m_mainForm_FormClosing;
                     }
                     break;
@@ -193,10 +189,26 @@ namespace Sce.Atf.Applications
             }
         }
 
-        void SkinEditor_FormClosed(object sender, FormClosedEventArgs e)
+        private void SkinEditor_SkinChanged(object sender, DocumentEventArgs e)
         {
-            m_skinEditor = null;
-            m_mainForm.FormClosing -= m_mainForm_FormClosing;
+            using (Stream stream = m_skinEditor.GetCurrentSkin())
+            {
+                string skinFile = UnsavedSkinString;
+                if (e.Document != null && e.Document.Uri != null)
+                    skinFile = e.Document.Uri.LocalPath;
+                OpenSkinFile(stream, skinFile);
+                if (ActiveSkin != null)
+                {
+                    // Success! This means the editor is not shutting down and is still editing a valid skin.
+                    ApplyActiveSkin();
+                }
+                else
+                {
+                    // Either revert to the previous skin or reset to the original no-skin look.
+                    if (!OpenAndApplySkin(MruSkinFile))
+                        ResetSkin();
+                }
+            }
         }
 
         /// <summary>
@@ -263,9 +275,6 @@ namespace Sce.Atf.Applications
         /// <returns>True if the skin was successfully opened, false otherwise</returns>
         public bool OpenAndApplySkin(Stream stream)
         {
-            if (stream == null || stream == Stream.Null || !stream.CanRead)
-                return false;
-
             OpenSkinFile(stream, EmbeddedSkinString);
 
             if (ActiveSkin == null)
@@ -308,9 +317,14 @@ namespace Sce.Atf.Applications
         /// Loads the skin from the specified stream and sets the active skin to it</summary>
         /// <param name="stream">Stream containing the skin</param>
         /// <param name="skinFileDisplayText">Skin file path</param>
-        /// <remarks>No return value, but side effect is to set ActiveSkin upon success</remarks>
+        /// <remarks>No return value, but ActiveSkin will be null if there was a failure and not
+        /// null if successful.</remarks>
         public void OpenSkinFile(Stream stream, string skinFileDisplayText)
-        {           
+        {
+            ActiveSkin = null;
+            if (stream == null || stream == Stream.Null || !stream.CanRead)
+                return;
+
             try
             {                
                 ActiveSkin = new Skin { SkinFile = skinFileDisplayText, Styles = new List<SkinStyle>() };               
@@ -326,7 +340,8 @@ namespace Sce.Atf.Applications
 
                 // Store the file path so it will be persisted and reloaded the next
                 // time the app is launched.
-                MruSkinFile = skinFileDisplayText;
+                if (skinFileDisplayText != UnsavedSkinString)
+                    MruSkinFile = skinFileDisplayText;
             }
             catch (Exception exception)
             {
@@ -399,13 +414,13 @@ namespace Sce.Atf.Applications
         {
             get { return ActiveSkin == null ? null : ActiveSkin.SkinFile;}
         }
+
         /// <summary>
         /// Gets the controls to which a skin can be applied. Might be the empty list, but won't be null.</summary>
         protected virtual IEnumerable<Control> SkinnableControls
         {
             get { return SkinnableObjects.OfType<Control>(); }
         }
-
         
         /// <summary>
         /// Gets the objects to which a skin can be applied. Might be the empty list, but won't be null.</summary>
@@ -425,7 +440,7 @@ namespace Sce.Atf.Applications
                     object target = existing.Target;
                     // We have to check if the target got garbage-collected, since that can happen at any time.
 
-                    Control ctrl = target as Control;
+                    var ctrl = target as Control;
                     if (target != null && (ctrl == null || !ctrl.IsDisposed))
                         yield return target;
                 }
@@ -541,6 +556,12 @@ namespace Sce.Atf.Applications
         }
 
         #region Private
+
+        private void SkinEditor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            m_skinEditor = null;
+            m_mainForm.FormClosing -= m_mainForm_FormClosing;
+        }
 
         private void m_mainForm_Load(object sender, EventArgs e)
         {
@@ -1004,7 +1025,7 @@ namespace Sce.Atf.Applications
 
                     // ToolStrips and MenuStrips are controls, but none of their contents are.
                     // Since it is essential that they be skinnable, we need to custom handle them here.
-                    ToolStrip toolStrip = control as ToolStrip;
+                    var toolStrip = control as ToolStrip;
                     if (toolStrip != null)
                         ApplyCommonValuesToToolStrip(toolStrip);
                 }
@@ -1042,7 +1063,7 @@ namespace Sce.Atf.Applications
             if (obj == null)
                 return;
 
-            Control control = obj as Control;
+            var control = obj as Control;
             if (control != null)
                 control.SuspendLayout();
             
@@ -1101,6 +1122,7 @@ namespace Sce.Atf.Applications
                 control.ResumeLayout();
             }
         }
+
         private void ApplySkinToNonClientArea()
         {
             if (ActiveSkin == null) return;
@@ -1133,12 +1155,13 @@ namespace Sce.Atf.Applications
                 }
             }            
         }
+
         private static void ApplyNewPropertyValues(object obj, HashSet<object> skinnedControls)
         {
             if (obj == null)
                 return;
 
-            Control control = obj as Control;            
+            var control = obj as Control;            
             if (control != null)
                 control.SuspendLayout();
 
@@ -1398,6 +1421,7 @@ namespace Sce.Atf.Applications
         /// String for embedded skin</summary>
         protected const string EmbeddedSkinString = "Embedded Skin";
 
+        private const string UnsavedSkinString = "Unsaved Skin";
         private const string SkinSchema = "Sce.Atf.Applications.SkinService.Schemas.skin.xsd";
         private const string ValueInfoElement = "valueInfo";
         private const string ListInfoElement = "listInfo";

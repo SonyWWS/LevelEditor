@@ -24,7 +24,7 @@ namespace Sce.Atf.Controls.PropertyEditing
 
         /// <summary>
         /// Constructor using the default PropertyGridView and the given mode flags</summary>
-        /// <param name="mode">Flags specifiying the PropertyGrid's features and appearance</param>
+        /// <param name="mode">Flags specifying the PropertyGrid's features and appearance</param>
         public PropertyGrid(PropertyGridMode mode)
             : this(mode, new PropertyGridView())
         {
@@ -32,7 +32,7 @@ namespace Sce.Atf.Controls.PropertyEditing
 
         /// <summary>
         /// Constructor using given PropertyGridView and mode flags</summary>
-        /// <param name="mode">The flags specifiying the PropertyGrid's features and appearance</param>
+        /// <param name="mode">The flags specifying the PropertyGrid's features and appearance</param>
         /// <param name="propertyGridView">The customized PropertyGridView</param>
         public PropertyGrid(PropertyGridMode mode, PropertyGridView propertyGridView)
         {
@@ -132,8 +132,7 @@ namespace Sce.Atf.Controls.PropertyEditing
                 resetAllButton.ToolTipText = "Reset all properties".Localize();
                 resetAllButton.Click += (sender, e) =>
                     {
-                        ITransactionContext transaction = m_propertyGridView.EditingContext.As<ITransactionContext>();
-                        if (transaction == null) return;
+                        ITransactionContext transaction = m_propertyGridView.EditingContext.As<ITransactionContext>();                        
                         transaction.DoTransaction(delegate
                         {
                             ResetAll();

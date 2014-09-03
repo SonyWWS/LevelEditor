@@ -7,6 +7,8 @@ using System.IO;
 using RenderingInterop;
 namespace LevelEditor.Terrain
 {
+    /// <summary>
+    /// Dialog for creating new terrain</summary>
     public partial class CreateTerrainDlg : Form
     {
         public CreateTerrainDlg(string resourceRoot)
