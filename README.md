@@ -18,7 +18,7 @@ The following LevelEditor features help you construct game levels efficiently an
 * Show or hide groups of game objects to unclutter the view as you work
 * Construct Linears (lines and curves)
 
-![LevelEditor Design View]../LevelEditor/tree/master/LevelEditor.wiki/images/LE_Lights.png?raw=true "LevelEditor Design View")
+![LevelEditor Design View]LevelEditor.wiki/images/LE_Lights.png?raw=true "LevelEditor Design View")
 
 Prerequisites
 -------------
