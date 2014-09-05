@@ -22,7 +22,7 @@ The following LevelEditor features help you construct game levels efficiently an
 
 Prerequisites
 -------------
-* Operating System: Microsoft Windows 7, 32-bit or 64-bit (SP1 or later)
+* Operating System: Microsoft Windows 7 64-bit SP1 or later.
 * Development Environment:
     * Microsoft .Net 4.0 (or later) installed
     * DirectX SDK June 2010.
