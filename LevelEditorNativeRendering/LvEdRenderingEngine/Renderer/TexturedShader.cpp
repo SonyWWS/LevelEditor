@@ -4,9 +4,6 @@
     TexturedShader.cpp
 
 ****************************************************************************/
-#include <d3dx11.h>
-#include <DxErr.h>
-#include <D3DX10math.h>
 #include "../Core/NonCopyable.h"
 #include "RenderUtil.h"
 #include "RenderState.h"

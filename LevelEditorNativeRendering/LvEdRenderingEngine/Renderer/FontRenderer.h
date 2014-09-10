@@ -8,7 +8,6 @@
 ****************************************************************************/
 #pragma once
 
-#include <d3dx11.h>
 #include <vector>
 #include "FontTypes.h"
 #include "../Core/StringBlob.h"

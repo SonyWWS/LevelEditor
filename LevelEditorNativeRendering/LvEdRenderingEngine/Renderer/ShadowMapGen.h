@@ -9,7 +9,6 @@
 #include "../Core/NonCopyable.h"
 #include "ShadowMaps.h"
 #include "RenderSurface.h"
-#include <d3dx11.h>
 
 namespace LvEdEngine
 {

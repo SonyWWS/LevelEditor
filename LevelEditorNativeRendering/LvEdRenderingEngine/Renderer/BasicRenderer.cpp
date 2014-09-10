@@ -1,9 +1,7 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
-#include <D3Dx11.h>
-#include <DxErr.h>
 #include <D3Dcompiler.h>
-
+#include <d3d11.h>
 #include "BasicRenderer.h"
 #include "RenderBuffer.h"
 #include "Texture.h"

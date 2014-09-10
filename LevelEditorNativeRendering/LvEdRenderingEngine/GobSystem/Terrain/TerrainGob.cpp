@@ -7,7 +7,6 @@
 #include "../../Core/StringUtils.h"
 #include "../../Core/ImageData.h"
 #include "../../VectorMath/MeshUtil.h"
-#include "../../DirectX/XNAMath/xnamath.h"
 #include "../../Renderer/Texture.h"
 #include "../../Renderer/ShaderLib.h"
 #include "../../Renderer/RenderUtil.h"

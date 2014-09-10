@@ -4,9 +4,7 @@
     FontRenderer.cpp
 
 ****************************************************************************/
-#include <d3dx11.h>
-#include <DxErr.h>
-#include <xnamath.h>
+
 #include <assert.h>
 #include "../Core/Utils.h"
 #include "../Core/Logger.h"

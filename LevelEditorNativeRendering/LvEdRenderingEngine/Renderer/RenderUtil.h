@@ -3,11 +3,11 @@
 #pragma once
 #include <vector>
 #include "../Core/WinHeaders.h"
-#include <D3DX11.h>
 #include "../Core/Utils.h"
 #include "../VectorMath/V3dMath.h"
 #include "../VectorMath/CollisionPrimitives.h"
 #include "RenderEnums.h"
+#include <d3d11.h>
 
 namespace LvEdEngine
 {

@@ -5,6 +5,7 @@
 
 ****************************************************************************/
 #include <stdarg.h>
+#include <d3d11.h>
 #include "FontRenderer.h"
 #include "..\Core\Utils.h"
 #include "ScreenMsgPrinter.h"

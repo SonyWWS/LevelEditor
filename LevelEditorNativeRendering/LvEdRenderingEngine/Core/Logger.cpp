@@ -10,8 +10,6 @@
 
 #include "Logger.h"
 #include <stdio.h>
-#include <DxErr.h>
-
 
 namespace LvEdEngine
 {
@@ -63,13 +61,22 @@ namespace LvEdEngine
     // -------------------------------------------------------------------------
     bool Logger::IsFailureLog(HRESULT hr, const wchar_t * fmt, ...)
     {
+
         if (SUCCEEDED(hr))
-        {
             return false;
-        }
 
+        LPWSTR wstr;
+        FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+				FORMAT_MESSAGE_IGNORE_INSERTS 	 |
+				FORMAT_MESSAGE_ALLOCATE_BUFFER,
+				NULL,
+				hr,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+				(LPTSTR) &wstr,
+				0,
+				NULL);
 
-        const wchar_t *wstr =  DXGetErrorString(hr);
+       
         if (!fmt)
         {
             Log(OutputMessageType::Error, L"HRESULT: '%s'\n", wstr);
@@ -83,6 +90,7 @@ namespace LvEdEngine
             Log(OutputMessageType::Error, L"HRESULT: '%s' in context '%s'\n", wstr, wbuffer);
             va_end(args);
         }
+
         return true;
     }
 

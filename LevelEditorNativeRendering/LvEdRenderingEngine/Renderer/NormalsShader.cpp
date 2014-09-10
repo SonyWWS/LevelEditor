@@ -10,7 +10,6 @@
 #include "RenderContext.h"
 #include "RenderState.h"
 #include "Model.h"
-#include <DxErr.h>
 
 using namespace LvEdEngine;
 

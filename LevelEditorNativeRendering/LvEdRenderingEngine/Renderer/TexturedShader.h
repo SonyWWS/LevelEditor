@@ -10,7 +10,6 @@
 #include "ShadowMaps.h"
 #include "RenderSurface.h"
 #include "Lights.h"
-#include "D3DX10Math.h"
 
 namespace LvEdEngine 
 {

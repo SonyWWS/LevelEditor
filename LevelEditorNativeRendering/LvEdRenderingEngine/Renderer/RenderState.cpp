@@ -2,8 +2,8 @@
 
 #include "RenderState.h"
 #include "ShadowMaps.h"
-#include <DxErr.h>
 #include "../Core/Utils.h"
+#include "../Core/Logger.h"
 
 
 
@@ -68,36 +68,27 @@ namespace LvEdEngine
         // solid and cull back faces
         rsDcr.CullMode =  D3D11_CULL_BACK;        
         hr = device->CreateRasterizerState(&rsDcr,  &rasterState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
+        if (Logger::IsFailureLog(hr))
             return;			 
-        }                
+        
         rsKey = MakeRSKey(FillMode::Solid, CullMode::BACK);
         RasterStates[rsKey] = rasterState;
                
         // solid  and cull front faces
         rsDcr.CullMode =  D3D11_CULL_FRONT;    
         hr = device->CreateRasterizerState(&rsDcr,  &rasterState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
+        if (Logger::IsFailureLog(hr))
             return;			 
-        }
+        
         rsKey = MakeRSKey(FillMode::Solid, CullMode::FRONT);
         RasterStates[rsKey] = rasterState;
 
         // solid  and cull none 
         rsDcr.CullMode =  D3D11_CULL_NONE;    
         hr = device->CreateRasterizerState(&rsDcr,  &rasterState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rsKey = MakeRSKey(FillMode::Solid, CullMode::NONE);
         RasterStates[rsKey] = rasterState;
 	
@@ -109,36 +100,27 @@ namespace LvEdEngine
         // Wireframe and cull back faces
         rsDcr.CullMode =  D3D11_CULL_BACK;        
         hr = device->CreateRasterizerState(&rsDcr,  &rasterState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }                
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rsKey = MakeRSKey(FillMode::Wireframe, CullMode::BACK);
         RasterStates[rsKey] = rasterState;
                
         // Wireframe  and cull front faces
         rsDcr.CullMode =  D3D11_CULL_FRONT;    
         hr = device->CreateRasterizerState(&rsDcr,  &rasterState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rsKey = MakeRSKey(FillMode::Wireframe, CullMode::FRONT);
         RasterStates[rsKey] = rasterState;
 
         // Wireframe  and cull none 
         rsDcr.CullMode =  D3D11_CULL_NONE;    
         hr = device->CreateRasterizerState(&rsDcr,  &rasterState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rsKey = MakeRSKey(FillMode::Wireframe, CullMode::NONE);
         RasterStates[rsKey] = rasterState;
 
@@ -165,24 +147,18 @@ namespace LvEdEngine
         
         ID3D11DepthStencilState* depthState;
         hr = device->CreateDepthStencilState(&dsDcr,&depthState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         RenderFlagsEnum rf = (RenderFlagsEnum)0;
         DepthStencilStates[rf] = depthState;
 
         // test no-write
         dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
         hr = device->CreateDepthStencilState(&dsDcr,&depthState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rf = RenderFlags::DisableDepthWrite;
         DepthStencilStates[rf] = depthState;
 
@@ -190,24 +166,18 @@ namespace LvEdEngine
         dsDcr.DepthEnable = FALSE;
         dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         hr = device->CreateDepthStencilState(&dsDcr,&depthState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rf = RenderFlags::DisableDepthTest;
         DepthStencilStates[rf] = depthState;
 
         // no-test no-write
         dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;        
         hr = device->CreateDepthStencilState(&dsDcr,&depthState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rf = (RenderFlagsEnum)(RenderFlags::DisableDepthTest | RenderFlags::DisableDepthWrite);        
         DepthStencilStates[rf] = depthState;  
 
@@ -233,28 +203,20 @@ namespace LvEdEngine
 
         m_defBsDcr = blendDcr;
 
-
-
         // crate alphaToCoverage
         blendDcr.AlphaToCoverageEnable = TRUE;
         hr = device->CreateBlendState(&blendDcr,&m_alphaToCoverage);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }        
+        if (Logger::IsFailureLog(hr))
+            return;
+        
 
         // create default blendstate 
         blendDcr.AlphaToCoverageEnable = FALSE;
         ID3D11BlendState* blendState;
         hr = device->CreateBlendState(&blendDcr,&blendState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }        
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rf = (RenderFlagsEnum)0;        
         BlendStates[rf] = blendState;
 
@@ -264,12 +226,9 @@ namespace LvEdEngine
         rtblendDcr.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
         blendDcr.RenderTarget[0] = rtblendDcr;
         hr = device->CreateBlendState(&blendDcr,&blendState);
-        if(FAILED(hr))
-        {
-            const WCHAR *wstr =  DXGetErrorString( hr);
-            wprintf(L"%s\n",wstr);
-            return;			 
-        }
+        if (Logger::IsFailureLog(hr))
+            return;
+        
         rf = RenderFlags::AlphaBlend;
         BlendStates[rf] = blendState;    
 

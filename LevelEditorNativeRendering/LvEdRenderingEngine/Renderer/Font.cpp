@@ -4,8 +4,7 @@
     FontSource.cpp
 
 ****************************************************************************/
-#include <d3dx11.h>
-#include <DxErr.h>
+#include "d3d11.h"
 #include <assert.h>
 #include <Gdiplus.h>
 #include "DeviceManager.h"

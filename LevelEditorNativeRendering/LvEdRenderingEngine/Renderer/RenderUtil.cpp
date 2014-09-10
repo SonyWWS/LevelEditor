@@ -1,7 +1,5 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
-#include <d3dx11.h>
-#include <DxErr.h>
 #include <D3Dcompiler.h>
 
 

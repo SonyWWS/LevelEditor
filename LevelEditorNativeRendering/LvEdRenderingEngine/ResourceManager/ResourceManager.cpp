@@ -7,8 +7,6 @@
 #include <functional>
 #include <process.h>
 #include <d3d11.h>
-#include <d3dx9math.h>
-#include <D3DX11tex.h>
 #include <D3Dcompiler.h>
 #include "../Core/NonCopyable.h"
 #include "../Core/typedefs.h"

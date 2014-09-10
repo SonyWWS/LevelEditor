@@ -9,7 +9,6 @@
 #include "../Core/Logger.h"
 #include "../DirectX/DDSTextureLoader/DDSTextureLoader.h"
 #include "../DirectX/WICTextureLoader/WICTextureLoader.h"
-#include <DxErr.h>
 #include <map>
 
 namespace LvEdEngine

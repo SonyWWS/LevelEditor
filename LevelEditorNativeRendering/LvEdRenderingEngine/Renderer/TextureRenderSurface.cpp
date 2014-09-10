@@ -5,8 +5,6 @@
 #include "RenderUtil.h"
 #include "../Core/Logger.h"
 
-#include <DxErr.h>
-
 
 
 namespace LvEdEngine

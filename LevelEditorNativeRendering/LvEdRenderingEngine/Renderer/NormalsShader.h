@@ -3,7 +3,6 @@
 #pragma once
 
 #pragma once
-#include <D3DX11.h>
 #include "../Core/WinHeaders.h"
 #include "Shader.h"
 #include "RenderEnums.h"

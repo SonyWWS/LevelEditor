@@ -6,8 +6,6 @@
 
 ****************************************************************************/
 #include "ShadowMapGen.h"
-#include <DxErr.h>
-#include <D3DX10math.h>
 #include "RenderUtil.h"
 #include "RenderEnums.h"
 #include "RenderState.h"

@@ -5,9 +5,6 @@
 
 ****************************************************************************/
 #pragma once
-
-#include <d3dx11.h>
-#include <D3DX10math.h>
 #include <string>
 #include "Lights.h"
 #include "Shader.h"

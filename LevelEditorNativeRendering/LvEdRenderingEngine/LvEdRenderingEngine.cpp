@@ -9,7 +9,6 @@
 #include <hash_set>
 #include <algorithm>
 #include <D3D11.h>
-#include <D3DX10math.h>
 #include "Core/Logger.h"
 #include "Core/ErrorHandler.h"
 #include "Core/PerfTimer.h"
@@ -44,7 +43,6 @@
 #include "Model3d/ColladaModelFactory.h"
 #include "ResourceManager/TextureFactory.h"
 
-
 #include "GobSystem/GameLevel.h"
 #include "GobSystem/SkyDome.h"
 #include "LvEdUtils.h"
@@ -55,7 +53,6 @@
 #include "Model3d/rapidxmlhelpers.h"
 #include "Core/Hasher.h"
 
-#include <DxErr.h>
 #include "Core/FileUtils.h"
 #include "DirectX\DirectXTex\DirectXTex.h"
 #include "Renderer/Texture.h"

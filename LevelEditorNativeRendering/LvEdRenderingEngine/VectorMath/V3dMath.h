@@ -362,6 +362,16 @@ namespace LvEdEngine
 
     };
     
+
+    float3 Vec3CatmullRom(const float3 &p0
+        ,const float3 &p1
+        ,const float3 &p2
+        ,const float3 &p3,
+        float t);
+
+    
+
+
     class Matrix
     {
     public:
@@ -413,8 +423,7 @@ namespace LvEdEngine
         static Matrix CreateLookAtRH(const float3 &eye,const float3& at, const float3& up);
         static Matrix CreateRotationX(float angle);
         static Matrix CreateRotationY(float angle);
-        static Matrix CreateRotationZ(float angle);        
-        static Matrix CreateRotationYawPitchRoll(float yaw, float pitch, float roll );
+        static Matrix CreateRotationZ(float angle);                
         static Matrix CreateTranslation();
         static Matrix CreateTranslation(float x, float y, float z);
         static Matrix CreateTranslation(const float3 &v);

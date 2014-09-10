@@ -1,6 +1,6 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
-#include <d3dx9math.h>
+#include "../VectorMath/V3dMath.h"
 #include "../Renderer/Model.h"
 #include "../Core/Utils.h"
 #include "../Core/Logger.h"
@@ -442,13 +442,13 @@ void ColladaModelFactory::ProcessImage(Model3dBuilder * builder, xml_node* node)
 // ------------------------------------------------------------------------------------------------
 void ColladaModelFactory::GetTransform(xml_node* node, Matrix * out )
 {
-    D3DXMATRIX rotateX,rotateY,rotateZ,translate,scale,temp;
-    D3DXMatrixIdentity(&rotateX);
-    D3DXMatrixIdentity(&rotateY);
-    D3DXMatrixIdentity(&rotateZ);
-    D3DXMatrixIdentity(&translate);
-    D3DXMatrixIdentity(&scale);
-    D3DXMatrixIdentity(&temp);
+    Matrix rotateX,rotateY,rotateZ,translate,scale;
+    rotateX.MakeIdentity();
+    rotateY.MakeIdentity();
+    rotateZ.MakeIdentity();
+    translate.MakeIdentity();
+    scale.MakeIdentity();
+  
 
     for(xml_node* child = GetChildEle(node); child != NULL; child=GetNextEle(child))
     {
@@ -462,47 +462,62 @@ void ColladaModelFactory::GetTransform(xml_node* node, Matrix * out )
             if(strcmp(sid, "rotateX")==0)
             {
                 float4 temp;
-                if (!ParseVector4(child, &temp)) {
+                if (!ParseVector4(child, &temp))
+                {
                     ParseError("Failed to parse '%s' transform (expected 4 floats)'\n", sid);
-                } else {
-                    D3DXMatrixRotationX(&rotateX, temp.w);
+                } 
+                else 
+                {
+                    rotateX = Matrix::CreateRotationX(temp.w);                    
                 }
             }
             else if(strcmp(sid, "rotateY")==0)
             {
                 float4 temp;
-                if (!ParseVector4(child, &temp)) {
+                if (!ParseVector4(child, &temp)) 
+                {
                     ParseError("Failed to parse '%s' transform (expected 4 floats)'\n", sid);
-                } else {
-                    D3DXMatrixRotationY(&rotateY, temp.w);
+                } 
+                else 
+                {
+                    rotateY = Matrix::CreateRotationY(temp.w);                
                 }
             }
             else if(strcmp(sid, "rotateZ")==0)
             {
                 float4 temp;
-                if (!ParseVector4(child, &temp)) {
+                if (!ParseVector4(child, &temp)) 
+                {
                     ParseError("Failed to parse '%s' transform (expected 4 floats)'\n", sid);
-                } else {
-                    D3DXMatrixRotationZ(&rotateZ, temp.w);
+                } 
+                else
+                {
+                    rotateZ = Matrix::CreateRotationZ(temp.w);                    
                 }
             }
         }
         else if(strcmp(name, "translate")==0)
         {
             float3 temp;
-            if (!ParseVector3(child, &temp)) {
+            if (!ParseVector3(child, &temp)) 
+            {
                 ParseError("Failed to parse '%s' transform (expected 3 floats)'\n", name);
-            } else {
-                D3DXMatrixTranslation(&translate, temp.x, temp.y, temp.z);
+            } 
+            else 
+            {
+                translate = Matrix::CreateTranslation(temp);                
             }
         }
         else if(strcmp(name, "scale")==0)
         {
             float3 temp;
-            if (!ParseVector3(child, &temp)) {
+            if (!ParseVector3(child, &temp)) 
+            {
                 ParseError("Failed to parse '%s' transform (expected 3 floats)'\n", name);
-            } else {
-                D3DXMatrixScaling(&scale, temp.x, temp.y, temp.z);
+            } 
+            else
+            {
+                scale = Matrix::CreateScale(temp);                
             }
         }
         // unhandled transform node
@@ -512,13 +527,11 @@ void ColladaModelFactory::GetTransform(xml_node* node, Matrix * out )
         }
     }
 
-    D3DXMatrixMultiply(&temp, &temp, &scale);
-    D3DXMatrixMultiply(&temp, &temp, &rotateX);
-    D3DXMatrixMultiply(&temp, &temp, &rotateY);
-    D3DXMatrixMultiply(&temp, &temp, &rotateZ);
-    D3DXMatrixMultiply(&temp, &temp, &translate);
-    *out = *(Matrix*)&temp;
-
+    Matrix tmp = scale * rotateX;
+    tmp = tmp * rotateY;
+    tmp = tmp * rotateZ;
+    tmp = tmp * translate;
+    *out = tmp;
 }
 
 // ------------------------------------------------------------------------------------------------

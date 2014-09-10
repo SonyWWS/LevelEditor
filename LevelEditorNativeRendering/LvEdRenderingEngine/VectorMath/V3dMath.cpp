@@ -2,8 +2,6 @@
 
 #include "V3dMath.h"
 #include <math.h>
-#include <d3dx9.h>
-
 
 namespace LvEdEngine
 {
@@ -150,6 +148,22 @@ namespace LvEdEngine
       assert(count > 1);
       BuildCurves(points,count,isClosed,&m_curves);
     }
+
+
+    float3 Vec3CatmullRom(const float3 &p0
+        ,const float3 &p1
+        ,const float3 &p2
+        ,const float3 &p3
+        ,float t)
+    {
+        float t2 = t * t;
+        float t3 = t * t2;
+        float3 n = (2.0f * p1) + 
+                   (p2-p0) * t + 
+                   (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
+                   (3.0f * p1 - p0 + p3 - 3.0f * p2)  * t3;
+        return (n * 0.5f);
+    }
   
     //********************************* Matrix class **********************************
 
@@ -178,17 +192,13 @@ namespace LvEdEngine
 
     Matrix Matrix::CreateFromAxisAngle(const float3 &axis, float angle)
     {        
-        D3DXMATRIX m;
-        ::D3DXVECTOR3 v(axis.x,axis.y,axis.z);
-        ::D3DXMatrixRotationAxis(&m,&v,angle);
-        return Matrix((float*)&m._11);
-
-      /* float3 vcAxis = axis;
+    
+       float3 vcAxis = axis;
        float fCos = cosf(angle);
        float fSin = sinf(angle);
        float fSum = 1.0f - fCos;   
-       if (vcAxis.Length() != 1.0f)
-          vcAxis.Normalize();
+       if (length(vcAxis) != 1.0f)
+          vcAxis = normalize(vcAxis);
 
        Matrix mat;
        mat.M11 = (vcAxis.x * vcAxis.x) * fSum + fCos;
@@ -204,7 +214,7 @@ namespace LvEdEngine
        mat.M33 = (vcAxis.z * vcAxis.z) * fSum + fCos;
        mat.M14 = mat.M24 = mat.M34 = mat.M41 = mat.M42 = mat.M43 = 0.0f;
        mat.M44 = 1.0f;
-       return mat;*/
+       return mat;
     }
 
 
@@ -254,46 +264,132 @@ namespace LvEdEngine
        mat.M13 = mat.M14 = mat.M23 = mat.M24 = mat.M31 = mat.M32 = mat.M34 = mat.M41 = mat.M42 = mat.M43 = 0.0f;
        return mat;
     }
-
-    Matrix Matrix::CreateRotationYawPitchRoll(float yaw, float pitch, float roll )
-    {
-        D3DXMATRIX m;
-        D3DXMatrixRotationYawPitchRoll(&m,yaw,pitch,roll );
-        return (Matrix)m;
-    }
-            
+        
     Matrix Matrix::CreateLookAtRH(const float3 &eye,const float3& at, const float3& up)
     {
-        D3DXMATRIX m;
-        ::D3DXMatrixLookAtRH(&m,(D3DXVECTOR3*)&eye,(D3DXVECTOR3*)&at,(D3DXVECTOR3*)&up);
-        return (Matrix)m;
+       
+        /*
+          zaxis = normal(Eye - At)
+          xaxis = normal(cross(Up, zaxis))
+          yaxis = cross(zaxis, xaxis)
+
+          xaxis.x           yaxis.x           zaxis.x          0
+          xaxis.y           yaxis.y           zaxis.y          0
+          xaxis.z           yaxis.z           zaxis.z          0
+         -dot(xaxis, eye)  -dot(yaxis, eye)  -dot(zaxis, eye)  1
+
+          */
+
+        Matrix mat;
+        memset(&mat.M11, 0, sizeof(Matrix));
+
+        float3 zaxis = normalize(eye - at);
+        float3 xaxis = normalize( cross(up, zaxis));
+        float3 yaxis = cross(zaxis, xaxis);
+
+        mat.M11 = xaxis.x;
+        mat.M12 = yaxis.x;
+        mat.M13 = zaxis.x;
+        mat.M21 = xaxis.y;
+        mat.M22 = yaxis.y;
+        mat.M23 = zaxis.y;
+        mat.M31 = xaxis.z;
+        mat.M32 = yaxis.z;
+        mat.M33 = zaxis.z;
+        mat.M41 = -dot(xaxis, eye);
+        mat.M42 = -dot(yaxis, eye);
+        mat.M43 = -dot(zaxis, eye);
+        mat.M44 = 1.0f;
+
+        return mat;
     }
     
     Matrix Matrix::CreateOrthographicOffCenter(float minx, float maxx, float miny, float maxy, float zn, float zf)
-    {
-        D3DXMATRIX mat;                 
-        D3DXMatrixOrthoOffCenterRH(&mat, minx, maxx, miny, maxy, zn, zf);
-        return Matrix( (float*)&mat._11);
+    {        
+        //  FLOAT l,   // minx
+        //  FLOAT r,   //maxx
+        //  FLOAT b,   // miny
+        //  FLOAT t,  // maxy                
+
+        /*2/(r-l)      0            0           0
+        0            2/(t-b)      0           0
+        0            0            1/(zn-zf)   0
+        (l+r)/(l-r)  (t+b)/(b-t)  zn/(zn-zf)  1*/
+        Matrix mat;
+        memset(&mat.M11, 0, sizeof(Matrix));
+        mat.M11 = 2.0f /(maxx-minx);
+        mat.M22 = 2.0f/(maxy-miny);
+        mat.M33 = 1.0f/(zn-zf);
+        mat.M41 = (minx+maxx)/(minx-maxx);
+        mat.M42 = (maxy+miny)/(miny-maxy);
+        mat.M43 = zn/(zn-zf);
+        mat.M44 = 1.0f;
+        return mat;
     }
     Matrix Matrix::CreateOrthographic(float width, float height, float zn, float zf)
     {
-        D3DXMATRIX mat;                 
-        D3DXMatrixOrthoRH(&mat,width, height, zn, zf);
-        return Matrix( (float*)&mat._11);
+        // CreateOrthographic RH
+        //  
+        //  FLOAT w  // width
+        //  FLOAT h  // height  
+
+        // 2/w  0    0           0
+        // 0    2/h  0           0
+        // 0    0    1/(zn-zf)   0
+        // 0    0    zn/(zn-zf)  1
+
+        Matrix mat;
+        memset(&mat.M11, 0, sizeof(Matrix));
+        mat.M11 = 2.0f / width;
+        mat.M22 = 2.0f / height;
+        mat.M33 = 1.0f/(zn-zf);
+        mat.M43 = zn/(zn-zf);
+        mat.M44 = 1.0f;
+        return mat;
     }
 
     Matrix Matrix::CreatePerspectiveFieldOfView(float fovy, float aspect, float zn, float zf)
     {
-        D3DXMATRIX mat;                 
-        D3DXMatrixPerspectiveFovRH(&mat,fovy,aspect,zn,zf);
-        return Matrix( (float*)&mat._11);
+       //CreatePerspectiveFieldOfViewRH
+
+       // yScale = cot(fovY/2)    
+       // xScale = yScale / aspect ratio
+
+       //   xScale     0          0              0
+       //   0        yScale       0              0
+       //   0        0        zf/(zn-zf)        -1
+       //   0        0        zn*zf/(zn-zf)      0 
+
+        float yScale = 1.0f / tanf(fovy * 0.5f);
+        float xScale = yScale / aspect;        
+
+        Matrix mat;
+        memset(&mat.M11, 0, sizeof(Matrix));        
+        mat.M11 = xScale;
+        mat.M22 = yScale;
+        mat.M33 = zf/(zn-zf);
+        mat.M34 = -1.0f;
+        mat.M43 = zn*zf/(zn-zf);
+        return mat;
     }
 
     Matrix Matrix::CreatePerspective(float width, float height, float zn, float zf)
     {
-        D3DXMATRIX mat;                 
-        D3DXMatrixPerspectiveRH(&mat,width,height,zn,zf);
-        return Matrix( (float*)&mat._11);
+
+        // CreatePerspectiveRH
+        // 2*zn/w  0       0              0
+        // 0       2*zn/h  0              0
+        // 0       0       zf/(zn-zf)    -1
+        // 0       0       zn*zf/(zn-zf)  0*/
+
+        Matrix mat;
+        memset(&mat.M11, 0, sizeof(Matrix));
+        mat.M11 = (2.0f * zn) / width;
+        mat.M22 = (2.0f * zn) / height;
+        mat.M33 = zf/(zn-zf);
+        mat.M34 = -1.0f;
+        mat.M43 = (zn*zf)/(zn-zf);        
+        return mat;
     }
 
     void Matrix::MakeIdentity()

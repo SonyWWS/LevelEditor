@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include "SwapChain.h"
-#include <DxErr.h>
 #include "../Core/Utils.h"
 #include "../Core/Logger.h"
 #include "Texture.h"

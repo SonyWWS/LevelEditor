@@ -2,7 +2,6 @@
 
 #include "CurveGob.h"
 #include <algorithm>
-#include "D3DX10Math.h"
 
 #include "../Renderer/RenderUtil.h"
 #include "../Renderer/RenderBuffer.h"
@@ -122,6 +121,7 @@ bool CurveGob::GetRenderables(RenderableNodeCollector* collector, RenderContext*
 
 //-----------------------------------------------------------------------------------------------------------------------------------
 
+bool useD3dX = true;
 void CurveGob::Update(float dt)
 {
     UpdateWorldTransform();
@@ -236,12 +236,10 @@ void CurveGob::Update(float dt)
                 float3 p3 = points[index+2];
 
                 for(int i = 0; i < m_steps; ++i)
-                {
-                    float3 out;
-                    float s = (float)i / (float)m_steps;
-                    D3DXVec3CatmullRom((D3DXVECTOR3*)&out, (D3DXVECTOR3*)&p0, (D3DXVECTOR3*)&p1, (D3DXVECTOR3*)&p2, (D3DXVECTOR3*)&p3, s);            
-                    verts.push_back(out);
-                }
+                {                    
+                    float s = (float)i / (float)m_steps;                    
+                    verts.push_back(Vec3CatmullRom(p0,p1,p2,p3,s));
+                }                
             }    
             verts.push_back(points[sz]);           
             break;
@@ -289,9 +287,8 @@ void CurveGob::Update(float dt)
         ID3D11DeviceContext* context = gD3D11->GetImmediateContext();
         assert(m_mesh.vertexBuffer != NULL);        
         UpdateVertexBuffer(context, m_mesh.vertexBuffer, m_mesh.vertexBuffer->GetFormat(), (void*)&verts[0], (uint32_t)verts.size());        
-    }
-
-    // ok, we are updated.
+    }    
+    
     m_needsRebuild = false;    
 }
 

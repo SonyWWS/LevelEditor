@@ -4,7 +4,6 @@
 #include "../Core/Logger.h"
 #include "../Core/Utils.h"
 #include "DeviceManager.h"
-#include <DxErr.h>
 
 namespace LvEdEngine
 {
@@ -89,6 +88,10 @@ DeviceManager::DeviceManager(void)
     Logger::Log(OutputMessageType::Info, L"%s\n",pdescr.Description);
 
 
+    // Note: If you set the pAdapter parameter to a non-NULL value,
+    //      you must also set the DriverType parameter 
+    //      to the D3D_DRIVER_TYPE_UNKNOWN
+    
 	// create d3d11 device on the first graphics adapter.
 	hr =  D3D11CreateDevice(
 			pAdapter,
