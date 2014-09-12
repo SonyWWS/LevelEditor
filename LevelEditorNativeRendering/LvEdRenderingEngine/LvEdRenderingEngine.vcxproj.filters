@@ -40,18 +40,6 @@
     <None Include="DirectX\DirectXTex\ReadMe.txt">
       <Filter>DirectX\DirectXTex</Filter>
     </None>
-    <None Include="DirectX\XNAMath\xnamathconvert.inl">
-      <Filter>DirectX\XNAMath</Filter>
-    </None>
-    <None Include="DirectX\XNAMath\xnamathmatrix.inl">
-      <Filter>DirectX\XNAMath</Filter>
-    </None>
-    <None Include="DirectX\XNAMath\xnamathmisc.inl">
-      <Filter>DirectX\XNAMath</Filter>
-    </None>
-    <None Include="DirectX\XNAMath\xnamathvector.inl">
-      <Filter>DirectX\XNAMath</Filter>
-    </None>
     <None Include="Resources\Light.png">
       <Filter>Shaders\Resources</Filter>
     </None>
@@ -332,9 +320,6 @@
     </ClInclude>
     <ClInclude Include="Core\ResUtil.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectX\XNAMath\xnamath.h">
-      <Filter>DirectX\XNAMath</Filter>
     </ClInclude>
     <ClInclude Include="Core\Logger.h">
       <Filter>Core</Filter>
@@ -713,9 +698,6 @@
     </Filter>
     <Filter Include="DirectX\WICTextureLoader">
       <UniqueIdentifier>{57d42e0d-4fab-4a9d-980f-2c1a410d8dc0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DirectX\XNAMath">
-      <UniqueIdentifier>{ea4a1c3c-a046-4659-b67b-542951b8944e}</UniqueIdentifier>
     </Filter>
     <Filter Include="GobSystem\Terrain">
       <UniqueIdentifier>{1ab0b10e-56aa-40bd-a684-d2f80ce18c59}</UniqueIdentifier>

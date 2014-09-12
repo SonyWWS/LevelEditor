@@ -1,6 +1,7 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 #include "CollisionPrimitives.h"
+#include <algorithm>
 #include <float.h>
 
 namespace LvEdEngine

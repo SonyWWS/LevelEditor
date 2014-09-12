@@ -20,17 +20,17 @@ The following LevelEditor features help you construct game levels efficiently an
 
 ![LevelEditor Design View](https://raw.githubusercontent.com/wiki/SonyWWS/LevelEditor/images/LE_Lights.png?raw=true "LevelEditor Design View")
 
-Prerequisites
--------------
-* Operating System: Microsoft Windows 7 64-bit SP1 or later.
-* Development Environment:
-    * Microsoft .Net 4.0 (or later) installed
-    * DirectX SDK June 2010.
-Download the SDK from http://www.microsoft.com/en-us/download/details.aspx?id=6812.
-    * If you have the Platform Update for Windows 7 installed, perform the actions for Windows 7 DirectX developers, as described in the following Microsoft Knowledgebase article: http://support.microsoft.com/kb/2670838.
-(That is, you need to use the Windows 8 SDK, use Visual studio 2012 (or later), or the Remote Tools for Visual Studio 2012 (x86 and X64).
-See the following Dev Center article for more information about the Platform Update for Windows 7: http://msdn.microsoft.com/en-us/library/windows/desktop/jj863687%28v=vs.85%29.aspx.
-  
+
+LevelEditor Minimal System Requirements
+---------------------------------------
+* Microsoft Windows® 7 64-bit SP1 with platform update or newer.
+* Microsoft DirectX® 10 compatible graphics card or newer.
+
+Development Environment:
+------------------------
+* Microsoft Visual Studio 2010 Pro
+     ** Windows SDK 8.1 installed at default location.
+* Or Visual Studio 2013 Pro  
    
 Getting Started 
 --------------- 
