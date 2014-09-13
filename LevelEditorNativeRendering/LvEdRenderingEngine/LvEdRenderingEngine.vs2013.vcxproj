@@ -48,6 +48,7 @@
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>LvEdRenderingEngine</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -58,6 +59,7 @@
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetName>LvEdRenderingEngine</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
