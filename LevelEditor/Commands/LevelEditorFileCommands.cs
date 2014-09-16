@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 using Sce.Atf;
 using Sce.Atf.Applications;
-
+using Sce.Atf.Adaptation;
 using LevelEditorCore;
 
 namespace LevelEditor.Commands
@@ -97,12 +97,8 @@ namespace LevelEditor.Commands
             bool result = base.CanDoCommand(commandTag);
             if (result == false && StandardCommand.FileSave.Equals(commandTag))
             {
-                // external resources.
-                foreach (var obj in Util.FindAll<IEditableResourceOwner>())
-                {
-                    result = obj.Dirty;
-                    if (result) break;
-                }   
+                GameDocument gamedoc = DocumentRegistry.ActiveDocument.As<GameDocument>();
+                result = gamedoc != null ? gamedoc.AnyDirty : result;                
             }
             return result;
         }        
