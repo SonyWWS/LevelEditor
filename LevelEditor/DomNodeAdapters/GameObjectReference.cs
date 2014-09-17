@@ -22,25 +22,32 @@ namespace LevelEditor.DomNodeAdapters
                 throw new ArgumentNullException("node");
             if (!node.Is<IGameObject>())
                 throw new ArgumentException(node.Type.Name + " is not derived from " +
-                                            Schema.gameObjectType.Type.Name);           
-            DomNode rootNode = node.GetRoot();
-            GameDocument gameDoc = rootNode.As<GameDocument>();
-            if(gameDoc == null)
-                throw new ArgumentException("nod must belong to a document.");
+                                            Schema.gameObjectType.Type.Name);
 
+            GameDocument gameDoc = node.GetRoot().As<GameDocument>();             
+            if(gameDoc == null)
+                throw new ArgumentException("node must belong to a document.");
 
             // create game object reference.
             DomNode refNode = new DomNode(Schema.gameObjectReferenceType.Type);
             GameObjectReference gobRef = refNode.As<GameObjectReference>();
-            
-            // Create Uri
-            Uri ur = new Uri(gameDoc.Uri +"#"+node.GetId());
-            refNode.SetAttribute(Schema.gameObjectReferenceType.refAttribute,ur);
-            gobRef.m_target = node;
+                       
+            gobRef.SetTarget(node);
+            gobRef.UpdateUri();
             return gobRef;
 
         }
-       
+
+        /// <summary>
+        /// Sets target to null.</summary>
+        public void UnResolve()
+        {
+            if (m_target != null)
+            {
+                m_target.AttributeChanged -= Target_AttributeChanged;
+                m_target = null;
+            }
+        }
         #region IReference<IGameObject> Members
 
         /// <summary>
@@ -86,6 +93,7 @@ namespace LevelEditor.DomNodeAdapters
 
         #endregion
 
+        #region private members
         private void Resolve()
         {
             if (m_target != null) return;
@@ -98,9 +106,42 @@ namespace LevelEditor.DomNodeAdapters
             if (gamedoc == null) return;
             string nodeId = ur.Fragment.TrimStart('#');
             DomNode target = gamedoc.Cast<IdToDomNode>().FindById(nodeId);
-            m_target = target;            
+            SetTarget(target);
         }
-              
-        private DomNode m_target;        
+
+        private void SetTarget(DomNode target)
+        {
+            if (target == null) return;
+            m_target = target;
+            m_target.AttributeChanged += Target_AttributeChanged;
+        }
+
+        private void Target_AttributeChanged(object sender, AttributeEventArgs e)
+        {
+            if (e.DomNode == m_target && e.AttributeInfo.Equivalent(e.DomNode.Type.IdAttribute))
+            {
+                UpdateUri();
+            }
+        }
+
+        private void UpdateUri()
+        {
+            GameDocument gameDoc = m_target.GetRoot().As<GameDocument>();
+            if (gameDoc != null)
+            {
+                Uri ur = new Uri(gameDoc.Uri + "#" + m_target.GetId());
+
+                // Note: Must set property to null before setting the new uri.
+                // Reason: The old and new uri might only differ by the fragment sections.
+                // Fragment is what comes after "#" symbol.
+                // DomNode.SetAttribute(...) considers two URIs to be equal event if 
+                // the fragment parts are different.
+                SetAttribute(Schema.gameObjectReferenceType.refAttribute, null);
+                SetAttribute(Schema.gameObjectReferenceType.refAttribute, ur);
+            }
+        }
+
+        private DomNode m_target;
+        #endregion
     }
 }

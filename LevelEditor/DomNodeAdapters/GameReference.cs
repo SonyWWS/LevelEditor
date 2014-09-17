@@ -106,14 +106,15 @@ namespace LevelEditor.DomNodeAdapters
 
         #endregion
 
+        /// <summary>
+        /// Gets absolute uri of the target GameDocument.</summary>
         public Uri Uri
         {
             get { return GetAttribute<Uri>(Schema.gameReferenceType.refAttribute); }
         }
 
         /// <summary>
-        /// Resolves the Uri to a Dom object using the parent's collection's resolvers</summary>
-        /// <returns>Dom object, referenced by the Uri, or null if uri can't be resolved</returns>
+        /// Resolves the Uri to DomNode</summary>        
         public void Resolve()
         {
             if (m_target == null)
@@ -144,7 +145,8 @@ namespace LevelEditor.DomNodeAdapters
         }
 
         /// <summary>
-        /// Unresolves the Dom Uri back to a string</summary>
+        /// Sets target to null and removes the resolved 
+        /// GameDocument from  GameDocumentRegistry</summary>
         public void Unresolve()
         {
             if (m_target != null)
