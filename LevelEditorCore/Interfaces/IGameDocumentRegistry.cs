@@ -25,6 +25,13 @@ namespace LevelEditorCore
         /// Finds document by uri</summary>        
         IGameDocument FindDocument(Uri ur);
 
+        
+        /// <summary>
+        /// Checks if GameDocumentRegistry contains a GameDocument</summary>
+        /// <param name="doc">GameDocument to search for</param>
+        /// <returns>True if GameDocument is in GameDocumentRegistry</returns>
+        bool Contains(IGameDocument doc);
+
         /// <summary>
         /// Event that is raised after a document is added</summary>
         event EventHandler<ItemInsertedEventArgs<IGameDocument>> DocumentAdded;

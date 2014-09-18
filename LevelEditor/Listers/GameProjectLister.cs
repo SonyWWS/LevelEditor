@@ -11,6 +11,7 @@ using Sce.Atf.Adaptation;
 
 using LevelEditorCore;
 using LevelEditor.DomNodeAdapters;
+using Sce.Atf.Dom;
 
 namespace LevelEditor
 {
@@ -287,6 +288,7 @@ namespace LevelEditor
                             // because we performing this operation outside of TransactionContext
                             // we must set Document Dirty flag.
                             gameDocument.Dirty = true;
+                            RefreshLayerContext();
                         }
                         catch (Exception ex)
                         {
@@ -321,7 +323,9 @@ namespace LevelEditor
                             gameRef.DomNode.RemoveFromParent();
                             // because we performing this operation outside of TransactionContext
                             // we must set Document Dirty flag.                        
-                            gameDocument.Dirty = true;                        
+                            gameDocument.Dirty = true;
+                            UpdateGameObjectReferences();
+                            RefreshLayerContext();
                         }
                     }
                     break;
@@ -330,6 +334,7 @@ namespace LevelEditor
                         GameReference gameRef = TreeControlAdapter.LastHit.As<GameReference>();
                         gameRef.Resolve();
                         TreeControlAdapter.Refresh(gameRef);
+                        RefreshLayerContext();
                     }
                     break;
                 case Command.Unresolve:
@@ -351,8 +356,15 @@ namespace LevelEditor
                                 unresolve = dlgResult != DialogResult.Cancel;
                             }
                             //cando = gameRef != null && gameRef.Target != null;
-                            if (save) subDoc.Save(subDoc.Uri, m_schemaLoader);
-                            if (unresolve) gameRef.Unresolve();
+                            if (save) 
+                                subDoc.Save(subDoc.Uri, m_schemaLoader);
+                            if (unresolve)
+                            {
+                                gameRef.Unresolve();
+                                UpdateGameObjectReferences();
+                                RefreshLayerContext();
+
+                            }
                             TreeControlAdapter.Refresh(gameRef);
                         }
                         catch (Exception ex)
@@ -428,10 +440,45 @@ namespace LevelEditor
             }
         }
 
-        void ValidationContext_Ended(object sender, EventArgs e)
+        private void ValidationContext_Ended(object sender, EventArgs e)
         {
             Refresh();
         }
+
+        private void RefreshLayerContext()
+        {
+            var layerContext = m_gameDocumentRegistry.MasterDocument.As<LayeringContext>();
+            if (layerContext != null)
+                layerContext.RefreshRoot();
+        }
+        /// <summary>
+        /// Unresolve all the GameObjectReferences, 
+        /// if the target object is belong to the removed documents</summary>
+        private void UpdateGameObjectReferences()
+        {
+            
+            // Refresh LayerListers, after the following subgame operations.
+            // adding 
+            // unresolving
+            // excluding  
+            // for all Layer Lister need to be refreshed.
+            
+            foreach (var subDoc in m_gameDocumentRegistry.Documents)
+            {
+                var rootNode = subDoc.Cast<DomNode>();
+                foreach (DomNode childNode in rootNode.Subtree)
+                {
+                    var gameObjectReference = childNode.As<GameObjectReference>();
+                    if (gameObjectReference == null) continue;
+                    var targetNode = Adapters.As<DomNode>(gameObjectReference.Target);
+                    if(targetNode == null) continue;
+                    var targetDoc = targetNode.GetRoot().As<IGameDocument>();
+                    if(!m_gameDocumentRegistry.Contains(targetDoc))
+                        gameObjectReference.UnResolve();
+                }
+            }
+        }
+
         private readonly IControlHostService m_controlHostService;
         private readonly IContextRegistry m_contextRegistry;
                 

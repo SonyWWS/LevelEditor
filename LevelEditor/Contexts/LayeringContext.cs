@@ -54,12 +54,17 @@ namespace LevelEditor
             }
         }
 
-       
-        private void validationContext_Ended(object sender, EventArgs e)
-        {                        
+
+        public void RefreshRoot()
+        {
             // refresh root.
             LayerLister lister = Globals.MEFContainer.GetExportedValue<LayerLister>();
-            lister.TreeControlAdapter.Refresh(m_rootLayers);                       
+            if(lister != null)
+                lister.TreeControlAdapter.Refresh(m_rootLayers);                       
+        }
+        private void validationContext_Ended(object sender, EventArgs e)
+        {
+            RefreshRoot();
         }
 
         private DomNode m_rootLayers;

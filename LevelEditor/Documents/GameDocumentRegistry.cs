@@ -44,6 +44,11 @@ namespace LevelEditor
             return null;            
         }
 
+        public bool Contains(IGameDocument doc)
+        {
+            return m_documents.Contains(doc);
+        }
+
         /// <summary>
         /// Event that is raised after a document is added</summary>
         public event EventHandler<ItemInsertedEventArgs<IGameDocument>> DocumentAdded = delegate { };
