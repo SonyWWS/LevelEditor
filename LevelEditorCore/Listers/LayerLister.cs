@@ -1,6 +1,7 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Windows.Forms;
@@ -17,7 +18,7 @@ namespace LevelEditorCore
     [Export(typeof(IInitializable))]
     [Export(typeof(LayerLister))]
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class LayerLister : TreeControlEditor, IControlHostClient, IInitializable
+    public class LayerLister : TreeControlEditor, IInitializable
     {
         /// <summary>
         /// Constructor</summary>
@@ -27,7 +28,6 @@ namespace LevelEditorCore
             : base(commandService)
         {
             Configure(out m_controlInfo);
-
             TreeControl.NodeCheckStateEdited += treeControl_NodeCheckStateEdited;
         }
 
@@ -46,6 +46,7 @@ namespace LevelEditorCore
             TreeControl.ShowRoot = false;
             TreeControl.AllowDrop = true;
             TreeControl.SelectionMode = SelectionMode.MultiExtended;
+            TreeControl.Text = "Drag items from the Project Lister and drop them here to create layers whose visibility can be controlled by clicking on a check box.".Localize();
         }
 
         /// <summary>
@@ -56,19 +57,17 @@ namespace LevelEditorCore
             get { return m_controlInfo; }
         }
 
+       
         /// <summary>
-        /// Gets or sets the layering context to be viewed and edited by the user</summary>
-        public ILayeringContext LayeringContext
+        /// Called when the underlying tree control raises the MouseUp event</summary>
+        /// <param name="e">Event args from the tree control's MouseUp event</param>
+        protected override void OnMouseUp(MouseEventArgs e)
         {
-            get { return m_layeringContext; }
-            set
-            {
-                if (m_layeringContext != value)
-                {
-                    m_layeringContext = value;
-                    TreeView = m_layeringContext;
-                }
-            }
+            // disable base method.
+            // Let laying command process mouse-up event.
+            // It is not possible to identify LayringCommands
+            // LayerLister must only operate on LayringCommands, not other 
+            // IContextMenuCommandProviders           
         }
 
         [Import]
@@ -82,39 +81,7 @@ namespace LevelEditorCore
         void IInitializable.Initialize()
         {
             m_contextRegistry.ActiveContextChanged += contextRegistry_ActiveContextChanged;
-
-            m_controlHostService.RegisterControl(TreeControl, m_controlInfo, this);
-        }
-
-        #endregion
-
-        #region IControlHostClient Members
-
-        /// <summary>
-        /// Notifies the client that its control has been activated. Activation occurs when
-        /// the control gets focus, or a parent "host" control gets focus.</summary>
-        /// <param name="control">Client control that was activated</param>
-        void IControlHostClient.Activate(Control control)
-        {
-            if (m_layeringContext != null)
-                m_contextRegistry.ActiveContext = m_layeringContext;
-        }
-
-        /// <summary>
-        /// Notifies the client that its control has been deactivated. Deactivation occurs when
-        /// another control or "host" control gets focus.</summary>
-        /// <param name="control">Client control that was deactivated</param>
-        void IControlHostClient.Deactivate(Control control)
-        {
-        }
-
-        /// <summary>
-        /// Requests permission to close the client's control</summary>
-        /// <param name="control">Client control to be closed</param>
-        /// <returns>True if the control can close, or false to cancel</returns>
-        bool IControlHostClient.Close(Control control)
-        {
-            return true;
+            m_controlHostService.RegisterControl(TreeControl, m_controlInfo, null);
         }
 
         #endregion
@@ -124,24 +91,14 @@ namespace LevelEditorCore
         /// <param name="e">Event args</param>
         protected override void OnLastHitChanged(EventArgs e)
         {
-            if (m_layeringContext != null)
-                m_layeringContext.SetActiveItem(LastHit);
-
+            var layeringContext = TreeView.As<ILayeringContext>();
+            layeringContext.SetActiveItem(LastHit);
             base.OnLastHitChanged(e);
         }
 
         private void contextRegistry_ActiveContextChanged(object sender, EventArgs e)
         {
-            LayeringContext = m_contextRegistry.GetMostRecentContext<ILayeringContext>();
-
-            if (LayeringContext != null)
-            {
-                TreeControl.Text = "Drag items from the Project Lister and drop them here to create layers whose visibility can be controlled by clicking on a check box.".Localize();
-            }
-            else
-            {
-                TreeControl.Text = null;
-            }
+            TreeView = m_contextRegistry.GetActiveContext<ILayeringContext>();            
         }
 
         private void treeControl_NodeCheckStateEdited(object sender, TreeControl.NodeEventArgs e)
@@ -151,17 +108,16 @@ namespace LevelEditorCore
 
         public void ShowLayer(object layer, bool show)
         {
-            ITransactionContext transactionContext = m_layeringContext.As<ITransactionContext>();
+            var layeringContext = TreeView.As<ILayeringContext>();
+            var transactionContext = TreeView.As<ITransactionContext>();
             transactionContext.DoTransaction(delegate
             {
-                m_layeringContext.SetVisible(layer, show);
+                layeringContext.SetVisible(layer, show);
             },
-                "Show/Hide Layer".Localize());
+            "Show/Hide Layer".Localize());
         }
-
+        
         private readonly ControlInfo m_controlInfo;
-        private ILayeringContext m_layeringContext;
-
         private static readonly Image s_layerImage = ResourceUtil.GetImage16(Sce.Atf.Resources.LayerImage);
     }
 }

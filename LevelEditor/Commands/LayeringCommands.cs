@@ -3,7 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-
+using System.Drawing;
+using System.Windows.Forms;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
@@ -18,123 +19,122 @@ namespace LevelEditor.Commands
     /// <summary>
     /// Component to add "Add Layer" command to app. Command is accessible only
     /// by right click (context menu).</summary>
-    [Export(typeof(IInitializable))]
-    [Export(typeof(IContextMenuCommandProvider))]
+    [Export(typeof(IInitializable))]   
     [PartCreationPolicy(CreationPolicy.Shared)]
-    public class LayeringCommands : ICommandClient, IContextMenuCommandProvider, IInitializable
-    {
-        /// <summary>
-        /// Constructor</summary>
-        /// <param name="commandService">Command service</param>
-        /// <param name="contextRegistry">Context registry</param>
-        [ImportingConstructor]
-        public LayeringCommands(
-            ICommandService commandService,
-            IContextRegistry contextRegistry,
-            LayerLister layerLister)
+    public class LayeringCommands :  IInitializable
+    {        
+        public LayeringCommands()
         {
-            m_commandService = commandService;
-            m_contextRegistry = contextRegistry;
-            m_layerLister = layerLister;
+            m_contextMenuStrip = new ContextMenuStrip();
+            m_contextMenuStrip.AutoClose = true;
+            
+            m_addLayer = new ToolStripMenuItem("New Layer".Localize());
+            m_addLayer.Click += (sender, e) => AddNewLayer();
+            m_contextMenuStrip.Items.Add(m_addLayer);
+
+            m_deleteLayer = new ToolStripMenuItem("Delete".Localize());
+            m_deleteLayer.Click += (sender, e) => Delete();
+            m_deleteLayer.ShortcutKeys = Keys.Delete;
+            m_deleteLayer.ShortcutKeyDisplayString = KeysUtil.KeysToString(Keys.Delete, true);
+            
+            
+            //m_deleteLayer.Image = CommandInfo.EditDelete.ImageKey;
+            m_contextMenuStrip.Items.Add(m_deleteLayer);
         }
 
-        private enum CommandTag
-        {
-            AddLayerFolder,
-        }
-
+        
         #region IInitializable Members
 
         void IInitializable.Initialize()
         {
-            m_commandService.RegisterCommand(
-                new CommandInfo(
-                    CommandTag.AddLayerFolder,
-                    null,
-                    null,
-                    "Add Layer".Localize(),
-                    "Creates a new layer folder".Localize()),
-                this);
+            m_layerLister.TreeControl.MouseUp += TreeControl_MouseUp;            
+            m_commandService.ProcessingKey += (sender, e) =>
+                {
+                    if (e.KeyData == Sce.Atf.Input.Keys.Delete
+                        && m_controlRegistry.ActiveControl == m_layerLister.ControlInfo)
+                    {
+                        e.Handled = Delete();                        
+                    }
+                };
         }
 
         #endregion
 
-        #region ICommandClient Members
-
-        bool ICommandClient.CanDoCommand(object commandTag)
-        {
-            return
-                CommandTag.AddLayerFolder.Equals(commandTag)
-                && m_targetRef != null
-                && m_targetRef.Target != null
-                && (m_targetRef.Target.Is<ILayer>() || m_targetRef.Target.Is<ILayeringContext>());
-        }
-
-        void ICommandClient.DoCommand(object commandTag)
-        {
-            if (CommandTag.AddLayerFolder.Equals(commandTag))
+        private void TreeControl_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {            
+            if (e.Button == MouseButtons.Right)
             {
-                ILayer newLayer = new DomNode(Schema.layerType.Type).As<ILayer>();
-                newLayer.Name = "New Layer".Localize();
-
-                IList<ILayer> layerList = null;
-                object target = m_targetRef.Target;
-                if (target != null)
-                {
-                    ILayer parentLayer = Adapters.As<ILayer>(target);
-                    if (parentLayer != null)
-                        layerList = parentLayer.Layers;
-                    else
-                    {
-                        LayeringContext layeringContext = Adapters.As<LayeringContext>(target);
-                        if (layeringContext != null)
-                            layerList = layeringContext.Layers;
-                    }
-                }
-
-                if (layerList != null)
-                {
-                    ILayeringContext layeringContext = m_contextRegistry.GetMostRecentContext<ILayeringContext>();
-                    ITransactionContext transactionContext = Adapters.As<ITransactionContext>(layeringContext);
-                    TransactionContexts.DoTransaction(
-                        transactionContext,
-                        delegate
-                        {
-                            layerList.Add(newLayer);
-                        },
-                        "Add Layer".Localize());
-                }
+                var instancingContext = m_layerLister.TreeView.As<IInstancingContext>();
+                m_deleteLayer.Enabled = instancingContext.CanDelete();
+                m_deleteLayer.Visible = instancingContext.CanDelete();
+                SkinService.ApplyActiveSkin(m_contextMenuStrip);
+                m_contextMenuStrip.Show(m_layerLister.TreeControl, e.X, e.Y);                
             }
         }
-
-        void ICommandClient.UpdateCommand(object commandTag, CommandState commandState)
-        {
-        }
-
-        #endregion
-
-        #region IContextMenuCommandProvider Members
 
         /// <summary>
-        /// Gets tags for context menu (right click) commands</summary>
-        /// <param name="context">Context containing target object</param>
-        /// <param name="target">Right clicked object, or null if none</param>
-        IEnumerable<object> IContextMenuCommandProvider.GetCommands(object context, object target)
+        /// Delete selected objects</summary>
+        private bool Delete()
         {
-            m_targetRef = null;
-
-            if (Adapters.Is<LayeringContext>(context) && m_layerLister.TreeControl.Focused)
+            var instancingContext = m_layerLister.TreeView.As<IInstancingContext>();
+            if (instancingContext.CanDelete())
             {
-                m_targetRef = new WeakReference(target);
-                yield return CommandTag.AddLayerFolder;
+                var transactionContext = m_layerLister.TreeView.As<ITransactionContext>();
+                transactionContext.DoTransaction(
+                        delegate
+                        {
+                            instancingContext.Delete();
+                        },
+                        m_deleteLayer.Text);
+                return true;
+            }
+            return false;
+        }
+
+        private void AddNewLayer()
+        {
+            object lastHit = m_layerLister.LastHit;
+            ILayer newLayer = new DomNode(Schema.layerType.Type).As<ILayer>();
+            newLayer.Name = "New Layer".Localize();
+
+            IList<ILayer> layerList = null;
+
+            if (lastHit != null)
+            {
+                ILayer parentLayer = Adapters.As<ILayer>(lastHit);
+                if (parentLayer != null)
+                    layerList = parentLayer.Layers;
+                else
+                {
+                    LayeringContext layeringContext = Adapters.As<LayeringContext>(lastHit);
+                    if (layeringContext != null)
+                        layerList = layeringContext.Layers;
+                }
+            }
+
+            if (layerList != null)
+            {
+                var transactionContext = m_layerLister.TreeView.As<ITransactionContext>();
+                transactionContext.DoTransaction(
+                    delegate
+                    {
+                        layerList.Add(newLayer);
+                    },
+                    m_addLayer.Text);
             }
         }
 
-        #endregion
-
+        [Import(AllowDefault = false)]
         private LayerLister m_layerLister;
+
+        [Import(AllowDefault = false)]
+        private IControlRegistry m_controlRegistry;
+
+        [Import(AllowDefault = false)]
         private ICommandService m_commandService;
-        private IContextRegistry m_contextRegistry;
-        private WeakReference m_targetRef;
+
+        private ContextMenuStrip m_contextMenuStrip;
+        private ToolStripMenuItem m_addLayer;
+        private ToolStripMenuItem m_deleteLayer;
     }
 }
