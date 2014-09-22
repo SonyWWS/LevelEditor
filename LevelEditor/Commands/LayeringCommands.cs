@@ -30,15 +30,14 @@ namespace LevelEditor.Commands
             
             m_addLayer = new ToolStripMenuItem("New Layer".Localize());
             m_addLayer.Click += (sender, e) => AddNewLayer();
-            m_contextMenuStrip.Items.Add(m_addLayer);
-
+            
             m_deleteLayer = new ToolStripMenuItem("Delete".Localize());
             m_deleteLayer.Click += (sender, e) => Delete();
             m_deleteLayer.ShortcutKeys = Keys.Delete;
             m_deleteLayer.ShortcutKeyDisplayString = KeysUtil.KeysToString(Keys.Delete, true);
-            
-            
-            //m_deleteLayer.Image = CommandInfo.EditDelete.ImageKey;
+            m_deleteLayer.Image = ResourceUtil.GetImage16(CommandInfo.EditDelete.ImageName);
+
+            m_contextMenuStrip.Items.Add(m_addLayer);
             m_contextMenuStrip.Items.Add(m_deleteLayer);
         }
 
@@ -84,6 +83,10 @@ namespace LevelEditor.Commands
                         delegate
                         {
                             instancingContext.Delete();
+                            ISelectionContext selectionContext = m_layerLister.TreeView.As<ISelectionContext>();
+                            if (selectionContext != null)
+                                selectionContext.Clear();
+
                         },
                         m_deleteLayer.Text);
                 return true;
@@ -98,20 +101,17 @@ namespace LevelEditor.Commands
             newLayer.Name = "New Layer".Localize();
 
             IList<ILayer> layerList = null;
-
-            if (lastHit != null)
+            var layer = lastHit.As<ILayer>();
+            if (layer != null)
             {
-                ILayer parentLayer = Adapters.As<ILayer>(lastHit);
-                if (parentLayer != null)
-                    layerList = parentLayer.Layers;
-                else
-                {
-                    LayeringContext layeringContext = Adapters.As<LayeringContext>(lastHit);
+                layerList = layer.Layers;
+            }
+            else
+            {
+                LayeringContext layeringContext = m_layerLister.TreeView.As<LayeringContext>();
                     if (layeringContext != null)
                         layerList = layeringContext.Layers;
-                }
-            }
-
+            }                                
             if (layerList != null)
             {
                 var transactionContext = m_layerLister.TreeView.As<ITransactionContext>();
