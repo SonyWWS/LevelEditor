@@ -54,7 +54,6 @@ namespace LevelEditor
             }
         }
 
-
         public void RefreshRoot()
         {
             // refresh root.
@@ -281,24 +280,27 @@ namespace LevelEditor
                 }
             }
 
-            foreach (IGameObject gameObject in layer.GetGameObjects())
+            if (!hasCheckedChild || !hasUncheckedChild)
             {
-                IVisible iVisible = gameObject.As<IVisible>();
-                if (iVisible != null)
+                foreach (IGameObject gameObject in layer.GetGameObjects())
                 {
-                    if (iVisible.Visible)
-                        hasCheckedChild = true;
-                    else
-                        hasUncheckedChild = true;
+                    IVisible iVisible = gameObject.As<IVisible>();
+                    if (iVisible != null)
+                    {
+                        if (iVisible.Visible)
+                            hasCheckedChild = true;
+                        else
+                            hasUncheckedChild = true;
+                    }
                 }
             }
 
             if (hasCheckedChild && !hasUncheckedChild)
                 return CheckState.Checked;
-            else if (hasUncheckedChild && !hasCheckedChild)
+            if (hasUncheckedChild && !hasCheckedChild)
                 return CheckState.Unchecked;
-            else
-                return CheckState.Indeterminate;
+
+            return CheckState.Indeterminate;
         }
 
         #endregion

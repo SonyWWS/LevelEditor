@@ -262,13 +262,22 @@ namespace Sce.Atf.Controls
         /// <param name="y">The y-coordinate of the upper-left corner of the check box</param>
         public virtual void DrawCheckBox(TreeControl.Node node, Graphics g, int x, int y)
         {
-            ButtonState buttonState = ButtonState.Flat;
-            if (node.CheckState == CheckState.Checked)
-                buttonState |= ButtonState.Checked;
-            else if (node.CheckState == CheckState.Indeterminate)
-                buttonState |= ButtonState.Inactive;
             Rectangle bounds = new Rectangle(x, y, CheckBoxSize.Width, CheckBoxSize.Height);
-            ControlPaint.DrawCheckBox(g, bounds, buttonState);
+            if (node.CheckState == CheckState.Indeterminate)
+            {   // draw indeterminate state.                                               
+                var rect = Rectangle.Inflate(bounds,-1, -1);
+                g.FillRectangle(SystemBrushes.Window, rect);
+                var rect2 = Rectangle.Inflate(bounds,-4, -4);
+                g.FillRectangle(SystemBrushes.ControlText, rect2);
+                g.DrawRectangle(SystemPens.ControlDark, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);                
+            }
+            else
+            {
+                var buttonState = ButtonState.Flat;
+                if (node.CheckState == CheckState.Checked)
+                    buttonState |= ButtonState.Checked;            
+                ControlPaint.DrawCheckBox(g, bounds, buttonState);
+            }            
         }
 
         /// <summary>

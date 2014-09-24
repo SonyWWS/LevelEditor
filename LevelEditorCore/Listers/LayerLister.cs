@@ -98,7 +98,16 @@ namespace LevelEditorCore
 
         private void contextRegistry_ActiveContextChanged(object sender, EventArgs e)
         {
-            TreeView = m_contextRegistry.GetActiveContext<ILayeringContext>();            
+            // Note: obtain ITreeView from ILayeringContext not directly from GetActiveContext().
+            var context = m_contextRegistry.GetActiveContext<ILayeringContext>();
+            var treeView = context.As<ITreeView>();
+
+            // The TreeView property guards again setting same value
+            // but it still reloads the context.            
+            // so this check is required to prevent the tree to unnecessarily reload 
+            // the context.
+            if (TreeView != treeView)
+                TreeView = treeView;
         }
 
         private void treeControl_NodeCheckStateEdited(object sender, TreeControl.NodeEventArgs e)

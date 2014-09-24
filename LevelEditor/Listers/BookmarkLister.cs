@@ -113,7 +113,17 @@ namespace LevelEditor
         
         private void contextRegistry_ActiveContextChanged(object sender, EventArgs e)
         {
-            TreeView = m_contextRegistry.GetActiveContext<BookmarkingContext>();
+            // Note: obtain ITreeView from BookmarkingContext not directly from GetActiveContext().
+            var context = m_contextRegistry.GetActiveContext<BookmarkingContext>();            
+            var treeview = context.As<ITreeView>();
+
+            // The TreeView property guards again setting same value
+            // but it still reloads the context.            
+            // so this check is required to prevent the tree to unnecessarily reload 
+            // the context.
+            if (TreeView != treeview)
+                TreeView = treeview;
+            
         }
 
         private void TreeControl_MouseDown(object sender, MouseEventArgs e)
