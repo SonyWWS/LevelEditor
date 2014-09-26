@@ -43,25 +43,20 @@ namespace LevelEditor.DomNodeAdapters
             NumericTupleEditor rotationTupleEditor =
                 new NumericTupleEditor(typeof(float), new string[] { "x", "y", "z" });
             rotationTupleEditor.ScaleFactor = 360 / (2 * Math.PI); // Radians to Degrees
-
-            FloatArrayConverter converter = new FloatArrayConverter();
-            FloatArrayConverter rotationConverter = new FloatArrayConverter();
-            rotationConverter.ScaleFactor = 360 / (2 * Math.PI); // Radians to Degrees
-
-
+          
             string category = "Transform".Localize();
             // Check for transform types
             if ((transformType & TransformationTypes.Translation) != 0)
                 descriptors.Add(
                     new AttributePropertyDescriptor(
                         "Translation", Schema.gameObjectType.translateAttribute, category, "Translation of Game Object along X, Y, and Z axes".Localize(),
-                        false, tupleEditor, converter));
+                        false, tupleEditor));
 
             if ((transformType & TransformationTypes.Rotation) != 0)
                 descriptors.Add(new AttributePropertyDescriptor(
                         "Rotation".Localize(), Schema.gameObjectType.rotateAttribute, category, 
                         "Origin of Rotation transform relative to Game Object Translation".Localize(),
-                        false, rotationTupleEditor, rotationConverter));
+                        false, rotationTupleEditor));
 
             if ((transformType & TransformationTypes.Scale) != 0)
             {
@@ -71,14 +66,14 @@ namespace LevelEditor.DomNodeAdapters
                             "Scale".Localize(), 
                             Schema.gameObjectType.scaleAttribute, category, 
                             "Scale of Game Object along X, Y, and Z axes".Localize(),
-                            false, tupleEditor, converter));
+                            false, tupleEditor));
                 else
                     descriptors.Add(
                         new AttributePropertyDescriptor(
                             "Scale".Localize(), Schema.gameObjectType.scaleAttribute, 
                             category, 
                             "Scale of Game Object along X, Y, and Z axes".Localize(),
-                            false, new UniformArrayEditor<Single>(), new UniformFloatArrayConverter()));
+                            false, new UniformArrayEditor<Single>()));
             }
 
             if ((transformType & TransformationTypes.Pivot) != 0)
@@ -86,7 +81,7 @@ namespace LevelEditor.DomNodeAdapters
                     new AttributePropertyDescriptor(
                         "Pivot".Localize(), Schema.gameObjectType.pivotAttribute, category,
                         "Origin of Rotation and scale transform relative to Game Object Translation".Localize(),
-                        false, tupleEditor, converter));  
+                        false, tupleEditor));  
            
 
             // remove hidden properties
