@@ -6,13 +6,11 @@ using System.ComponentModel.Composition;
 using System.Windows.Forms;
 using System.Drawing;
 
-
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
 using Sce.Atf.Dom;
 using Sce.Atf.VectorMath;
-
 
 using LevelEditorCore;
 using Camera = Sce.Atf.Rendering.Camera;
@@ -184,20 +182,21 @@ namespace RenderingInterop
             
             Vec3F rotAxis = new Vec3F();
             float theta = 0;
-            
+
+            float snapAngle = ((ISnapSettings)DesignView).SnapAngle;
             switch (m_hitRegion)
             {                
                 case HitRegion.XAxis:
                     {
                         Plane3F xplane = new Plane3F(xAxis, origin);
-                        theta = CalcAngle(origin, xplane, hitRay, dragRay);
+                        theta = CalcAngle(origin, xplane, hitRay, dragRay, snapAngle);
                         rotAxis = HitMatrix.XAxis;                     
                     }
                     break;
                 case HitRegion.YAxis:
                     {
                         Plane3F yplane = new Plane3F(yAxis, origin);
-                        theta = CalcAngle(origin, yplane, hitRay, dragRay);
+                        theta = CalcAngle(origin, yplane, hitRay, dragRay, snapAngle);
                         rotAxis = HitMatrix.YAxis;
 
                     }
@@ -205,7 +204,7 @@ namespace RenderingInterop
                 case HitRegion.ZAxis:
                     {
                         Plane3F zplane = new Plane3F(zAxis, origin);
-                        theta = CalcAngle(origin, zplane, hitRay, dragRay);
+                        theta = CalcAngle(origin, zplane, hitRay, dragRay, snapAngle);
                         rotAxis = HitMatrix.ZAxis;
                     }
                     break;
@@ -258,7 +257,7 @@ namespace RenderingInterop
             m_rotations = null;
         }
         
-        private static float CalcAngle(Vec3F origin, Plane3F plane, Ray3F ray0, Ray3F ray1)
+        private static float CalcAngle(Vec3F origin, Plane3F plane, Ray3F ray0, Ray3F ray1, float snapAngle)
         {
             float theta = 0;            
             Vec3F p0;
@@ -269,7 +268,7 @@ namespace RenderingInterop
             {
                 Vec3F v0 = Vec3F.Normalize(p0 - origin);
                 Vec3F v1 = Vec3F.Normalize(p1 - origin);
-                theta = CalcAngle(v0, v1, plane.Normal, 0);
+                theta = CalcAngle(v0, v1, plane.Normal, snapAngle);
             }
             return theta;
         }
@@ -279,14 +278,14 @@ namespace RenderingInterop
             float angle = Vec3F.Dot(v0, v1);
             if (angle > 1.0f)
                 angle = 1.0f;
-            else if (angle < -1.0f)
+            else if (angle <= -1.0f)
                 angle = 1.0f;
             angle = (float)Math.Acos(angle);
 
             // Check if v0 is left of v1
             Vec3F cross = Vec3F.Cross(v0, v1);
             if (Vec3F.Dot(cross, axis) < 0)
-                angle = -angle;
+                angle = -angle; //todo instead of negative use 0 to 2Pi.
 
             // round to nearest multiple of preference
             if (snapAngle > 0)
@@ -313,10 +312,10 @@ namespace RenderingInterop
             if (node == null ) return null;
             
             Path<DomNode> path = new Path<DomNode>(node.Cast<DomNode>().GetPath());
-            Matrix4F parent = TransformUtils.CalcPathTransform(path, path.Count - 1);
+            Matrix4F localToWorld = TransformUtils.CalcPathTransform(path, path.Count - 1);
 
             // local transform
-            Matrix4F toworld = new Matrix4F(parent);
+            Matrix4F toworld = new Matrix4F(localToWorld);
 
             // Offset by rotate pivot
             Matrix4F P = new Matrix4F();

@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace LevelEditorCore
@@ -78,7 +78,14 @@ namespace LevelEditorCore
         /// Invalates all the visible views.</summary>        
         /// <remarks>if realtime is true then this method do nothing.</remarks>
         void InvalidateViews();
-        
+
+        /// <summary>
+        /// Gets or sets the background color of the design controls</summary>
+        Color BackColor
+        {
+            get;
+            set;
+        }
         /// <summary>
         /// Advance update and render by step</summary>
         void Tick();

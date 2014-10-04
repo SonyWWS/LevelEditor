@@ -10,8 +10,6 @@ using System.Diagnostics;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Controls;
-using Sce.Atf.VectorMath;
-
 
 using ControlSchemes = Sce.Atf.Rendering.ControlSchemes;
 using MayaControlScheme = Sce.Atf.Rendering.MayaControlScheme;
@@ -34,7 +32,7 @@ namespace LevelEditorCore
 
             m_frequency = Stopwatch.Frequency;
             m_baseTicks = Stopwatch.GetTimestamp();
-            m_lastTicks = m_baseTicks;
+            m_lastTicks = m_baseTicks;            
         }
         
         #region IDesignView Members
@@ -184,6 +182,18 @@ namespace LevelEditorCore
             set;
         }
 
+        [DefaultValue(typeof(Color), "0xFF606060")]
+        public Color BackColor
+        {
+            get { return m_backColor; }
+            set
+            {
+                m_backColor = value;
+                InvalidateViews();
+            }
+        }
+        private Color m_backColor = Color.FromArgb(96, 96, 96);
+
         public void InvalidateViews()
         {
             foreach (DesignViewControl view in Views)
@@ -221,28 +231,32 @@ namespace LevelEditorCore
 
         #region ISnapSettings Members
 
+        [DefaultValue(false)]
         public bool SnapVertex { get; set; }
+
+        [DefaultValue(false)]
         public bool RotateOnSnap { get; set; }
+
+        [DefaultValue(SnapFromMode.Pivot)]
         public SnapFromMode SnapFrom { get; set; }
+
+        [DefaultValue(false)]
         public bool ManipulateLocalAxis { get; set; }
+
+        [DefaultValue((float)(5.0f * (Math.PI / 180.0f)))]
+        public float SnapAngle
+        {
+            get{return m_SnapAngle;}
+            set
+            {
+                m_SnapAngle = MathUtil.Clamp(value,0, (float) (2.0 * Math.PI));
+            }
+        }
 
         #endregion
 
       
-        /// <summary>
-        /// Gets or sets the background color of the design controls</summary>        
-        public Color BackColor
-        {
-            get { return m_backColor; }
-            set
-            {
-                m_backColor = value;
-                foreach (DesignViewControl view in QuadView.Controls)
-                {
-                    view.BackColor = m_backColor;                         
-                }
-            }
-        }
+       
 
         /// <summary>
         /// Distance to the camera's far clipping plane.</summary>        
@@ -284,37 +298,21 @@ namespace LevelEditorCore
                 m_controlScheme = value;
             }
         }
-        
-        /// <summary>
-        /// The angle, in degrees, that rotations should be an integer multiple of.</summary>        
-        [DefaultValue((float)(5.0f * (Math.PI / 180.0f)))]
-        public float SnapAngle
-        {
-            get
-            {
-                return (float)(m_SnapAngle * (180.0f / Math.PI)); 
-            }
-            set
-            {
-                m_SnapAngle = (float)(value * (Math.PI / 180.0f));                
-            }
-        }
-       
-        protected int DefaultSplitterThickness = 8;
-        protected QuadPanelControl QuadView;
+                   
+        protected const int DefaultSplitterThickness = 8;
+        protected readonly QuadPanelControl QuadView;
 
         #region private members
                 
         private float m_cameraFarZ = 2048;
-        private ControlSchemes m_controlScheme;
-        private float m_SnapAngle;
+        private ControlSchemes m_controlScheme = ControlSchemes.Maya;
+        private float m_SnapAngle = (float)(5.0 * (Math.PI / 180.0f));
         private IManipulator m_manipulator;
         private IValidationContext m_validationContext;
-        private Color m_backColor = SystemColors.ControlDark;
-
+        
         // update and render variables.
         private double m_frequency;
-        private long m_baseTicks;
+        private readonly long m_baseTicks;
         private long m_lastTicks;
         #endregion       
     }

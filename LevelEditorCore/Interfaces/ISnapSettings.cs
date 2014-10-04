@@ -23,6 +23,16 @@ namespace LevelEditorCore
         }
 
         /// <summary>
+        /// Snap to angle when using rotation manipulator.
+        /// The Angle is in radians</summary>        
+        float SnapAngle
+        {
+            get;
+            set;
+        }
+
+
+        /// <summary>
         /// If 'true', then the translate manipulator should use the object's local coordinate system,
         /// otherwise, the translate manipulator control is aligned to the world coordinate system.</summary>
         bool ManipulateLocalAxis

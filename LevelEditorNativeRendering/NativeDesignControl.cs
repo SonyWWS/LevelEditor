@@ -58,15 +58,6 @@ namespace RenderingInterop
             get { return m_renderState; }
         }
 
-        protected override void OnBackColorChanged(EventArgs e)
-        {
-            base.OnBackColorChanged(e);
-            if (swapChainId != 0)
-            {
-                GameEngine.SetObjectProperty(swapChainId, SurfaceId, BkgColorPropId, BackColor);
-            }            
-        }
-        
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
@@ -327,7 +318,7 @@ namespace RenderingInterop
         {
             if (DesignView.Context == null || GameEngine.IsInError)
             {
-                e.Graphics.Clear(BackColor);
+                e.Graphics.Clear(DesignView.BackColor);
                 if(GameEngine.IsInError)
                     e.Graphics.DrawString(GameEngine.CriticalError, Font, Brushes.Red, 1, 1);
                 return;
@@ -361,8 +352,9 @@ namespace RenderingInterop
 
             if (skipRender)
                 return;
-
+            
             m_clk.Start();
+            GameEngine.SetObjectProperty(swapChainId, SurfaceId, BkgColorPropId, DesignView.BackColor);
             GameEngine.SetRenderState(RenderState);
             GameEngine.Begin(SurfaceId, Camera.ViewMatrix, Camera.ProjectionMatrix);
 

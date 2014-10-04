@@ -6,20 +6,16 @@ using System.ComponentModel.Composition;
 
 using Sce.Atf;
 using Sce.Atf.Adaptation;
-using Sce.Atf.Applications;
 using Sce.Atf.Dom;
 using Sce.Atf.VectorMath;
 
 using LevelEditorCore;
 
 using Camera = Sce.Atf.Rendering.Camera;
-using ViewTypes = Sce.Atf.Rendering.ViewTypes;
-using AxisSystemType = Sce.Atf.Rendering.Dom.AxisSystemType;
-
 
 namespace RenderingInterop
 {
-    using HitRegion = RenderingInterop.TranslatorControl.HitRegion;
+    using HitRegion = TranslatorControl.HitRegion;
 
     [Export(typeof(IManipulator))]
     [PartCreationPolicy(CreationPolicy.Shared)]

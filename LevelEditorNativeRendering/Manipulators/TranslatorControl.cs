@@ -2,11 +2,9 @@
 
 using System;
 using System.Drawing;
-using Sce.Atf.VectorMath;
 
-using LevelEditorCore;
+using Sce.Atf.VectorMath;
 using LevelEditorCore.VectorMath;
-using Camera = Sce.Atf.Rendering.Camera;
 
 namespace RenderingInterop
 {

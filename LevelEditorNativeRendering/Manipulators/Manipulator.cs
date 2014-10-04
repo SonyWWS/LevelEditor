@@ -11,8 +11,6 @@ using Sce.Atf.Adaptation;
 using Sce.Atf.Dom;
 using Sce.Atf.Applications;
 using LevelEditorCore;
-using LevelEditorCore.VectorMath;
-using Camera = Sce.Atf.Rendering.Camera;
 
 namespace RenderingInterop
 {

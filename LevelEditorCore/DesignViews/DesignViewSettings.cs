@@ -1,7 +1,7 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System.ComponentModel.Composition;
-
+using System;
 using Sce.Atf;
 using Sce.Atf.Controls.PropertyEditing;
 using Sce.Atf.Applications;
@@ -21,7 +21,9 @@ namespace LevelEditorCore
 
         void IInitializable.Initialize()
         {
-
+            
+            var snapAngleEditor = new NumericEditor(typeof(float));
+            snapAngleEditor.ScaleFactor = 180.0 / Math.PI;
             string misc = "Misc".Localize();
              var userSettings = new System.ComponentModel.PropertyDescriptor[]
                 {                                       
@@ -44,7 +46,14 @@ namespace LevelEditorCore
                     new BoundPropertyDescriptor(
                         m_designView, () => m_designView.RotateOnSnap,
                         "RotateOnSnap".Localize(),
-                        misc, "Rotate on snap".Localize())                     
+                        misc, "Rotate on snap".Localize()),
+
+                    new BoundPropertyDescriptor(
+                        m_designView, () => m_designView.SnapAngle,
+                        "Snap Angle".Localize(),
+                        misc, "Snap to angle when using rotation manipulator." +
+                              "Angle is in degrees. Set it to zero to disable snapping.".Localize(), snapAngleEditor,null)
+                     
                 };
 
             m_settingsService.RegisterUserSettings( "Editors".Localize() + "/" + "DesignView".Localize(), userSettings);

@@ -21,7 +21,7 @@ using AxisSystemType = Sce.Atf.Rendering.Dom.AxisSystemType;
 
 namespace RenderingInterop
 {
-    using HitRegion = RenderingInterop.TranslatorControl.HitRegion;
+    using HitRegion = TranslatorControl.HitRegion;
 
     [Export(typeof(IManipulator))]
     [PartCreationPolicy(CreationPolicy.Shared)]

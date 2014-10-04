@@ -11,6 +11,7 @@ using Sce.Atf.VectorMath;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Dom;
 using Sce.Atf.Applications;
+
 using LevelEditorCore;
 using LevelEditorCore.VectorMath;
 using Camera = Sce.Atf.Rendering.Camera;
@@ -366,10 +367,10 @@ namespace RenderingInterop
             if (node == null ) return null;
 
             Path<DomNode> path = new Path<DomNode>(node.Cast<DomNode>().GetPath());
-            Matrix4F parent = TransformUtils.CalcPathTransform(path, path.Count - 1);
+            Matrix4F localToWorld = TransformUtils.CalcPathTransform(path, path.Count - 1);
 
             // local transform
-            Matrix4F toworld = new Matrix4F(parent);
+            Matrix4F toworld = new Matrix4F(localToWorld);
 
             // Offset by pivot
             Matrix4F P = new Matrix4F();

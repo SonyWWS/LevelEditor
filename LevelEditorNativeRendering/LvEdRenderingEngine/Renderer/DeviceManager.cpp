@@ -36,6 +36,7 @@ DeviceManager::DeviceManager(void)
 
     int i = 0;
     int adapterIndex = 0;
+    IDXGIOutput* output;
 
     printf("Available DXGIAdapters:\n");
     while(m_pDXGIFactory1->EnumAdapters1(i, &pAdapter) != DXGI_ERROR_NOT_FOUND) 
@@ -43,6 +44,22 @@ DeviceManager::DeviceManager(void)
         DXGI_ADAPTER_DESC1 descr;
         pAdapter->GetDesc1(&descr);
         wprintf(L"\t%s\n",descr.Description);
+
+
+        uint32_t j = 0;
+       while(pAdapter->EnumOutputs(j, &output) != DXGI_ERROR_NOT_FOUND)
+       {
+
+           DXGI_OUTPUT_DESC outdescr;
+           output->GetDesc(&outdescr);
+           wprintf(L"\t\toutput Name: %s\n",outdescr.DeviceName);
+           wprintf(L"\t\toutput IsAttached: %d\n",outdescr.AttachedToDesktop);
+           
+           j++;
+           output->Release();
+           output = NULL;
+       }
+
 
         // choose discrete graphics over integrated.
         if(adapterIndex == 0 && (descr.VendorId == nvidia || descr.VendorId == ati))
