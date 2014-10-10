@@ -25,7 +25,7 @@ namespace LevelEditorCore
             var snapAngleEditor = new NumericEditor(typeof(float));
             snapAngleEditor.ScaleFactor = 180.0 / Math.PI;
             string misc = "Misc".Localize();
-             var userSettings = new System.ComponentModel.PropertyDescriptor[]
+            var userSettings = new System.ComponentModel.PropertyDescriptor[]
                 {                                       
                     new BoundPropertyDescriptor(
                         m_designView, () => m_designView.BackColor, "BackgroundColor".Localize(), misc,
@@ -58,6 +58,11 @@ namespace LevelEditorCore
 
             m_settingsService.RegisterUserSettings( "Editors".Localize() + "/" + "DesignView".Localize(), userSettings);
             m_settingsService.RegisterSettings(this, userSettings);
+
+            var snapfrom = new BoundPropertyDescriptor(
+                         m_designView, () => m_designView.SnapFrom,
+                         "SnapMode".Localize(),null, null);
+            m_settingsService.RegisterSettings(this, snapfrom);
 
             if (m_scriptingService != null)
                 m_scriptingService.SetVariable("designView", m_designView);

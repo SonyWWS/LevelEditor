@@ -120,7 +120,7 @@
                 <xs:attribute name="diffuse" type="xs:int" default="-1644826"/>
                 <xs:attribute name="specular" type="xs:int" default="-8355712"/>
                 <xs:attribute name="attenuation" type="vector3Type" default="0 1 0"/>
-                <xs:attribute name="range" type="xs:float" default="1"/>
+                <xs:attribute name="range" type="xs:float" default="10"/>
             </xs:extension>
         </xs:complexContent>
     </xs:complexType>

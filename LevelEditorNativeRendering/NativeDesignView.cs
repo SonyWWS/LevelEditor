@@ -14,9 +14,8 @@ using LevelEditorCore;
 using ViewTypes = Sce.Atf.Rendering.ViewTypes;
 
 namespace RenderingInterop
-{
-
-    [Export(typeof(IRenderLoop))]
+{    
+    [Export(typeof(ISnapSettings))]
     [Export(typeof(IDesignView))]
     [Export(typeof(DesignView))]
     [PartCreationPolicy(CreationPolicy.Shared)]

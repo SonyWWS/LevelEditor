@@ -147,8 +147,7 @@ namespace RenderingInterop
                 if (notifier != null) notifier.OnBeginDrag();
             }
 
-            m_rotations = new Matrix4F[NodeList.Count];
-
+            m_rotations = new Matrix4F[NodeList.Count];            
             for (int k = 0; k < NodeList.Count; k++)
             {
                 ITransformable node = NodeList[k];                
@@ -180,7 +179,7 @@ namespace RenderingInterop
             Vec3F zAxis = axisMtrx.ZAxis;
             Vec3F origin = axisMtrx.Translation;
             
-            Vec3F rotAxis = new Vec3F();
+            Vec3F rotAxis = new Vec3F();            
             float theta = 0;
 
             float snapAngle = ((ISnapSettings)DesignView).SnapAngle;
@@ -190,15 +189,14 @@ namespace RenderingInterop
                     {
                         Plane3F xplane = new Plane3F(xAxis, origin);
                         theta = CalcAngle(origin, xplane, hitRay, dragRay, snapAngle);
-                        rotAxis = HitMatrix.XAxis;                     
+                        rotAxis = HitMatrix.XAxis;                        
                     }
                     break;
                 case HitRegion.YAxis:
                     {
                         Plane3F yplane = new Plane3F(yAxis, origin);
                         theta = CalcAngle(origin, yplane, hitRay, dragRay, snapAngle);
-                        rotAxis = HitMatrix.YAxis;
-
+                        rotAxis = HitMatrix.YAxis;                        
                     }
                     break;
                 case HitRegion.ZAxis:
@@ -214,17 +212,16 @@ namespace RenderingInterop
 
             AngleAxisF axf = new AngleAxisF(-theta, rotAxis);
             Matrix4F deltaMtrx = new Matrix4F(axf);                                   
-            Matrix4F rotMtrx = new Matrix4F();            
+            Matrix4F rotMtrx = new Matrix4F();
+           
             for (int i = 0; i < NodeList.Count; i++)
             {                                
-                ITransformable node = NodeList[i];                
-                rotMtrx.Set(m_rotations[i]);
-                rotMtrx.Mul(rotMtrx, deltaMtrx);                
+                ITransformable node = NodeList[i];                              
+                rotMtrx.Mul(m_rotations[i], deltaMtrx);                
                 float ax, ay, az;
-                rotMtrx.GetEulerAngles(out ax, out ay, out az);                
-                node.Rotation = new Vec3F(ax,ay,az);
+                rotMtrx.GetEulerAngles(out ax, out ay, out az);                                
+                node.Rotation = new Vec3F(ax, ay, az);      
             }
-
         }
 
         public override void OnEndDrag(ViewControl vc, Point scrPt)
@@ -275,6 +272,7 @@ namespace RenderingInterop
 
         private static float CalcAngle(Vec3F v0, Vec3F v1, Vec3F axis, float snapAngle)
         {
+            const float twoPi = (float)(2.0 * Math.PI);
             float angle = Vec3F.Dot(v0, v1);
             if (angle > 1.0f)
                 angle = 1.0f;
@@ -285,23 +283,23 @@ namespace RenderingInterop
             // Check if v0 is left of v1
             Vec3F cross = Vec3F.Cross(v0, v1);
             if (Vec3F.Dot(cross, axis) < 0)
-                angle = -angle; //todo instead of negative use 0 to 2Pi.
-
+                angle = twoPi - angle;
             // round to nearest multiple of preference
             if (snapAngle > 0)
             {
                 if (angle >= 0)
                 {
-                    int n = (int)((angle + snapAngle * 0.5) / snapAngle);
+                    int n = (int)((angle + snapAngle * 0.5f) / snapAngle);
                     angle = n * snapAngle;
                 }
                 else
                 {
-                    int n = (int)((angle - snapAngle * 0.5) / snapAngle);
+                    int n = (int)((angle - snapAngle * 0.5f) / snapAngle);
                     angle = n * snapAngle;
                 }
-            }
-
+            }            
+           // const float epsilone = (float)1e-7;
+           // if (twoPi - angle <= epsilone) angle = 0.0f;          
             return angle;
         }
 

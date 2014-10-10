@@ -17,11 +17,8 @@ namespace LevelEditorCore.Commands
     public class ManipulatorCommands : ICommandClient, IInitializable
     {
         [ImportingConstructor]
-        public ManipulatorCommands(
-            IContextRegistry contextRegistry,
-            ICommandService commandService)
-        {
-            m_contextRegistry = contextRegistry;
+        public ManipulatorCommands(ICommandService commandService)
+        {            
             m_commandService = commandService;
             
         }
@@ -45,6 +42,15 @@ namespace LevelEditorCore.Commands
                    info.Image,
                    CommandVisibility.All,
                    this);
+            }
+
+            if (m_settingsService != null)
+            {
+                m_settingsService.Reloaded += (sender, e) =>
+                    {
+                        ISnapSettings snapSettings = (ISnapSettings)m_designView;
+                        m_snapFromModeComboBox.SelectedItem = snapSettings.SnapFrom;
+                    };
             }
         }
 
@@ -193,8 +199,7 @@ namespace LevelEditorCore.Commands
                 CommandVisibility.All,
                 this);
 
-
-
+            
              // Register comboBoxes for snap-from-mode and reference-coordinate-system, in the edit
             //  menu's toolbar
             m_snapFromModeComboBox = new ToolStripComboBox();
@@ -221,7 +226,6 @@ namespace LevelEditorCore.Commands
 
         void m_snapFromModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             ISnapSettings snapSettings = (ISnapSettings)m_designView;
             snapSettings.SnapFrom = (SnapFromMode) m_snapFromModeComboBox.SelectedItem;
             m_designView.InvalidateViews();
@@ -240,9 +244,11 @@ namespace LevelEditorCore.Commands
 
         [ImportMany]
         private IEnumerable<IManipulator> m_manipulators;
-        
-        private readonly ICommandService m_commandService;
-        private readonly IContextRegistry m_contextRegistry;        
+
+        [Import(AllowDefault = true)]
+        private ISettingsService m_settingsService = null;
+
+        private readonly ICommandService m_commandService;        
         private ToolStripComboBox m_referenceCoordinateSystemComboBox;
         private ToolStripComboBox m_snapFromModeComboBox;
     }

@@ -676,66 +676,6 @@ static void CreateCube(float width, float height, float depth,
 //---------------------------------------------------------------------------------------------
 static void CreateQuad(float width, float height, std::vector<float3>* pos, std::vector<float3>* nor, std::vector<float2>* tex, std::vector<uint32_t>* indices)
 {   
-
-    //// generate texture coordinates such that the vertex tex is at the center of texel.
-    //float m_patchDim = 9;
-    //std::vector<VertexPNT> vertices;
-    //VertexPNT vertex;
-    //vertex.Normal = float3(0,1,0);
-    //float numverts = m_patchDim;    
-    //float halftexel =  (1.0f/m_patchDim) * 0.5f;    
-    //for(float z = 0; z < m_patchDim; z++)
-    //{
-    //   
-    //    for(float x = 0; x < m_patchDim; x++)
-    //    {
-    //        vertex.Position = float3(x,0,z);            
-    //        vertex.Tex = float2( x/m_patchDim+halftexel,z/m_patchDim+halftexel);
-    //        vertices.push_back(vertex);
-    //    }
-    //}
-
-
-    // //// copy data to arrays
-    //for(auto it = vertices.begin(); it != vertices.end(); it++)
-    //{
-
-    //    pos->push_back(it->Position);
-    //    if(nor) nor->push_back(it->Normal);
-    //    if(tex) tex->push_back(it->Tex);
-    //}
-
-    //
-    //// create index buffer.
-    //// A--------B    
-    //// | \      |
-    //// |   \    |
-    //// |     \  |
-    //// C--------D
-    //// each cell has two tri  ABC and CBD
-
-    //// create one set of indices used by all the meshes.
-    //// todo allow mesh class to share indices.
-    //int32_t patchDim = m_patchDim;
-    //int32_t patchCell = m_patchDim - 1;    
-    //int32_t numPatchIndices =   patchCell * patchCell * 6;
-    //indices->resize(numPatchIndices);    
-    //
-    //for (int32_t zc = 0; zc < patchCell; zc++)
-    //{
-    //    for (int32_t xc = 0; xc < patchCell; xc++)
-    //    {
-    //        // front faces are CCW like OpenGL            
-    //        indices->push_back( zc * patchDim + xc);            // A
-    //        indices->push_back( (zc + 1) * patchDim + xc);      // C
-    //        indices->push_back( (zc + 1) * patchDim + xc + 1);  // D
-
-    //        indices->push_back( zc * patchDim + xc);            // A
-    //        indices->push_back( (zc + 1) * patchDim + xc + 1);  // D            
-    //        indices->push_back( zc * patchDim + xc + 1);        // B
-    //    }
-    //}    
-
     VertexPNT v[4];
     float maxt = 1.0f;
     // Fill in the front face vertex data.

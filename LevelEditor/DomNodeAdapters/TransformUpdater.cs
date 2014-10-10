@@ -17,14 +17,11 @@ namespace LevelEditor.DomNodeAdapters
         {
             base.OnNodeSet();
 
-            // Register child and attribute events
-            DomNode.AttributeChanged += OnAttributeChanged;
-            m_transformable = DomNode.As<ITransformable>();
-
             if (Schema.gameObjectType.Type.IsAssignableFrom(this.DomNode.Type) == false)
-            {
                 throw new InvalidOperationException("this adapter can only attach to instance of gameobjecttype");
-            }            
+
+            m_transformable = DomNode.As<ITransformable>();            
+            DomNode.AttributeChanged += OnAttributeChanged;
         }
 
         private void OnAttributeChanged(object sender, AttributeEventArgs e)

@@ -157,15 +157,9 @@ namespace RenderingInterop
             bool hitAxis = m_hitRegion == HitRegion.XAxis
                 || m_hitRegion == HitRegion.YAxis
                 || m_hitRegion == HitRegion.ZAxis;
-
-
-            Matrix4F view = vc.Camera.ViewMatrix;
-            Matrix4F proj = vc.Camera.ProjectionMatrix;
-            Matrix4F vp = view * proj;
             
-            // create ray in world space.
-            Ray3F rayW = vc.GetRay(scrPt, vp);
-           
+            Matrix4F proj = vc.Camera.ProjectionMatrix;
+                      
             // create ray in view space.            
             Ray3F rayV = vc.GetRay(scrPt, proj);
             Vec3F translate = m_translatorControl.OnDragging(rayV);
@@ -174,7 +168,12 @@ namespace RenderingInterop
             bool snapToGeom = Control.ModifierKeys == m_snapGeometryKey;
 
             if (snapToGeom)
-            {               
+            {
+                Matrix4F view = vc.Camera.ViewMatrix;
+                Matrix4F vp = view * proj;
+                // create ray in world space.
+                Ray3F rayW = vc.GetRay(scrPt, vp);
+
                 Vec3F manipPos = HitMatrix.Translation;
                 Vec3F manipMove;
                 if (hitAxis)
