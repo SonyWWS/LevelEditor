@@ -200,11 +200,7 @@ namespace LevelEditorCore
         {            
             float axisRatio = 0.24f;
 
-            float worldHeight;
-            Matrix4F view = camera.ViewMatrix;
-            Vec3F objPosV;
-            view.Transform(objectPosW, out objPosV);
-            
+            float worldHeight;                        
             // World height on origin's z value
             if (camera.Frustum.IsOrtho)
             {
@@ -212,6 +208,9 @@ namespace LevelEditorCore
             }
             else
             {
+                Matrix4F view = camera.ViewMatrix;
+                Vec3F objPosV;
+                view.Transform(objectPosW, out objPosV);
                 worldHeight = -objPosV.Z * (float)Math.Tan(camera.Frustum.FovY / 2.0f);
             }
             s = (axisRatio*worldHeight);

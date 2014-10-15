@@ -66,7 +66,7 @@ namespace RenderingInterop
             {
                 GameEngine.SetObjectProperty(swapChainId, SurfaceId, SizePropId, sz);
                 Camera.Aspect = (float)sz.Width / (float)sz.Height;
-            }
+            }            
         }
         protected override void Dispose(bool disposing)
         {
@@ -352,7 +352,7 @@ namespace RenderingInterop
 
             if (skipRender)
                 return;
-            
+
             m_clk.Start();
             GameEngine.SetObjectProperty(swapChainId, SurfaceId, BkgColorPropId, DesignView.BackColor);
             GameEngine.SetRenderState(RenderState);
@@ -368,8 +368,7 @@ namespace RenderingInterop
 
 
             if (renderSelected)
-            {
-                // for testing draw bounds for selected objects
+            {                
                 var selection = DesignView.Context.As<ISelectionContext>().Selection;
                 IEnumerable<DomNode> rootDomNodes = DomNode.GetRoots(selection.AsIEnumerable<DomNode>());
                 RenderProperties(rootDomNodes,
@@ -390,59 +389,10 @@ namespace RenderingInterop
                 DesignView.Manipulator.Render(this);
 
             string str = string.Format("View Type: {0}   time-per-frame: {1:0.00} ms", ViewType, m_clk.Milliseconds);
-            GameEngine.DrawText2D(str, Util3D.CaptionFont, 1,1, Color.White);
-
-            RenderSystemAxis();
+            GameEngine.DrawText2D(str, Util3D.CaptionFont, 1,1, Color.White);          
             GameEngine.End();                                    
         }
         
-        private void RenderSystemAxis()
-        {
-            float nz = Camera.Frustum.NearZ;
-
-            float x = 0.05f * Width;
-            Vec3F pos = new Vec3F(x, Height-x , 0.0f);
-            Matrix4F vp = Camera.ViewMatrix * Camera.ProjectionMatrix;
-            pos = this.Unproject(pos, vp);
-            if (Camera.Frustum.IsOrtho)
-                pos = pos + Camera.LookAt;
-            else
-                pos = pos + Camera.LookAt * (Camera.NearZ * 0.1f);
-                                    
-            float s;
-            Util.CalcAxisLengths(Camera, pos, out s);
-            Matrix4F scale = new Matrix4F();
-            scale.Scale(s * 0.3f);
-            Matrix4F trans =  new Matrix4F(pos);
-            Matrix4F xform = scale * trans;
-            Util3D.RenderFlag = BasicRendererFlags.WireFrame | BasicRendererFlags.DisableDepthTest;            
-            Util3D.DrawX(xform, Color.Red);
-            Util3D.DrawY(xform, Color.Green);
-            Util3D.DrawZ(xform, Color.Blue);
-
-            Matrix4F wvp = xform * vp;
-
-            if (ViewType != ViewTypes.Left && ViewType != ViewTypes.Right)
-            {
-                Vec3F xaxis = new Vec3F(1, 0, 0);
-                Point scPt = Project(wvp, xaxis);
-                GameEngine.DrawText2D("X", Util3D.CaptionFont, scPt.X, scPt.Y, Color.Red);
-            }
-
-            if (ViewType != ViewTypes.Top && ViewType != ViewTypes.Bottom)
-            {
-                Vec3F yaxis = new Vec3F(0, 1.6f, 0);
-                Point scPt = Project(wvp, yaxis);
-                GameEngine.DrawText2D("Y", Util3D.CaptionFont, scPt.X, scPt.Y, Color.Green);
-            }
-
-            if (ViewType != ViewTypes.Front && ViewType != ViewTypes.Back)
-            {
-                Vec3F zaxis = new Vec3F(0, 0, 1);
-                Point scPt = Project(wvp, zaxis);
-                GameEngine.DrawText2D("Z", Util3D.CaptionFont, scPt.X, scPt.Y, Color.Blue);
-            }
-        }
 
         private void RenderProperties(IEnumerable<object> objects, bool renderCaption, bool renderBound, bool renderPivot)
         {

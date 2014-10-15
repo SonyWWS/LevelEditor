@@ -124,7 +124,9 @@ public:
     std::vector<HitRecord> HitRecords;
     ShadowMapGen*        shadowMapShader;
     RenderableNodeSorter    renderableSorter;
-    RenderableNodeSet       pickCollector;    
+    RenderableNodeSet       pickCollector; 
+    Font* AxisFont;
+    
 };
 
 //---------------------------------------------------------------------------
@@ -142,13 +144,15 @@ EngineData::EngineData( ID3D11Device* device )
     basicRenderer   = new BasicRenderer(device);
     shadowMapShader = new ShadowMapGen(device);
 
+    AxisFont = Font::CreateNewInstance( device,L"Arial",14,LvEdFonts::kFontStyleBOLD);
 }
 
 //---------------------------------------------------------------------------
 EngineData::~EngineData()
 {
     SAFE_DELETE(basicRenderer);    
-    SAFE_DELETE(shadowMapShader);     
+    SAFE_DELETE(shadowMapShader); 
+    SAFE_DELETE(AxisFont);    
 }
 
 
@@ -775,8 +779,9 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Begin(ObjectGUID renderSurface, floa
     float4 vf(vp.Width,vp.Height,vp.TopLeftX,vp.TopLeftY);
     rc->SetViewPort(vf);
 
-    rc->Cam().SetViewProj(Matrix(viewxform), Matrix(projxform));
-
+    Matrix view(viewxform);    
+    rc->Cam().SetViewProj(view, Matrix(projxform));
+    
     d3dcontext->RSSetState(NULL);
     d3dcontext->OMSetDepthStencilState(NULL,0);
     d3dcontext->OMSetBlendState( NULL, NULL, 0xFFFFFFFF );
@@ -923,33 +928,104 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_RenderGame()
         normShader->End();
     }
 
-    
     //Level editor may perform additional rendering before LvEd_End() is called 
     s_engineData->basicRenderer->Begin(RenderContext::Inst()->Context(), RenderContext::Inst()->Cam().View(), RenderContext::Inst()->Cam().Proj());
 }
 
+// todo: move this code to C# side.
+// Renders world axis at the bottom-left corner.
+static void RenderWorldAxis()
+{
+    RenderContext* rc = RenderContext::Inst();
+    RenderSurface* surface = s_engineData->pRenderSurface;
+    LineRenderer *lr = LineRenderer::Inst();
+    Camera& cam = rc->Cam();    
+    float margin = 36; // margin in pixels
+    float xl = 28; // axis length in pixels.
+    float vw = (float)surface->GetWidth();
+    float vh = (float)surface->GetHeight();
+    Matrix view = cam.View();    
+    view.M41 = -vw/2 + margin;
+    view.M42 = -vh/2 + margin;
+    view.M43 = -xl;
+    
+    float3 look = cam.CamLook();    
+    bool perspective = !cam.IsOrtho();
+
+    // for orthographic hide one of the axis depending on view-type
+    const float epsilon  = 0.001f; // use relatively large number for this test.
+    bool renderX = perspective || abs(look.x) < epsilon;
+    bool renderY = perspective || abs(look.y) < epsilon;
+    bool renderZ = perspective || abs(look.z) < epsilon;
+    
+    Matrix proj = Matrix::CreateOrthographic(vw,vh,1,10000);
+    cam.SetViewProj(view,proj);
+
+    float3 centerV(0,0,0);
+    // draw x,y,z
+    if(renderX)
+        lr->DrawLine(centerV,float3(xl,0,0),float4(1,0,0,1));    
+    if(renderY)
+        lr->DrawLine(centerV,float3(0,xl,0),float4(0,1,0,1));    
+    if(renderZ)
+        lr->DrawLine(centerV,float3(0,0,xl),float4(0,0,1,1));       
+
+    lr->RenderAll(rc);
+
+    Font* font = s_engineData->AxisFont;
+    if(font)
+    {   
+        float fh = font->GetFontSize();
+        float fhh = fh /2.0f;
+        FontRenderer* fr = LvEdFonts::FontRenderer::Inst();
+        Matrix vp = view * proj;
+                
+        // draw x,y,z
+        if(renderX)
+        {
+            float3 xpos = surface->Project(float3(xl,fhh,0),vp);
+            fr->DrawText(font,L"X",(int)xpos.x,(int)xpos.y,float4(1,0,0,1));
+        }
+
+        if(renderY)
+        {
+            float3 ypos = surface->Project(float3(0,xl+fhh,0),vp);
+            fr->DrawText(font,L"Y",(int)ypos.x,(int)ypos.y,float4(0,1,0,1));
+        }
+
+        if(renderZ)
+        {
+            float3 zpos = surface->Project(float3(0,fhh,xl),vp);
+            int ycoord =(int) ((zpos.y + fh) > vh ? vh - fh : zpos.y);
+            fr->DrawText(font,L"Z",(int)zpos.x,ycoord,float4(0,0,1,1));
+        }
+        fr->FlushPrintRequests( rc );
+    }    
+    
+}
 // ---------------------------------------------------------------------------------------------------------
 LVEDRENDERINGENGINE_API void __stdcall LvEd_End()
 {
-    LineRenderer::Inst()->RenderAll(RenderContext::Inst());
-    ErrorHandler::ClearError();
+    RenderContext* rc = RenderContext::Inst();
+    RenderSurface* surface = s_engineData->pRenderSurface;
+
     s_engineData->basicRenderer->End();    
-    LvEdFonts::FontRenderer::Inst()->FlushPrintRequests( RenderContext::Inst() );
+    LineRenderer::Inst()->RenderAll(rc);
+    ErrorHandler::ClearError();    
+    LvEdFonts::FontRenderer::Inst()->FlushPrintRequests( rc );
     
-    if(s_engineData->pRenderSurface->GetType() == RenderSurface::kSwapChain)
+    if(surface->GetType() == RenderSurface::kSwapChain)
     {        
-        SwapChain* swapchain = static_cast<SwapChain*>(s_engineData->pRenderSurface);
+        RenderWorldAxis();
+        SwapChain* swapchain = static_cast<SwapChain*>(surface);
         HRESULT hr = swapchain->GetDXGISwapChain()->Present(0,0);
         Logger::IsFailureLog(hr, L"presenting swapchain");
     }
 
     s_engineData->renderableSorter.ClearLists();    
     s_engineData->pRenderSurface = NULL;    
-    RenderContext::Inst()->LightEnvDirty = false;
- 
+    RenderContext::Inst()->LightEnvDirty = false; 
 }
-
-
 
 LVEDRENDERINGENGINE_API bool __stdcall LvEd_SaveRenderSurfaceToFile(ObjectGUID renderSurfaceId, wchar_t *fileName)
 {

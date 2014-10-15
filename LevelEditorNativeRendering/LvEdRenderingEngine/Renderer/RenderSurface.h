@@ -39,7 +39,14 @@ public:
 	
     int GetWidth() {return m_width;}
     int GetHeight() {return m_height;}
-	float3 Unproject(const float3 &v, Matrix& invVP);
+    
+    // project v from 3d space to viewport space.
+    // if m is Proj then v is in view space.
+    // if m is View * Proj then v is in word space.
+    // if m is world * View * Proj then v is in local space.
+    float3 Project(const float3& v, const Matrix& m);
+
+	float3 Unproject(const float3 &v, const Matrix& invVP);
 
     virtual void Resize(int w, int h) = 0;	
     virtual SurfaceType GetType() = 0;
