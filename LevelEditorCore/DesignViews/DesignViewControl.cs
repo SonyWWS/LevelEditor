@@ -62,11 +62,10 @@ namespace LevelEditorCore
                 return;
 
             Focus();
-
+            
             FirstMousePoint = CurrentMousePoint = new Point(e.X, e.Y);
             m_dragOverThreshold = false;
             
-
             if (DesignView.Context != null)
             {                
                 bool handled = CameraController.MouseDown(this, e);

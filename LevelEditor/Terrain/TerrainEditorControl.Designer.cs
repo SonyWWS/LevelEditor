@@ -268,7 +268,7 @@
             // 
             // m_noiseRdo
             // 
-            this.m_noiseRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_noiseRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.m_noiseRdo.Appearance = System.Windows.Forms.Appearance.Button;
             this.m_noiseRdo.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveBorder;
             this.m_noiseRdo.FlatAppearance.BorderSize = 2;
@@ -285,7 +285,7 @@
             // 
             // m_brushProps
             // 
-            this.m_brushProps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.m_brushProps.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.m_brushProps.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -302,7 +302,7 @@
             // 
             // m_terrainPropGrid
             // 
-            this.m_terrainPropGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.m_terrainPropGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.m_terrainPropGrid.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.m_terrainPropGrid.Location = new System.Drawing.Point(8, 33);
@@ -318,7 +318,7 @@
             // 
             // m_paintEraseRdo
             // 
-            this.m_paintEraseRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_paintEraseRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.m_paintEraseRdo.Appearance = System.Windows.Forms.Appearance.Button;
             this.m_paintEraseRdo.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveBorder;
             this.m_paintEraseRdo.FlatAppearance.BorderSize = 2;
@@ -335,7 +335,7 @@
             // 
             // m_flattenRdo
             // 
-            this.m_flattenRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_flattenRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.m_flattenRdo.Appearance = System.Windows.Forms.Appearance.Button;
             this.m_flattenRdo.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveBorder;
             this.m_flattenRdo.FlatAppearance.BorderSize = 2;
@@ -351,7 +351,7 @@
             // 
             // m_brushRiseLowRdo
             // 
-            this.m_brushRiseLowRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_brushRiseLowRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.m_brushRiseLowRdo.Appearance = System.Windows.Forms.Appearance.Button;
             this.m_brushRiseLowRdo.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveBorder;
             this.m_brushRiseLowRdo.FlatAppearance.BorderSize = 2;
@@ -368,7 +368,7 @@
             // 
             // m_brushSmoothRdo
             // 
-            this.m_brushSmoothRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_brushSmoothRdo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.m_brushSmoothRdo.Appearance = System.Windows.Forms.Appearance.Button;
             this.m_brushSmoothRdo.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveBorder;
             this.m_brushSmoothRdo.FlatAppearance.BorderSize = 2;

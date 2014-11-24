@@ -28,21 +28,20 @@ namespace RenderingInterop
         #region IInitializable Members
 
         void IInitializable.Initialize()
-        {            
+        {
+            
+
             m_controlInfo = new ControlInfo("DesignView", "DesignView", StandardControlGroup.CenterPermanent);
             m_controlHostService.RegisterControl(m_designView.HostControl, m_controlInfo, this);
           
             Application.ApplicationExit += delegate
             {            
                 Util3D.Shutdown();
-                GameEngine.Shutdown();
+                GameEngine.Shutdown();                
             };
 
-            GameEngine.RefreshView += delegate
-            {
-                m_designView.InvalidateViews();
-            };
-                                                
+            GameEngine.RefreshView += (sender,e)=> m_designView.InvalidateViews();
+                                                            
             m_gameDocumentRegistry.DocumentAdded += new EventHandler<ItemInsertedEventArgs<IGameDocument>>(m_gameDocumentRegistry_DocumentAdded);
             m_gameDocumentRegistry.DocumentRemoved += new EventHandler<ItemRemovedEventArgs<IGameDocument>>(m_gameDocumentRegistry_DocumentRemoved);
 
@@ -116,8 +115,6 @@ namespace RenderingInterop
             // register BoundableObject
             m_schemaLoader.GameObjectType.Define(new ExtensionInfo<BoundableObject>());
             m_schemaLoader.GameObjectFolderType.Define(new ExtensionInfo<BoundableObject>());
-
-
             
             #region code to handle gameObjectFolder
 

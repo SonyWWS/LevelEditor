@@ -154,7 +154,7 @@ namespace LevelEditorCore
 
             Pen selPen = new Pen(Color.LimeGreen, 2.0f);
             StringFormat format = new StringFormat();
-
+            var txtBrush = new SolidBrush(ForeColor);
             try                
             {
                 format.Alignment = StringAlignment.Center;
@@ -177,7 +177,7 @@ namespace LevelEditorCore
                     e.Graphics.DrawString(
                         item.Name,
                         Font,
-                        SystemBrushes.ControlText,
+                        txtBrush,
                         captionRect,
                         format);
 
@@ -204,6 +204,7 @@ namespace LevelEditorCore
             }
             finally
             {
+                txtBrush.Dispose();
                 selPen.Dispose();
                 format.Dispose();
             }

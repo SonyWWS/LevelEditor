@@ -1,9 +1,11 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Windows.Forms;
-
-
+using LevelEditorCore.Commands;
+using Sce.Atf;
+using Sce.Atf.Applications;
 using Sce.Atf.VectorMath;
 using Sce.Atf.Rendering;
 
@@ -12,8 +14,25 @@ namespace LevelEditorCore
     /// <summary>
     /// Walk camera controller, which uses WASD keys to move, and mouse to rotate. This
     /// controller doesn't change the camera eye position's y-coordinate</summary>
+    [Export(typeof(CameraController))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class WalkCameraController : CameraController
     {
+        public WalkCameraController()
+        {
+            CommandInfo = new CommandInfo(
+                this,
+                StandardMenu.View,
+                StandardCommandGroup.ViewCamera,
+                "camera".Localize() + "/" + "Walk".Localize(),
+                "Walk: WASD + Middle Mouse, press Alt+MiddleMouse for height, mouse wheel to adjust walk speed".Localize(),
+                Sce.Atf.Input.Keys.None,
+                Resources.WalkImage,
+                CommandVisibility.Menu
+                );
+        }
+
+        
         /// <summary>
         /// Handles key-down events</summary>
         /// <param name="sender">Control that raised original event</param>

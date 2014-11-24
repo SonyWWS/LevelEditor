@@ -26,9 +26,18 @@ namespace LevelEditorCore
             get;
         }
 
+
         /// <summary>
-        /// Gets the IDesigViewControls</summary>
-        /// <returns></returns>
+        /// Gets all the DesignViewControls</summary>
+        IEnumerable<DesignViewControl> AllViews
+        {
+            get;
+        }
+
+
+        /// <summary>
+        /// Gets only DesigViewControls
+        /// for the current ViewMode</summary>
         IEnumerable<DesignViewControl> Views
         {
             get;

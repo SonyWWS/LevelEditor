@@ -41,6 +41,9 @@ namespace LvEdEngine
 using namespace LvEdEngine;
 
 
+
+typedef void (__stdcall * InvalidateViewsCallbackType)(void);
+
 //==============================================================================
 // Initialization and Shutdown Functions
 //==============================================================================
@@ -49,11 +52,15 @@ using namespace LvEdEngine;
  * Initializes the game-rendering engine.
  *
  * LevelEditor calls this function once during startup.
+ * 
+ * @param logCallback call back for logging.
+ * @param invalidateCallback call back used for notifying LevelEditor that
+ *        the views need to be redrawn.
+ *        
  *
- * @param hwnd Handle of the quad-control that hosts the four view controls
- * @param callback call back for logging.
  */
-extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(HWND hwnd, LogCallbackType callback);
+extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallback,
+    InvalidateViewsCallbackType invalidateCallback);
 
 
 /**

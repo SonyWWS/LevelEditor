@@ -1,8 +1,11 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Sce.Atf;
+using Sce.Atf.Applications;
 using Sce.Atf.Rendering;
 using Sce.Atf.VectorMath;
 
@@ -11,8 +14,25 @@ namespace LevelEditorCore
     /// <summary>
     /// Walk camera controller, which uses WASD keys to move, and mouse to rotate. This
     /// controller converts WASD keys to forward, strafe left, backward, strafe right.</summary>
+    [Export(typeof(CameraController))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class FlyCameraController : CameraController
     {
+
+        public FlyCameraController()
+        {
+            CommandInfo = new CommandInfo(
+               this,
+               StandardMenu.View,
+               StandardCommandGroup.ViewCamera,
+               "camera".Localize() + "/" + "Fly".Localize(),
+               "Fly:  WASD + Middle Mouse navigation, mouse-wheel to adjust speed".Localize(),
+               Sce.Atf.Input.Keys.None,
+               Resources.FlyImage,
+               CommandVisibility.Menu
+               );
+        }
+
         /// <summary>
         /// Performs any camera initialization required by the controller</summary>
         /// <param name="camera">Camera</param>

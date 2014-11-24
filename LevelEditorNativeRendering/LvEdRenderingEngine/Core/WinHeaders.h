@@ -15,8 +15,5 @@
 #include <windows.h>
 #include <stdint.h>
 
-// this message is also defined in LevelEditor
-// it is used to invalidate all the view panels.
-#define InvalidateViews   (WM_USER + 0x1)
 // returns module handle for this dll.
 HMODULE GetDllModuleHandle();

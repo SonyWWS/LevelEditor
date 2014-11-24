@@ -23,15 +23,24 @@ namespace RenderingInterop
     {
         public NativeDesignView()
         {
-            GameEngine.Initialize(QuadView.Handle);
+            GameEngine.Initialize();
             Util3D.Init();
 
             QuadView.TopLeft = new NativeDesignControl(this) { ViewType = ViewTypes.Perspective };
             QuadView.TopRight = new NativeDesignControl(this) { ViewType = ViewTypes.Right };
             QuadView.BottomLeft = new NativeDesignControl(this) { ViewType = ViewTypes.Top };
             QuadView.BottomRight = new NativeDesignControl(this) { ViewType = ViewTypes.Front };
+
+            // set control names.            
+            QuadView.TopLeft.Name = "TopLeft";
+            QuadView.TopRight.Name = "TopRight";
+            QuadView.BottomLeft.Name = "BottomLeft";
+            QuadView.BottomRight.Name = "BottomRight";
+
+
+
             ViewMode = ViewModes.Single;
-            ContextChanged += new EventHandler(NativeDesignView_ContextChanged);            
+            ContextChanged += NativeDesignView_ContextChanged;
         }
 
         void NativeDesignView_ContextChanged(object sender, EventArgs e)

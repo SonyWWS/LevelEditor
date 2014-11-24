@@ -42,7 +42,7 @@ namespace LevelEditorCore
                 m_watcher.EnableRaisingEvents = false;
                 m_watcher.Created += Watcher_FileChanged;
                 m_watcher.Deleted += Watcher_FileChanged;
-                m_watcher.Renamed += new RenamedEventHandler(m_watcher_Renamed);
+                m_watcher.Renamed += Watcher_Renamed;
 
             }
 
@@ -77,78 +77,73 @@ namespace LevelEditorCore
             m_treeControlAdapter.Refresh(rootFolder);
         }
 
-        private void m_watcher_Renamed(object sender, RenamedEventArgs e)
+        private void Watcher_Renamed(object sender, RenamedEventArgs e)
         {
             var attr = File.GetAttributes(e.FullPath);
-            bool isDirectory = (attr & FileAttributes.Directory) == FileAttributes.Directory;
-
-            string rootFolder = Path.GetDirectoryName(((IFileSystemResourceFolder)m_treeContext.RootFolder).FullPath).ToLower();
+            bool isDirectory = (attr & FileAttributes.Directory) == FileAttributes.Directory;            
             IFileSystemResourceFolder folder = m_treeContext.GetLastSelected<IFileSystemResourceFolder>();
-            string selectedFolder = folder != null ? (folder.FullPath).ToLower().TrimEnd('\\') : null;
+            string selectedFolder = folder == null ? string.Empty : GetNormalizedName(folder.FullPath);
                        
-
             if (isDirectory)
-            {// 
-                var dirInfo = new DirectoryInfo(e.OldFullPath);
-                string dirName = dirInfo.FullName.ToLower();
-                string parentDir = dirInfo.Parent.FullName.ToLower();
-
-                // renaming root folder
-                if (dirName == rootFolder)
-                {
-                    throw new InvalidOperationException("Cannot rename root folder");
-                }
-
-                m_treeContext.Reload();
-                RefreshThumbnails();
+            {//                 
+                m_treeControlAdapter.Refresh(m_treeContext.RootFolder);                
             }
             else // it is a file
             {
-                string dirName = Path.GetDirectoryName(e.OldFullPath).ToLower();
+                string dirName = Path.GetDirectoryName(e.OldFullPath);
+                dirName = GetNormalizedName(dirName);
                 if (selectedFolder == dirName)
-                    RefreshThumbnails();
-            }
-            
+                {
+                    TreeSelectionChanged(m_treeContext, EventArgs.Empty);
+                }
+            }            
         }
-
 
         /// <summary>
         /// Handler for file or folder created or deleted.</summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Watcher_FileChanged(object sender, FileSystemEventArgs e)
-        {       
-         
-            string rootFolder = Path.GetDirectoryName(((IFileSystemResourceFolder)m_treeContext.RootFolder).FullPath).ToLower();
+        {                       
             IFileSystemResourceFolder folder = m_treeContext.GetLastSelected<IFileSystemResourceFolder>();
-            string selectedFolder = folder != null ? (folder.FullPath).ToLower().TrimEnd('\\') : null;
-
-            WatcherChangeTypes createOrDelete = WatcherChangeTypes.Created | WatcherChangeTypes.Deleted;           
-            if( (e.ChangeType & createOrDelete) != 0)
+            string selectedFolder = folder == null ? string.Empty : GetNormalizedName(folder.FullPath);
+            string parentDirName = Path.GetDirectoryName(e.FullPath);
+            parentDirName = GetNormalizedName(parentDirName);
+            string itemName = GetNormalizedName(e.FullPath);
+            if ((e.ChangeType & WatcherChangeTypes.Created) == WatcherChangeTypes.Created)
             {
-                // isFile is just a hint, some files don't have ext.                
-                bool isFile = !string.IsNullOrWhiteSpace(Path.GetExtension(e.FullPath));
-                string dirName = Path.GetDirectoryName(e.FullPath).ToLower();
-                if (dirName == rootFolder
-                    || dirName == selectedFolder)
+                
+                var attr = File.GetAttributes(e.FullPath);
+                bool isDirectory = (attr & FileAttributes.Directory) == FileAttributes.Directory;
+                if (isDirectory)
                 {
-                    if ((e.ChangeType & WatcherChangeTypes.Deleted) != 0)
-                    {
-                        m_treeContext.Reload();
-                        RefreshThumbnails();
-                    }
-                    else
-                    {
-                        m_treeControlAdapter.Refresh(folder ?? m_treeContext.RootFolder);
-                    }
+                    m_treeControlAdapter.Refresh(m_treeContext.RootFolder);
                 }
-                if (isFile)
+                else if (parentDirName == selectedFolder)
                 {
-                    RefreshThumbnails();
-                }                
-            }         
+                    TreeSelectionChanged(m_treeContext, EventArgs.Empty);
+                }                             
+            }
+            else if ((e.ChangeType & WatcherChangeTypes.Deleted) == WatcherChangeTypes.Deleted)
+            {
+                m_treeControlAdapter.Refresh(m_treeContext.RootFolder);
+                if (parentDirName == selectedFolder)
+                {
+                    TreeSelectionChanged(m_treeContext, EventArgs.Empty);
+                }
+                else if (itemName == selectedFolder)
+                {
+                    m_treeContext.Clear();
+                }
+            }
         }
 
+        private string GetNormalizedName(string path)
+        {
+            string result = string.IsNullOrWhiteSpace(path)
+                ? string.Empty : path.ToLower().Replace('\\', '_').Replace('/', '_').TrimEnd('_');            
+            return result;
+        }
         /// <summary>
         /// Gets Uri of last selected or null
         /// </summary>
@@ -218,8 +213,7 @@ namespace LevelEditorCore
             m_splitContainer.Panel1.Controls.Add(m_treeControl);
             m_splitContainer.Panel2.Controls.Add(m_thumbnailControl);
             m_splitContainer.Panel2.Controls.Add(m_listView);
-            m_splitContainer.SplitterDistance = 10;
-
+            m_splitContainer.SplitterDistance = 10;            
             m_listView.Hide();
 
             Image resourceImage = ResourceUtil.GetImage16(Sce.Atf.Resources.ResourceImage);
@@ -645,14 +639,14 @@ namespace LevelEditorCore
             set
             {
                 // delay setting it until form shown.
-                m_splitterDistance = value;
+                m_splitterDistance = value;                
             }
         }
 
         private void RegisterSettings()
         {
             m_settingsService.RegisterSettings(
-                GetType().ToString(), //maybe make into a settable string in case multiple instances of this class are needed
+                this,
                 new BoundPropertyDescriptor(this, () => AssetListViewMode, "AssetListViewMode", null, null),
                 new BoundPropertyDescriptor(this, () => SplitterDistance, "SplitterDistance", null, null),
                 new BoundPropertyDescriptor(this, () => ListViewSettings, "ListViewSettings", null, null)

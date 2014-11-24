@@ -83,6 +83,13 @@ namespace LevelEditor.Terrain
                 };            
         }
 
+        /// <summary>
+        /// Gets or sets splitter distance in pixels.</summary>
+        public int SplitterDistance
+        {
+            get { return splitContainer1.SplitterDistance; }
+            set { splitContainer1.SplitterDistance = value; }
+        }
         public TerrainGob SelectedTerrain
         {
             get { return (TerrainGob)m_cmboxTerrain.SelectedItem; }

@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
+using Sce.Atf.Controls.PropertyEditing;
 using Sce.Atf.Dom;
 
 using LevelEditorCore;
@@ -33,8 +34,17 @@ namespace LevelEditor.Terrain
             ControlInfo cinfo = new ControlInfo("Terrain Editor", "Edit terrain properties", StandardControlGroup.Right);
             m_controlHostService.RegisterControl(m_control, cinfo, null);
             m_contextRegistry.ActiveContextChanged += ContextRegistry_ActiveContextChanged;
+            m_settingsService.RegisterSettings(
+                this, new BoundPropertyDescriptor(this, () => SplitterDistance, "SplitterDistance", null, null));
+            m_mainForm.Loaded += (sender, e) => m_control.SplitterDistance = m_splitterDistance;                
         }
 
+        private int m_splitterDistance = 240;
+        private int SplitterDistance
+        {
+            get { return m_control.SplitterDistance;}
+            set { m_splitterDistance = value; }
+        }
         private void ContextRegistry_ActiveContextChanged(object sender, EventArgs e)
         {
             IGameContext game = m_contextRegistry.GetActiveContext<IGameContext>();
@@ -98,6 +108,12 @@ namespace LevelEditor.Terrain
             return false;                       
         }
         private TerrainEditorControl m_control;
+
+        [Import(AllowDefault = false)]
+        private IMainWindow m_mainForm = null;
+
+        [Import(AllowDefault = false)]
+        private ISettingsService m_settingsService;
 
         [Import(AllowDefault = false)]
         private IContextRegistry m_contextRegistry;

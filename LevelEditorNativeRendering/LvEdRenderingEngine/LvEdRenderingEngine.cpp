@@ -99,7 +99,13 @@ struct HitRecord
 class MyResourceListener : public ResourceListener
 {
 public:
+    void SetCallback(InvalidateViewsCallbackType invalidateCallback)
+    {
+        m_callback = invalidateCallback;
+    }
     virtual void OnResourceLoaded(Resource* r);
+private:
+    InvalidateViewsCallbackType m_callback;
 };
 
 class EngineData : public NonCopyable
@@ -157,13 +163,13 @@ EngineData::~EngineData()
 
 
 static EngineData* s_engineData = NULL;
-static HWND gQuadPanelHwnd;
+
 
 //=============================================================================================
 void MyResourceListener::OnResourceLoaded(Resource* /*r*/)
 {    
     RenderContext::Inst()->LightEnvDirty = true;
-    PostMessage(gQuadPanelHwnd,InvalidateViews,0,0);
+    if(m_callback) m_callback();   
 }
 
 
@@ -171,7 +177,7 @@ void MyResourceListener::OnResourceLoaded(Resource* /*r*/)
 // Initialize and Shutdown
 //=============================================================================================
 
-LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(HWND hwnd, LogCallbackType callback)
+LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallback, InvalidateViewsCallbackType invalidateCallback)
 {    
     // Enable run-time memory check for debug builds.
 #if defined(DEBUG) || defined(_DEBUG)
@@ -179,16 +185,14 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(HWND hwnd, LogCallbackTyp
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
-    
-
+    if(s_engineData) return;   
     ErrorHandler::ClearError();
-    if(callback) 
-        Logger::SetLogCallback(callback);
+    if(logCallback) 
+        Logger::SetLogCallback(logCallback);
 
-    Logger::Log(OutputMessageType::Info, L"Initializing Rendering Engine\n");
-    if(s_engineData) return;
-    gQuadPanelHwnd = hwnd;
-
+    Logger::Log(OutputMessageType::Info, L"Initializing Rendering Engine\n");    
+    
+    
     // note if you using game-engine
     // you don't need to use DeviceManager class.
     // the game-engine should provide
@@ -201,7 +205,7 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(HWND hwnd, LogCallbackTyp
    
     RenderContext::InitInstance(gD3D11->GetDevice());
     s_engineData = new EngineData( gD3D11->GetDevice() );
-    
+    s_engineData->resourceListener.SetCallback(invalidateCallback);
     RenderContext::Inst()->SetContext(gD3D11->GetImmediateContext());
 
     ShaderLib::InitInstance(gD3D11->GetDevice());

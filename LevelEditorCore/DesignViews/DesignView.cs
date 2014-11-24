@@ -6,16 +6,17 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Controls;
 
-using ControlSchemes = Sce.Atf.Rendering.ControlSchemes;
+
 using MayaControlScheme = Sce.Atf.Rendering.MayaControlScheme;
 using MayaLaptopControlScheme = Sce.Atf.Rendering.MayaLaptopControlScheme;
 using MaxControlScheme = Sce.Atf.Rendering.MaxControlScheme;
-using CameraController = Sce.Atf.Rendering.CameraController;
+using ControlSchemes = Sce.Atf.Rendering.ControlSchemes;
 
 
 namespace LevelEditorCore
@@ -47,19 +48,26 @@ namespace LevelEditorCore
             get { return (DesignViewControl)QuadView.ActiveControl; }
         }
 
-        public IEnumerable<DesignViewControl> Views
+        /// <summary>
+        /// Gets all the DesignViewControls</summary>
+        public IEnumerable<DesignViewControl> AllViews
         {
-            get 
+            get
             {
                 foreach (Control ctrl in QuadView.Controls)
-                {                    
+                {
                     DesignViewControl view = ctrl as DesignViewControl;
-                    if (view != null && view.Width > 1 && view.Height > 1)
-                    {
-                        yield return view;                        
-                    }
+                    if (view != null) yield return view;                    
                 }                                    
             }
+        }
+
+        /// <summary>
+        /// Gets only DesigViewControls
+        /// for the current ViewMode</summary>
+        public IEnumerable<DesignViewControl> Views
+        {
+            get {return AllViews.Where(view => view.Width > 1 && view.Height > 1); }
         }
 
         private ViewModes m_viewMode = ViewModes.Quad;

@@ -6,10 +6,9 @@ using System.IO;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
-using System.Windows.Forms;
 using System.Security;
 using System.Linq;
-
+using System.Threading;
 using Sce.Atf;
 using Sce.Atf.VectorMath;
 using Sce.Atf.Dom;
@@ -29,14 +28,8 @@ namespace RenderingInterop
 
         /// <summary>
         /// init game engine 
-        /// call it one time during startup.
-        /// handle of quadpanelcontrol
-        /// this handle is used by LvEdRenderingEngine.dll
-        /// to post invalidateviews message to Leveleditor.
-        /// when loading assets async.
-        /// </summary>
-        /// <param name="handle">Handle of the main form</param>
-        public static void Initialize(IntPtr handle)
+        /// call it one time during startup on the UI thread.</summary>        
+        public static void Initialize()
         {
             // the full dll name can be loaded in a config when needed.
             if (s_libHandle != IntPtr.Zero)
@@ -95,10 +88,15 @@ namespace RenderingInterop
                 }
                  */
 
-                s_logInstance = new LogCallbackType(LogCallback);                
-                NativeInitialize(handle,s_logInstance);                
+                s_invalidateCallback = new InvalidateViewsDlg(InvalidateViews);
+                s_logInstance = new LogCallbackType(LogCallback);
+                NativeInitialize(s_logInstance, s_invalidateCallback);
                 CriticalError = string.Empty;
-                Application.AddMessageFilter(new MessageFilter());
+
+                // get SynchronizationContext for current thread.
+                // Note: 
+                s_syncContext = SynchronizationContext.Current;
+                //Application.AddMessageFilter(new MessageFilter());
             }
             catch (Exception e)
             {
@@ -161,24 +159,30 @@ namespace RenderingInterop
 
         #endregion
 
+        #region call back for invalidating views.
+        private delegate void InvalidateViewsDlg();
+        private static InvalidateViewsDlg s_invalidateCallback;
+        private static void InvalidateViews()
+        {
+            if (s_syncContext != null)
+            {
+                s_syncContext.Post(obj=>RefreshView(null, EventArgs.Empty),null);
+            }
+        }
+        private static SynchronizationContext s_syncContext;
+        #endregion
+
         #region log callbacks
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall,CharSet = CharSet.Unicode)]
         private delegate void LogCallbackType(int messageType, string text);
-
         private static LogCallbackType s_logInstance;
         private static void LogCallback(int messageType, string text)
         {
+            Console.Write(text);
             if (messageType == (int)OutputMessageType.Warning
                 || messageType == (int)OutputMessageType.Error)
-            {
-                Console.Write(text);
-                Outputs.Write((OutputMessageType)messageType, text);                
-            }
-            else
-            {
-                Console.Write(text);
-            }
+                Outputs.Write((OutputMessageType)messageType, text);                            
         }
 
         #endregion
@@ -655,7 +659,7 @@ namespace RenderingInterop
         #region private members
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Initialize", CallingConvention = CallingConvention.StdCall)]
-        private static extern void NativeInitialize(IntPtr handle,LogCallbackType callback);
+        private static extern void NativeInitialize(LogCallbackType logCallback, InvalidateViewsDlg invalidateCallback);
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Shutdown", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeShutdown();
@@ -824,28 +828,26 @@ namespace RenderingInterop
 
 
 
-        private class MessageFilter : IMessageFilter
-        {
-            #region IMessageFilter Members
+        //private class MessageFilter : IMessageFilter
+        //{
+        //    #region IMessageFilter Members
 
-            bool IMessageFilter.PreFilterMessage(ref Message m)
-            {
-                const int WM_USER = 0x0400;
-                const int InvalidateViews = WM_USER + 0x1;
+        //    bool IMessageFilter.PreFilterMessage(ref Message m)
+        //    {
+        //        const int WM_USER = 0x0400;
+        //        const int InvalidateViews = WM_USER + 0x1;
 
-                if (m.Msg == InvalidateViews)
-                {
-                    RefreshView(this, EventArgs.Empty);                   
-                    return true;
-                }
-                return false;
-            }
+        //        if (m.Msg == InvalidateViews)
+        //        {
+        //            RefreshView(this, EventArgs.Empty);
+        //            return true;
+        //        }
+        //        return false;
+        //    }
 
-            #endregion
+        //    #endregion
 
-        }
-
-
+        //}
         #endregion
     }
 }

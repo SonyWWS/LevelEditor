@@ -1,12 +1,14 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Text;
 using System.Windows.Forms;
-
+using System.Xml;
 using Sce.Atf;
 using Sce.Atf.Applications;
 using Sce.Atf.Controls.PropertyEditing;
-using Sce.Atf.Rendering;
 
 namespace LevelEditorCore.Commands
 {
@@ -14,7 +16,7 @@ namespace LevelEditorCore.Commands
     /// Commands for switching the DesignView's active camera</summary>
     [Export(typeof(CameraCommands))]
     [Export(typeof(IInitializable))]
-    [PartCreationPolicy(CreationPolicy.Shared)]
+    [PartCreationPolicy(CreationPolicy.NonShared)]
     public class CameraCommands : ICommandClient, IInitializable
     {
         #region IInitializable Implementation
@@ -24,61 +26,14 @@ namespace LevelEditorCore.Commands
             // register a custom menu without any commands, so it won't appear in the main menu bar
             var cameraMenu = CommandService.RegisterMenu(this, "Camera", "Camera");
             ToolStrip strip = cameraMenu.GetToolStrip();
-
-
-            string camera = "Camera".Localize();
-
-            CommandInfo cmdInfo =
-                CommandService.RegisterCommand(
-                    Command.Arcball,
-                    StandardMenu.View,
-                    StandardCommandGroup.ViewCamera,
-                    camera + "/" + "Arcball".Localize(),
-                    "Arcball".Localize(),
-                    Keys.None,
-                    Resources.ArcballImage,
-                    CommandVisibility.Menu,
-                    this);
-            strip.Items.Add(cmdInfo.GetButton());
-
-            cmdInfo =
-                CommandService.RegisterCommand(
-                    Command.Maya,
-                    StandardMenu.View,
-                    StandardCommandGroup.ViewCamera,
-                    camera + "/" + "Maya".Localize(),
-                    "Maya style camera".Localize(),
-                    Keys.None,
-                    Resources.MayaImage,
-                    CommandVisibility.Menu,
-                    this);
-            strip.Items.Add(cmdInfo.GetButton());
-
-            cmdInfo =
-                CommandService.RegisterCommand(
-                    Command.Fly,
-                    StandardMenu.View,
-                    StandardCommandGroup.ViewCamera,
-                    camera + "/" + "Fly".Localize(),
-                    "Fly:  WASD + Middle Mouse navigation, mouse-wheel to adjust speed".Localize(),
-                    Keys.None,
-                    Resources.FlyImage,
-                    CommandVisibility.Menu,
-                    this);
-            strip.Items.Add(cmdInfo.GetButton());
-
-            cmdInfo =
-                CommandService.RegisterCommand(
-                    Command.Walk,
-                    StandardMenu.View,
-                    StandardCommandGroup.ViewCamera,
-                    camera + "/" + "Walk".Localize(),
-                    "Walk: WASD + Middle Mouse, press Alt+MiddleMouse for height, mouse wheel to adjust walk speed".Localize(),
-                    Keys.None,
-                    Resources.WalkImage,
-                    CommandVisibility.Menu,
-                    this);
-            strip.Items.Add(cmdInfo.GetButton());
+            foreach (var cameraController in m_cameraControllers)
+            {                
+                if (cameraController.CommandInfo != null)
+                {
+                    CommandService.RegisterCommand(cameraController.CommandInfo, this);
+                    strip.Items.Add(cameraController.CommandInfo.GetButton());
+                }                    
+            }
 
             SettingsService.RegisterSettings(
                 this,
@@ -95,29 +50,8 @@ namespace LevelEditorCore.Commands
         /// <returns>true, if client can do the command</returns>
         public bool CanDoCommand(object commandTag)
         {
-            if (!(commandTag is Command))
-                return false;
-
-            if (m_designView == null)
-                return false;
-
-            var designControl = m_designView.ActiveView;
-
-            var cmd = (Command)commandTag;
-            switch (cmd)
-            {
-                case Command.Arcball:
-                case Command.Maya:
-                    return true;
-
-                case Command.Walk:
-                case Command.Fly:
-                    {
-                        return designControl.ViewType == ViewTypes.Perspective;                        
-                    }
-            }
-
-            return false;
+            var camController = commandTag as CameraController;
+            return camController != null && camController.CanHandleCamera(m_designView.ActiveView.Camera);
         }
 
         /// <summary>
@@ -125,53 +59,12 @@ namespace LevelEditorCore.Commands
         /// <param name="commandTag">Command to be done</param>
         public void DoCommand(object commandTag)
         {
-            if (!(commandTag is Command))
-                return;
-
-            if (m_designView == null)
-                return;
-
-            m_cameraMode = (Command)commandTag;
-
+            var camController = commandTag as CameraController;            
             var designControl = m_designView.ActiveView;
-            
-            switch (m_cameraMode)
+            if(camController != null && camController.CanHandleCamera(designControl.Camera))
             {
-                case Command.Arcball:
-                    {
-                        if (!(designControl.CameraController is ArcBallCameraController))
-                            designControl.CameraController = new ArcBallCameraController();
-                    }
-                    break;
-
-                case Command.Maya:
-                    {
-                        if (!(designControl.CameraController is MayaStyleCameraController))
-                            designControl.CameraController = new MayaStyleCameraController();
-                    }
-                    break;
-
-                case Command.Walk:
-                    {
-                        if (!(designControl.CameraController is WalkCameraController) &&
-                            (designControl.ViewType == ViewTypes.Perspective))
-                        {
-                            designControl.CameraController = new WalkCameraController();
-                        }
-                    }
-                    break;
-
-                case Command.Fly:
-                    {
-                        if (!(designControl.CameraController is FlyCameraController) &&
-                            (designControl.ViewType == ViewTypes.Perspective))
-                        {
-                            designControl.CameraController = new FlyCameraController();
-                        }
-                    }
-                    break;
-            }
-
+                designControl.CameraController = (CameraController)Activator.CreateInstance(camController.GetType());
+            }            
             designControl.Invalidate();
         }
 
@@ -181,60 +74,77 @@ namespace LevelEditorCore.Commands
         /// <param name="state">Command state to update</param>
         public void UpdateCommand(object commandTag, CommandState state)
         {
-            if (!(commandTag is Command))
-                return;
-
-            if (m_designView == null)
-                return;
-
+            var camController = commandTag as CameraController;
+            if (camController == null)
+                return;            
             var designControl = m_designView.ActiveView;
-
-            switch ((Command)commandTag)
-            {
-                case Command.Arcball:
-                    state.Check = (designControl.CameraController is ArcBallCameraController);
-                    break;
-
-                case Command.Maya:
-                    state.Check = (designControl.CameraController is MayaStyleCameraController);
-                    break;
-
-                case Command.Walk:
-                    state.Check = (designControl.CameraController is WalkCameraController);
-                    break;
-
-                case Command.Fly:
-                    state.Check = (designControl.CameraController is FlyCameraController);
-                    break;
-            }
+            state.Check = designControl.CameraController.GetType() == camController.GetType();
         }
 
         #endregion
 
         /// <summary>
-        /// Gets and sets the currently selected camera mode. This string is
+        /// Gets and sets the currently selected camera controllers 
+        /// for each DesignView control. This string is
         /// persisted in the user's settings file.
         /// </summary>
         public string CameraMode
         {
-            get { return m_cameraMode.ToString(); }
+            get 
+            {
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.AppendChild(xmlDoc.CreateXmlDeclaration("1.0", Encoding.UTF8.WebName, "yes"));
+                XmlElement root = xmlDoc.CreateElement("CameraControllers");
+                xmlDoc.AppendChild(root);
+                foreach (var view in m_designView.AllViews)
+                {
+                    if (string.IsNullOrWhiteSpace(view.Name))
+                        continue;
+                    XmlElement elm = xmlDoc.CreateElement("ViewControl");
+                    elm.SetAttribute("Name", view.Name);
+                    elm.SetAttribute("CamController", view.CameraController.GetType().AssemblyQualifiedName);
+                    root.AppendChild(elm);                  
+                }
+                return xmlDoc.InnerXml;
+            }
             set
             {
-                // Make sure that 'value' is valid first, in case the the names have changed
-                //  or the settings file is otherwise invalid.
-                if (string.Compare(Command.Arcball.ToString(), value) == 0)
-                    m_cameraMode = Command.Arcball;
-                else if (string.Compare(Command.Maya.ToString(), value) == 0)
-                    m_cameraMode = Command.Maya;
-                else if (string.Compare(Command.Walk.ToString(), value) == 0)
-                    m_cameraMode = Command.Walk;
-                else if (string.Compare(Command.Fly.ToString(), value) == 0)
-                    m_cameraMode = Command.Fly;
 
-                DoCommand(m_cameraMode);
-            }
+                try
+                {                  
+                    if (string.IsNullOrEmpty(value))
+                        return;
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(value);
+                    XmlElement root = xmlDoc.DocumentElement;
+                    if (root == null) return;
+                    foreach (XmlElement elm in root.ChildNodes)
+                    {
+                        var view = GetViewByName(elm.GetAttribute("Name"));
+                        Type type = Type.GetType(elm.GetAttribute("CamController"));
+                        if (view != null && type != null)
+                            view.CameraController = (CameraController)Activator.CreateInstance(type);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Outputs.WriteLine(
+                        OutputMessageType.Error,
+                        "{0}: Exception loading CameraMode persisted settings: {1}", this, ex.Message);
+                }
+            }            
         }
 
+        private DesignViewControl GetViewByName(string name)
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                foreach (var view in m_designView.AllViews)
+                    if (view.Name == name) return view;
+            }
+            return null;
+        }
         /// <summary>
         /// Gets or sets the command service to use.</summary>
         [Import]
@@ -245,34 +155,10 @@ namespace LevelEditorCore.Commands
         [Import]
         public ISettingsService SettingsService { get; set; }
 
-        /// <summary>
-        /// Camera modes</summary>
-        protected enum Command
-        {
-            /// <summary>
-            /// Standard "Arcball" camera
-            /// </summary>
-            Arcball,
-
-            /// <summary>
-            /// Maya camera
-            /// </summary>
-            Maya,
-
-            /// <summary>
-            /// Fly "WASD" camera
-            /// </summary>
-            Fly,
-
-            /// <summary>
-            /// Walk "WASD" camera
-            /// </summary>
-            Walk,
-        }
-
         [Import(AllowDefault = false)]
         private IDesignView m_designView = null;
 
-        private Command m_cameraMode = Command.Maya;
+        [ImportMany]
+        private IEnumerable<CameraController> m_cameraControllers;
     }
 }

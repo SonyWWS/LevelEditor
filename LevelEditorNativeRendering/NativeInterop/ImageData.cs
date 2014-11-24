@@ -14,9 +14,7 @@ namespace RenderingInterop
     public unsafe class ImageData : DisposableObject
     {
         /// <summary>
-        /// Construct Image data from uri.
-        /// </summary>
-        /// <param name="uri">Absolute path to image file</param>
+        /// Construct Image data</summary>        
         public ImageData() : this(0)
         {
             

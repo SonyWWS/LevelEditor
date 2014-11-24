@@ -364,12 +364,14 @@ namespace LevelEditor
       
         private void RegisterSettings()
         {
+            string descr = "Root path for all resources".Localize();
             var resourceRoot =
                 new BoundPropertyDescriptor(this, () => ResourceRoot,
                     "ResourceRoot".Localize("A user preference and the name of the preference in the settings file"),
                     null,
-                    "Root path for all resources".Localize(),
-                    new FolderNameEditor(), null);
+                    descr,
+                    new FolderBrowserDialogUITypeEditor(descr), null);
+            
 
             m_settingsService.RegisterSettings(this, resourceRoot);
             m_settingsService.RegisterUserSettings("Resources".Localize(), resourceRoot);

@@ -1,22 +1,38 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Windows.Forms;
 
 using Sce.Atf;
+using Sce.Atf.Applications;
 using Sce.Atf.VectorMath;
 
 using Camera = Sce.Atf.Rendering.Camera;
-using CameraController = Sce.Atf.Rendering.CameraController;
 using ViewTypes = Sce.Atf.Rendering.ViewTypes;
 
 namespace LevelEditorCore
 {
 
+    [Export(typeof(CameraController))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class MayaStyleCameraController : CameraController
     {
-         /// <summary>
+        public MayaStyleCameraController()
+        {
+            CommandInfo = new CommandInfo(
+                   this,
+                   StandardMenu.View,
+                   StandardCommandGroup.ViewCamera,
+                   "camera".Localize() + "/" + "Maya".Localize(),
+                   "Maya style camera".Localize(),
+                   Sce.Atf.Input.Keys.None,
+                   Resources.MayaImage,
+                   CommandVisibility.Menu);            
+        }
+        
+        /// <summary>
         /// Handles mouse-down events</summary>
         /// <param name="sender">Control that raised original event</param>
         /// <param name="e">Event args</param>
@@ -250,73 +266,6 @@ namespace LevelEditorCore
         private float m_dollyThreshold;
         private Point m_lastMousePoint;
         private bool m_dragging;
-
-        //private Vec3F ProjectToTrackball(Point point)
-        //{
-        //    float x = point.X / (m_width / 2);    // Scale so bounds map to [0,0] - [2,2]
-        //    float y = point.Y / (m_height / 2);
-
-        //    x = x - 1;                           // Translate 0,0 to the center
-        //    y = 1 - y;                           // Flip so +Y is up
-        //    if (x < -1) x = -1;
-        //    else if (x > 1) x = 1;
-        //    if (y < -1) y = -1;
-        //    else if (y > 1) y = 1;
-
-        //    float z2 = 1 - x * x - y * y;       // z^2 = 1 - x^2 - y^2
-        //    float z = z2 > 0 ? (float)Math.Sqrt(z2) : 0;
-
-        //    Vec3F p = new Vec3F(x, y, z);
-        //    p.Normalize();
-
-        //    return p;
-        //}
-
-        //private void Track(Point p1, Point p2)
-        //{
-        //    if (p1.X == p2.X && p1.Y == p2.Y)
-        //        return;
-
-        //    if (p1.X < 0 || p1.X > m_width)
-        //        return;
-
-        //    if (p1.Y < 0 || p1.Y > m_height)
-        //        return;
-
-        //    if (p2.X < 0 || p2.X > m_width)
-        //        return;
-
-        //    if (p2.Y < 0 || p2.Y > m_height)
-        //        return;
-
-        //    Vec3F v1 = ProjectToTrackball(p1);
-        //    Vec3F v2 = ProjectToTrackball(p2);
-        //    Vec3F axis = Vec3F.Cross(v2, v1);
-        //    axis.Normalize();
-
-        //    float angle = (float)Math.Acos(Vec3F.Dot(v1, v2)) * 1.5f;
-
-        //    // you can use either quaternion or matrix multiply
-        //    // I found matrix approach to be more accurate.
-        //    //Quaternion delta = Quaternion.CreateFromAxisAngle(axis, -angle);
-        //    //delta.Normalize();
-
-        //    // Compose the delta with the previous orientation
-        //    //prevQ = delta * prevQ;
-        //    //prevQ.Normalize();
-        //    Matrix4F r = new Matrix4F(new AngleAxisF(-angle, axis));
-        //    m_rot = Matrix4F.Multiply(m_rot, r);
-        //}
-
-        //public override string ToString()
-        //{
-        //    return
-        //        "Camera controller params:" + Environment.NewLine
-        //        + "Look at Point: " + m_lookAtPoint + Environment.NewLine
-        //        + "Rho: " + m_distanceFromOrigin + Environment.NewLine
-        //        + "phi: " + m_elevation + Environment.NewLine
-        //        + "theta: " + m_azimuth + Environment.NewLine + Environment.NewLine;
-        //}
     }
     
 }

@@ -2,15 +2,15 @@
 
 using System.ComponentModel.Composition;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 using Sce.Atf;
 using Sce.Atf.Applications;
-using Sce.Atf.Rendering;
-using Sce.Atf.Rendering.Dom;
 
 using LevelEditorCore;
-
+using Sce.Atf.Controls.PropertyEditing;
 using Resources = LevelEditorCore.Resources;
+using PropertyDescriptor = System.ComponentModel.PropertyDescriptor;
 
 namespace RenderingInterop
 {   
@@ -20,8 +20,7 @@ namespace RenderingInterop
     [Export(typeof(RenderCommands))]
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class RenderCommands : ICommandClient, IInitializable
-    {
-       
+    {       
         #region IInitializable Members
 
         public virtual void Initialize()
@@ -128,8 +127,7 @@ namespace RenderingInterop
              this);
             strip.Items.Add(cmdInfo.GetButton());
 
-
-            cmdInfo = m_commandService.RegisterCommand(                
+            m_commandService.RegisterCommand(                
                 Command.RenderCycle,
                 StandardMenu.View,
                 m_commandGroup,
@@ -152,16 +150,11 @@ namespace RenderingInterop
             //  this);
             //strip.Items.Add(cmdInfo.GetButton());
 
-
             ControlInfo controlInfo = new ControlInfo("Render settings", "per view port render settings", StandardControlGroup.Hidden);
-            m_propGrid = new PropertyGrid();
-            m_propGrid.PropertyValueChanged += delegate
-            {
-                m_designView.InvalidateViews();
-            };
             
-            m_controlHostService.RegisterControl(m_propGrid, controlInfo, null);
-            
+            m_propertyGrid = new Sce.Atf.Controls.PropertyEditing.PropertyGrid();
+            m_controlHostService.RegisterControl(m_propertyGrid, controlInfo, null);                       
+
             if (m_scriptingService != null)
                 m_scriptingService.SetVariable("renderCommands", this);
         }
@@ -182,11 +175,14 @@ namespace RenderingInterop
             NativeDesignControl activeControl = (NativeDesignControl)m_designView.ActiveView;
             RenderState rs = activeControl.RenderState;
 
-            if (activeControl.RenderState != m_propGrid.SelectedObject)
+            var context = m_propertyGrid.PropertyGridView.EditingContext as RenderStateEditingContext;
+            if (context == null || context.Item != rs)
             {
-                m_propGrid.SelectedObject = activeControl.RenderState;
+                context = new RenderStateEditingContext(rs);                
+                m_propertyGrid.Bind(context);
             }
-
+            
+                      
             switch ((Command)commandTag)
             {
                 case Command.RenderSmooth:
@@ -281,8 +277,7 @@ namespace RenderingInterop
                   //      m_designView.RealTime = !m_designView.RealTime;
                   //      break;
                 }
-                control.Invalidate();
-                m_propGrid.Refresh();
+                control.Invalidate();                
             }
         }
 
@@ -351,8 +346,8 @@ namespace RenderingInterop
           //  RealTime
         }
 
-        private PropertyGrid m_propGrid;
-        
+        private Sce.Atf.Controls.PropertyEditing.PropertyGrid m_propertyGrid;
+              
         [Import(AllowDefault = false)]
         private ICommandService m_commandService;
 
@@ -362,9 +357,53 @@ namespace RenderingInterop
         [Import(AllowDefault = false)]
         private IDesignView m_designView = null;
         
-        [Import(AllowDefault = false)]
+        [Import(AllowDefault = true)]
         private ScriptingService m_scriptingService;
 
-        private string m_commandGroup = "RenderingModes";        
+        private string m_commandGroup = "RenderingModes";
+
+        private class RenderStateEditingContext : IPropertyEditingContext
+        {
+            public RenderStateEditingContext(RenderState rs)
+            {
+                m_items[0] = rs;
+            }
+            public object Item
+            {
+                get { return m_items[0];}
+            }
+            #region IPropertyEditingContext Members
+
+            public IEnumerable<object> Items
+            {
+                get { return m_items; }
+            }
+
+            public IEnumerable<PropertyDescriptor> PropertyDescriptors
+            {
+                get 
+                {
+                    if (s_propertyDescriptor == null)
+                    {                        
+                        var colorEd = new Sce.Atf.Controls.ColorPickerEditor();
+                        string category = "Render Settings".Localize();                        
+                        
+                        s_propertyDescriptor = new PropertyDescriptor[]
+                        {
+                            new UnboundPropertyDescriptor(typeof(RenderState),"WireFrameColor","Wire FrameColor".Localize(),category,"color used for wireframe mode".Localize(),colorEd),
+                            new UnboundPropertyDescriptor(typeof(RenderState),"SelectionColor","Selection Color".Localize(),category,"Wireframe color for selected objects".Localize(),colorEd),
+                            new UnboundPropertyDescriptor(typeof(RenderState),"DisplayCaption","Display Caption".Localize(),category,"Display object name".Localize()),
+                            new UnboundPropertyDescriptor(typeof(RenderState),"DisplayBound","Display Bound".Localize(),category,"Display objects' bounding volume".Localize()),
+                            new UnboundPropertyDescriptor(typeof(RenderState),"DisplayPivot","Display Pivot".Localize(),category,"Display object pivot".Localize())
+                        };
+                    }
+                    return s_propertyDescriptor;
+                }
+            }
+
+            #endregion
+            private readonly object[] m_items = new object[1];
+            private static PropertyDescriptor[] s_propertyDescriptor;
+        }
     }
 }

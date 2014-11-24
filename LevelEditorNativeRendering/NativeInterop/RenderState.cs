@@ -83,31 +83,6 @@ namespace RenderingInterop
             }
         }
 
-
-
-        [CategoryAttribute("Render Settings"),
-        DescriptionAttribute("Render shadow")]
-        public bool RenderShadow
-        {
-            get 
-            {
-                return (RenderFlag & GlobalRenderFlags.Shadows) == GlobalRenderFlags.Shadows;
-            }
-            set
-            {
-                if (value)
-                {
-                    RenderFlag |= GlobalRenderFlags.Shadows;
-                }
-                else
-                {
-                    RenderFlag &= ~GlobalRenderFlags.Shadows;
-                }                
-            }
-        }
-
-
-
         [Browsable(false)]
         public ulong InstanceId
         {

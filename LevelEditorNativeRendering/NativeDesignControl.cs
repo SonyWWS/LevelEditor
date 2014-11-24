@@ -45,6 +45,7 @@ namespace RenderingInterop
             m_renderState.WireFrameColor = Color.DarkBlue;
             m_renderState.SelectionColor = Color.FromArgb(66, 255, 161);
             BackColor = SystemColors.ControlDark;
+            m_renderState.Changed += (sender, e) => Invalidate();
         }
 
         public ulong SurfaceId

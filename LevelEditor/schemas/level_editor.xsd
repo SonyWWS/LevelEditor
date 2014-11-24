@@ -221,8 +221,8 @@
         <LeGe.NativeProperty name="normal" nativeName="Normal" nativeType="wchar_t*" access="set"/>
         <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
         <scea.dom.editors.attribute category="Shape" name="color" displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
-        <scea.dom.editors.attribute category="Shape" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
-        <scea.dom.editors.attribute category="Shape" name="normal" displayName="Normal" description = "normal texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+        <scea.dom.editors.attribute category="Shape" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+        <scea.dom.editors.attribute category="Shape" name="normal" displayName="Normal" description = "normal texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
         <scea.dom.editors.attribute category="Shape" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
       </xs:appinfo>
     </xs:annotation>
@@ -305,7 +305,7 @@
         <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
         <scea.dom.editors name="BillboardTest" category="Examples" menuText="Game Objects/BillboardTest" description="Test Billboard"/>
         <scea.dom.editors.attribute category="Billboard" name="intensity" displayName="Intensity" description = "billboard intensity" />
-        <scea.dom.editors.attribute category="Billboard" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+        <scea.dom.editors.attribute category="Billboard" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
         <scea.dom.editors.attribute category="Billboard" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
       </xs:appinfo>
     </xs:annotation>
@@ -421,19 +421,19 @@
           displayName="Diffuse"
           description = "diffuse texture"
           category="Textures"
-          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
         <scea.dom.editors.attribute
           name="normal"
           displayName="Normal"
           description = "normal map texture"
           category="Textures"
-          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>
         <scea.dom.editors.attribute
           name="specular"
           displayName="Specular"
           description = "specular map texture"
           category="Textures"
-          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png; *.dds; *.bmp; *.tga; *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>               
+          editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif"/>               
       </xs:appinfo>
     </xs:annotation>
     <xs:attribute name="name" type="xs:string"/>

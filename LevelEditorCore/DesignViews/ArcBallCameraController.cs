@@ -1,10 +1,12 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Windows.Forms;
 
-
+using Sce.Atf;
+using Sce.Atf.Applications;
 using Sce.Atf.VectorMath;
 using Sce.Atf.Rendering;
 
@@ -12,8 +14,26 @@ namespace LevelEditorCore
 {
     /// <summary>
     /// Arcball camera controller, with Maya style zooming and panning</summary>
+    [Export(typeof(CameraController))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class ArcBallCameraController : CameraController
     {
+
+        public ArcBallCameraController()
+        {
+            CommandInfo = new CommandInfo(
+               this,
+               StandardMenu.View,
+               StandardCommandGroup.ViewCamera,
+               "camera".Localize() + "/" + "Arcball".Localize(),
+               "Arcball".Localize(),
+               Sce.Atf.Input.Keys.None,
+               Resources.ArcballImage,
+               CommandVisibility.Menu
+               );            
+        }
+        
+
         /// <summary>
         /// Performs any camera initialization required by the controller</summary>
         /// <param name="camera">Camera</param>
@@ -21,7 +41,6 @@ namespace LevelEditorCore
         {
             camera.PerspectiveNearZ = 0.01f;
         }
-
         /// <summary>
         /// Handles mouse-down events</summary>
         /// <param name="sender">Control that raised original event</param>
@@ -272,6 +291,6 @@ namespace LevelEditorCore
         private int m_height;
         private float m_dollyThreshold;
         private Point m_lastMousePoint;
-        private bool m_dragging;
+        private bool m_dragging;        
     }
 }

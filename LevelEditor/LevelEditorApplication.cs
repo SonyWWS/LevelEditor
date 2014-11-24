@@ -108,7 +108,11 @@ namespace LevelEditor
                 typeof(LevelEditorCore.Commands.ManipulatorCommands),
                 typeof(LevelEditorCore.Commands.ShowCommands),
                 typeof(LevelEditorCore.Commands.GroupCommands),
-                typeof(LevelEditorCore.Commands.CameraCommands)
+                typeof(LevelEditorCore.Commands.CameraCommands),
+                typeof(LevelEditorCore.MayaStyleCameraController),
+                typeof(LevelEditorCore.ArcBallCameraController),
+                typeof(LevelEditorCore.WalkCameraController),
+                typeof(LevelEditorCore.FlyCameraController)
                 );
 
             TypeCatalog thisAssemCatalog = new TypeCatalog(                
