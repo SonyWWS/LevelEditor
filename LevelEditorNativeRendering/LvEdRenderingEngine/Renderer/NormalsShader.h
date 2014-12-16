@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "RenderEnums.h"
 #include "Renderable.h"
+#include "RenderBuffer.h"
 
 struct ID3D11Device;
 struct ID3D11VertexShader;
@@ -35,16 +36,7 @@ namespace LvEdEngine
         
 
     private:
-        ID3D11Buffer*          m_cbPerFrame;
-        ID3D11Buffer*          m_cbPerObject;        
-        
-        ID3D11VertexShader*    m_vsShader;
-        ID3D11PixelShader*     m_psShader;
-        ID3D11GeometryShader*  m_gsShader;
-        ID3D11InputLayout*     m_layoutP;
-        
-        RenderContext*         m_rcntx; // render context
-        
+
         struct CbPerFrame
         {
             Matrix ViewProj;
@@ -57,6 +49,16 @@ namespace LvEdEngine
             Matrix worldXform;
             Matrix worldInvTrans;
         };
+
+        TConstantBuffer<CbPerFrame> m_cbPerFrame;
+        TConstantBuffer<CbPerObject> m_cbPerObject;
         
+        ID3D11VertexShader*    m_vsShader;
+        ID3D11PixelShader*     m_psShader;
+        ID3D11GeometryShader*  m_gsShader;
+        ID3D11InputLayout*     m_layoutPN;
+        
+        RenderContext*         m_rcntx; // render context
+                
     };
 }

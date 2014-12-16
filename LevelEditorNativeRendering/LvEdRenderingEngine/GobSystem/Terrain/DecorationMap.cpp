@@ -20,6 +20,7 @@ DecorationMap::DecorationMap() : m_scale(1),
 
 {
     s_instId++;
+    m_instId = s_instId;
 }
 
 DecorationMap::~DecorationMap()
@@ -163,7 +164,7 @@ void DecorationMap::GenVBuffers(int32_t patchId)
         
     auto& list = m_listOfVBList[patchId];
     list.clear();    
-    srand(7353 + patchId * s_instId);
+    srand(7353 + patchId * m_instId);
     for(int32_t y = box.y1; y < box.y2; y++)
     {            
         float v = y / ycol;

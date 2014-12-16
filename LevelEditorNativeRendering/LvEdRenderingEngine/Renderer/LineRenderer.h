@@ -60,7 +60,8 @@ private:
     ID3D11InputLayout*     m_vertexLayoutPC;
     ID3D11VertexShader*    m_vsShader;
     ID3D11PixelShader*     m_psShader;
-    ID3D11Buffer*          m_perframeCB;   
+
+    TConstantBuffer<Matrix> m_perframeCB;
 };
 
 

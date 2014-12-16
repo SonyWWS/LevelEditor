@@ -47,15 +47,14 @@ namespace RenderingInterop
                 return false;
 
             Camera camera = vc.Camera;
-            float s;
-            Util.CalcAxisLengths(camera, HitMatrix.Translation, out s);
+            
             Matrix4F view = camera.ViewMatrix;
             Matrix4F vp = view  * camera.ProjectionMatrix;
             Matrix4F wvp = HitMatrix * vp;
             
             Ray3F rayL = vc.GetRay(scrPt,wvp);
 
-            m_hitRegion = m_translatorControl.Pick(HitMatrix, view, rayL, HitRayV, s);
+            m_hitRegion = m_translatorControl.Pick(vc, HitMatrix, view, rayL, HitRayV);
             
             bool picked = m_hitRegion != HitRegion.None;                      
             return picked;
@@ -64,10 +63,8 @@ namespace RenderingInterop
         public override void Render(ViewControl vc)
         {                                                
             Matrix4F normWorld = GetManipulatorMatrix();
-            if (normWorld == null) return;
-            float s;
-            Util.CalcAxisLengths(vc.Camera, normWorld.Translation, out s);
-            m_translatorControl.Render(normWorld, s);        
+            if (normWorld == null) return;            
+            m_translatorControl.Render(vc, normWorld);        
         }
 
         public override void OnBeginDrag()
@@ -366,6 +363,8 @@ namespace RenderingInterop
 
         [Import(AllowDefault=false)]
         private ISnapFilter m_snapFilter;
+
+        
         private TranslatorControl m_translatorControl;
         private HitRegion m_hitRegion = HitRegion.None;        
         private bool m_cancelDrag;

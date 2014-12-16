@@ -3,8 +3,10 @@
 #pragma once
 
 #include "Renderer\RenderableNodeSet.h"
-#include "Renderer\BasicRenderer.h"
 #include <hash_set>
+#include "Core/Object.h"
+
+using namespace LvEdEngine;
 
 typedef std::hash_set<ObjectGUID> Selection;
 typedef std::vector<Object*> ObjectList;

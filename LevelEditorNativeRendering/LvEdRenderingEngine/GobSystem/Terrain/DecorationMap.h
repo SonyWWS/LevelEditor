@@ -65,6 +65,7 @@ private:
     std::hash_set<int32_t> m_tmpPatchSet;
     //std::hash_set<int32_t> temp;
     static int32_t s_instId;
+    int32_t m_instId;
 };
 
 }

@@ -23,8 +23,9 @@ namespace LvEdEngine
         float4 Color;     
     };
 
-    struct Light
+    class Light
     {
+    public:
         float3 ambient;
         float pad1;
         float3 diffuse;
@@ -38,7 +39,7 @@ namespace LvEdEngine
     {
     public:
         float3 dir;
-        float pad1;
+        float pad4;
     };
 
     // same struct defined in lighting.shh shader.
@@ -46,9 +47,9 @@ namespace LvEdEngine
     {
     public:
         float3 min;
-        float pad1;
+        float pad4;
         float3 max;
-        float pad2;
+        float pad5;
         float4 attenuation;
     };
 

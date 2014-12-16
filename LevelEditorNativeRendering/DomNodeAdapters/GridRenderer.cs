@@ -26,6 +26,7 @@ namespace RenderingInterop
 
         public void Render(Camera cam)
         {
+            GameEngine.SetRendererFlag(BasicRendererFlags.WireFrame);
             IGrid grid = this.As<IGrid>();
 
             if (grid.Visible == false)
@@ -86,9 +87,9 @@ namespace RenderingInterop
                 trans.Translation = new Vec3F(0, grid.Height, 0);
                 gridXform = Matrix4F.Multiply(scale, trans);
             }
-            
+
             GameEngine.DrawPrimitive(PrimitiveType.LineList, m_gridVBId, 0, m_gridVertexCount, Color.LightGray,
-                                     gridXform, BasicRendererFlags.WireFrame);
+                                     gridXform);
         }
 
         // creates grid unit grid.       

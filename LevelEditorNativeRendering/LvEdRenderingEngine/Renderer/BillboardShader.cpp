@@ -11,6 +11,7 @@
 #include "Model.h"
 #include "TextureLib.h"
 #include "ShaderLib.h"
+#include "GpuResourceFactory.h"
 
 
 
@@ -26,57 +27,25 @@ static const bool UseRightHand = true; // for testing.
 BillboardShader::BillboardShader(ID3D11Device* device)
   : Shader( Shaders::BillboardShader ), m_rc(NULL)
 {
-    Initialize( device );
-}
-
-// --------------------------------------------------------------------------------------------------
-void BillboardShader::Initialize(ID3D11Device* device)
-{
     assert(device);
-    // create constant buffers
-    m_constantBufferPerFrame = CreateConstantBuffer(device, sizeof(ConstantBufferPerFrame));
-    m_constantBufferPerDraw = CreateConstantBuffer(device, sizeof(ConstantBufferPerDraw));
-
-    assert(m_constantBufferPerFrame);
-    assert(m_constantBufferPerDraw);
-
-
+    m_cbPerFrame.Construct(device);
+    m_cbPerDraw.Construct(device);
+    
     // create shaders
     ID3DBlob* pVSBlob = CompileShaderFromResource(L"Billboard.hlsl", "VSMain","vs_4_0", NULL);
     ID3DBlob* pPSBlob = CompileShaderFromResource(L"Billboard.hlsl", "PSMain","ps_4_0", NULL);
-    assert(pVSBlob);
-    assert(pPSBlob);
-
-    m_vertexShader = CreateVertexShader(device, pVSBlob);
-    m_pixelShader = CreatePixelShader(device, pPSBlob);
-    assert(m_vertexShader);
-    assert(m_pixelShader);
-
-    m_vertexLayout = CreateInputLayout(device, pVSBlob, VertexFormat::VF_PNTT);
+    assert(pVSBlob && pPSBlob);
+        
+    m_vertexShader = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    m_pixelShader  =  GpuResourceFactory::CreatePixelShader(pPSBlob);
+    assert(m_vertexShader && m_pixelShader);
+    
+    m_vertexLayout = GpuResourceFactory::CreateInputLayout(pVSBlob, VertexFormat::VF_PNTT);
     assert(m_vertexLayout);
-
-    // create raster state
-    m_rasterStateSolid = CreateRasterState(device, FillMode::Solid);
-    assert(m_rasterStateSolid);
-
-    // create sampler state
-    m_samplerState = CreateSamplerState(device);
-    assert(m_samplerState);
-
-   // RenderStateCache* rscache = RenderContext::Inst()->GetRenderStateCache();
-  //  D3D11_SAMPLER_DESC smpDescr = rscache->GetDefaultSampler();
-  //  smpDescr.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-  //  smpDescr.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-  //  smpDescr.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-  //  device->CreateSamplerState(&smpDescr, &m_samplerState);
- //   assert(m_samplerState);
-
-
 
     // release blob memory
     pVSBlob->Release();
-    pPSBlob->Release();
-
+    pPSBlob->Release();    
 }
 
 
@@ -85,11 +54,7 @@ BillboardShader::~BillboardShader()
 {
     SAFE_RELEASE(m_vertexShader);
     SAFE_RELEASE(m_pixelShader);
-    SAFE_RELEASE(m_vertexLayout);
-    SAFE_RELEASE(m_constantBufferPerFrame);
-    SAFE_RELEASE(m_constantBufferPerDraw);
-    SAFE_RELEASE(m_rasterStateSolid);
-    SAFE_RELEASE(m_samplerState);
+    SAFE_RELEASE(m_vertexLayout);    
 }
 
 // --------------------------------------------------------------------------------------------------
@@ -97,57 +62,52 @@ void BillboardShader::SetRenderFlag(RenderFlagsEnum rf)
 {
     m_renderFlags = rf;
 
-     ID3D11DeviceContext*  d3dcontext = m_rc->Context();
+    ID3D11DeviceContext* dc = m_rc->Context();
         
     // if solid and wireframe bit are set then choose solid.
     CullModeEnum cullmode = (rf & RenderFlags::RenderBackFace) ? CullMode::NONE : CullMode::BACK;
-    auto rasterState = m_rc->GetRenderStateCache()->GetRasterState( FillMode::Solid, cullmode );
-    d3dcontext->RSSetState(rasterState);
+    auto rasterState = RSCache::Inst()->GetRasterState( FillMode::Solid, cullmode );
+    dc->RSSetState(rasterState);
 
     // set blend state 
-    auto blendState = m_rc->GetRenderStateCache()->GetBlendState(rf);
+    auto blendState = RSCache::Inst()->GetBlendState(rf);
     float blendFactor[4] = {1.0f};
-    d3dcontext->OMSetBlendState(blendState, blendFactor, 0xffffffff);        
+    dc->OMSetBlendState(blendState, blendFactor, 0xffffffff);        
 
     // set depth stencil state
-    auto depthState  = m_rc->GetRenderStateCache()->GetDepthStencilState(rf);
-    d3dcontext->OMSetDepthStencilState(depthState,0);
+    auto depthState  = RSCache::Inst()->GetDepthStencilState(rf);
+    dc->OMSetDepthStencilState(depthState,0);
 
 }
 // --------------------------------------------------------------------------------------------------
 void BillboardShader::Begin(RenderContext* rc)
 {
     m_rc = rc;
-    ID3D11DeviceContext*  d3dcontext = rc->Context();
-    Matrix invView = rc->Cam().View();
-    invView.Invert();
-
-    ConstantBufferPerFrame cb;
-    Matrix::Transpose(rc->Cam().View(),cb.viewXform);
-    Matrix::Transpose(rc->Cam().Proj(),cb.projXform);    
-    UpdateConstantBuffer(d3dcontext,m_constantBufferPerFrame,&cb,sizeof(cb));
+    ID3D11DeviceContext* dc = rc->Context();
+    
+    // update cbuffer
+    Matrix::Transpose(rc->Cam().View(),m_cbPerFrame.Data.viewXform);
+    Matrix::Transpose(rc->Cam().Proj(),m_cbPerFrame.Data.projXform);
+    m_cbPerFrame.Update(dc);
+    
 
     // set per call buffer.
-    d3dcontext->VSSetConstantBuffers(0,1,&m_constantBufferPerFrame);
-    d3dcontext->PSSetConstantBuffers(0,1,&m_constantBufferPerFrame);
+    auto perframeCb = m_cbPerFrame.GetBuffer();
+    auto perDrawCb = m_cbPerDraw.GetBuffer();
+    dc->VSSetConstantBuffers(0,1,&perframeCb);
+    dc->PSSetConstantBuffers(0,1,&perframeCb);
+    dc->VSSetConstantBuffers(1,1,&perDrawCb);
+    dc->PSSetConstantBuffers(1,1,&perDrawCb);
+
 
     // set vs, ps and layout.
-    d3dcontext->VSSetShader(m_vertexShader,NULL,0);
-    d3dcontext->PSSetShader(m_pixelShader,NULL,0);
+    dc->VSSetShader(m_vertexShader,NULL,0);
+    dc->PSSetShader(m_pixelShader,NULL,0);
+    dc->IASetInputLayout(m_vertexLayout);
 
     // setup samplers
-    d3dcontext->PSSetSamplers( 0, 1, &m_samplerState );
-
-    // raster state
-    d3dcontext->RSSetState(m_rasterStateSolid);
-
-    // depth stencil state
-    ID3D11DepthStencilState* depth = m_rc->GetRenderStateCache()->GetDepthStencilState(RenderFlags::None);
-    d3dcontext->OMSetDepthStencilState(depth, 0);
-
-    d3dcontext->VSSetConstantBuffers(1,1,&m_constantBufferPerDraw);
-    d3dcontext->PSSetConstantBuffers(1,1,&m_constantBufferPerDraw);
-    d3dcontext->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+    auto sampState = RSCache::Inst()->LinearWrap();
+    dc->PSSetSamplers( 0, 1, &sampState);    
 }
 
 // --------------------------------------------------------------------------------------------------
@@ -169,42 +129,40 @@ void BillboardShader::DrawNodes(const RenderNodeList& renderNodes)
 // --------------------------------------------------------------------------------------------------
 void BillboardShader::Draw(const RenderableNode& r)
 {
-    ID3D11DeviceContext*  d3dcontext = m_rc->Context();
+    ID3D11DeviceContext* dc = m_rc->Context();
 
     // verify lighting
     assert(r.lighting.numDirLights <= MAX_DIR_LIGHTS);
     assert(r.lighting.numBoxLights <= MAX_BOX_LIGHTS);
     assert(r.lighting.numPointLights <= MAX_POINT_LIGHTS);
 
-    ConstantBufferPerDraw cb;
-    Matrix::Transpose(r.WorldXform,cb.worldXform);
-    Matrix::Transpose(r.TextureXForm, cb.textureXForm);
-    cb.intensity = r.diffuse.x; // convention to use this    
-    UpdateConstantBuffer(d3dcontext,m_constantBufferPerDraw,&cb,sizeof(cb));
-
-    ID3D11ShaderResourceView* diffuseMap[1] = {NULL};
-    diffuseMap[0] = TextureLib::Inst()->GetWhite()->GetView();
+    Matrix::Transpose(r.WorldXform,m_cbPerDraw.Data.worldXform);
+    Matrix::Transpose(r.TextureXForm, m_cbPerDraw.Data.textureXForm);
+    m_cbPerDraw.Data.intensity = r.diffuse.x;
+    m_cbPerDraw.Update(dc);
+    
+    ID3D11ShaderResourceView* diffuseMap[1] = {NULL};    
     if( (m_renderFlags & RenderFlags::Textured) && r.textures[TextureType::DIFFUSE])
     {
         diffuseMap[0] = r.textures[TextureType::DIFFUSE]->GetView();
     }
+    else
+    {
+        diffuseMap[0] = TextureLib::Inst()->GetWhite()->GetView();
+    }
    
-    d3dcontext->PSSetShaderResources( 0, 1, diffuseMap );
+    dc->PSSetShaderResources( 0, 1, diffuseMap );
 
     uint32_t stride = r.mesh->vertexBuffer->GetStride();
-    uint32_t offset = 0;
-    uint32_t startIndex = 0;
-    uint32_t startVertex= 0;
+    uint32_t offset = 0;    
     uint32_t indexCount = r.mesh->indexBuffer->GetCount();
     ID3D11Buffer* d3dvb = r.mesh->vertexBuffer->GetBuffer();
     ID3D11Buffer* d3dib = r.mesh->indexBuffer->GetBuffer();
 
-    d3dcontext->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)r.mesh->primitiveType );
-    d3dcontext->IASetInputLayout(m_vertexLayout);
-    d3dcontext->IASetVertexBuffers( 0, 1, &d3dvb, &stride, &offset );
-    d3dcontext->IASetIndexBuffer(d3dib, DXGI_FORMAT_R32_UINT, 0);
-
-    d3dcontext->DrawIndexed(indexCount, startIndex, startVertex);
+    dc->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)r.mesh->primitiveType );    
+    dc->IASetVertexBuffers( 0, 1, &d3dvb, &stride, &offset );
+    dc->IASetIndexBuffer(d3dib, (DXGI_FORMAT) r.mesh->indexBuffer->GetFormat(), 0);
+    dc->DrawIndexed(indexCount,0,0 );
 }
 
 

@@ -16,16 +16,6 @@ namespace LvEdEngine
 {
 
 
-namespace BrushOps
-{
-   enum Enum
-    {
-        Add,
-        Sub,
-        Smooth,
-        Flatten,
-    };
-}
 
 class ImageData : public Object
 {

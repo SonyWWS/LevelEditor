@@ -10,6 +10,7 @@
 #include "RenderContext.h"
 #include "RenderState.h"
 #include "Model.h"
+#include "GpuResourceFactory.h"
 
 using namespace LvEdEngine;
 
@@ -19,25 +20,28 @@ void NormalsShader::Begin(RenderContext* context)
 	m_rcntx = context;
     
     ID3D11DeviceContext* d3dContext = context->Context();
-
-	CbPerFrame cb;   
-    cb.ViewPort = m_rcntx->ViewPort();
+	
+    m_cbPerFrame.Data.ViewPort = m_rcntx->ViewPort();
 
     Matrix vp = m_rcntx->Cam().View() * m_rcntx->Cam().Proj();
-    Matrix::Transpose(vp,cb.ViewProj);
-    cb.color = float4(1,0,0,1);
-	
-    UpdateConstantBuffer(d3dContext,m_cbPerFrame,&cb,sizeof(cb));		
-    d3dContext->VSSetConstantBuffers(1,1,&m_cbPerObject);
-    d3dContext->GSSetConstantBuffers(0,1,&m_cbPerFrame);    
+    Matrix::Transpose(vp,m_cbPerFrame.Data.ViewProj);
+    m_cbPerFrame.Data.color = float4(1,0,0,1);
+    m_cbPerFrame.Update(d3dContext);
+
+    auto perframe = m_cbPerFrame.GetBuffer();
+    auto perObj = m_cbPerObject.GetBuffer();
+    d3dContext->VSSetConstantBuffers(1,1,&perObj);
+    d3dContext->GSSetConstantBuffers(0,1,&perframe);    
+    d3dContext->PSSetConstantBuffers(0,1,&perframe);
+
     d3dContext->VSSetShader(m_vsShader,NULL,0);
     d3dContext->GSSetShader(m_gsShader,NULL,0);
     d3dContext->PSSetShader(m_psShader,NULL,0);
-    d3dContext->IASetInputLayout( m_layoutP);
-    d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);  // D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST
+    d3dContext->IASetInputLayout( m_layoutPN);
+    d3dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
                                        
 
-    RenderStateCache* rscache = m_rcntx->GetRenderStateCache();
+    RSCache* rscache = RSCache::Inst();
     // set state-blocks ( raster, depth, and blend states)     
     d3dContext->RSSetState(rscache->GetRasterState(FillMode::Wireframe,CullMode::BACK));    
     d3dContext->OMSetDepthStencilState(NULL,0);    
@@ -52,22 +56,20 @@ void NormalsShader::End()
 
 
 void NormalsShader::DrawNodes(const RenderNodeList& renderNodes)
-{
-    CbPerObject cb;
+{    
     ID3D11DeviceContext* d3dContext = m_rcntx->Context();
     for ( auto it = renderNodes.begin(); it != renderNodes.end(); ++it )
-    {
+    {        
         const RenderableNode& r = (*it);
         
         if(r.mesh->nor.size() == 0) continue;
-        Matrix::Transpose(r.WorldXform,cb.worldXform);    
+        Matrix::Transpose(r.WorldXform,m_cbPerObject.Data.worldXform);    
 
         Matrix w = r.WorldXform;        
         w.M41 = w.M42 = w.M43 = 0; w.M44 = 1;
-        Matrix::Invert(w,cb.worldInvTrans);
+        Matrix::Invert(w,m_cbPerObject.Data.worldInvTrans);
+        m_cbPerObject.Update(d3dContext);
         
-        UpdateConstantBuffer(d3dContext,m_cbPerObject,&cb,sizeof(cb));
-
         uint32_t stride = r.mesh->vertexBuffer->GetStride();
         uint32_t offset = 0;       
         uint32_t startVertex = 0;
@@ -85,8 +87,8 @@ NormalsShader::NormalsShader(ID3D11Device* device)
     m_rcntx = NULL;
     m_gsShader = NULL;
     // create cbuffers.
-    m_cbPerFrame  = CreateConstantBuffer(device, sizeof(CbPerFrame));
-    m_cbPerObject = CreateConstantBuffer(device, sizeof(CbPerObject));
+    m_cbPerFrame.Construct(device);
+    m_cbPerObject.Construct(device);
         
     ID3DBlob* vsBlob = CompileShaderFromResource(L"NormalsShader.hlsl", "VS","vs_4_0", NULL);    
     ID3DBlob* gsBlob = CompileShaderFromResource(L"NormalsShader.hlsl", "GS","gs_4_0", NULL);    
@@ -97,17 +99,17 @@ NormalsShader::NormalsShader(ID3D11Device* device)
     assert(psBlob);
     
 
-    m_vsShader = CreateVertexShader(device, vsBlob);
-    m_gsShader = CreateGeometryShader(device, gsBlob);
-    m_psShader = CreatePixelShader(device, psBlob);
+    m_vsShader = GpuResourceFactory::CreateVertexShader(vsBlob);
+    m_gsShader = GpuResourceFactory::CreateGeometryShader(gsBlob);
+    m_psShader = GpuResourceFactory::CreatePixelShader(psBlob);
     
     assert(m_vsShader);
     assert(m_gsShader);
     assert(m_psShader);
       
     // create input layout    
-    m_layoutP = CreateInputLayout(device,vsBlob,VertexFormat::VF_PN);
-    assert(m_layoutP);
+    m_layoutPN = GpuResourceFactory::CreateInputLayout(vsBlob, VertexFormat::VF_PN);
+    assert(m_layoutPN);
 
     // release the blobs
     vsBlob->Release();
@@ -118,10 +120,8 @@ NormalsShader::NormalsShader(ID3D11Device* device)
 
 // --------------------------------------------------------------------------------------------------
 NormalsShader::~NormalsShader()
-{
-    SAFE_RELEASE(m_cbPerFrame);
-    SAFE_RELEASE(m_cbPerObject);    
-    SAFE_RELEASE(m_layoutP);
+{    
+    SAFE_RELEASE(m_layoutPN);
     SAFE_RELEASE(m_vsShader);
     SAFE_RELEASE(m_psShader);
     SAFE_RELEASE(m_gsShader);    

@@ -9,6 +9,7 @@
 #include "RenderBuffer.h"
 #include "RenderUtil.h"
 #include "ShadowMaps.h"
+#include "RenderState.h"
 #include "../Core/Utils.h"
 #include "../Core/Logger.h"
 
@@ -76,17 +77,16 @@ ShadowMaps::ShadowMaps(ID3D11Device* device, uint32_t dim)
 
 
     // create sampler state         
-    D3D11_SAMPLER_DESC SamDesc;
+    D3D11_SAMPLER_DESC SamDesc = RSCache::Inst()->GetDefaultSampler();
     SamDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
     SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
     SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
     SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-    SamDesc.MipLODBias = 0.0f;
-    SamDesc.MaxAnisotropy = 0;
-    SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
-    SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 0;
+    SamDesc.MipLODBias = 0.0f;    
     SamDesc.MinLOD = 0;
-    SamDesc.MaxLOD = 0;    
+    SamDesc.MaxLOD = 0;
+    SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
+    SamDesc.BorderColor[0] = SamDesc.BorderColor[1] = SamDesc.BorderColor[2] = SamDesc.BorderColor[3] = 0;    
     hr = device->CreateSamplerState( &SamDesc, &m_samplerState );
     Logger::IsFailureLog(hr, L"CreateSamplerState");
     assert(m_samplerState);    
@@ -101,7 +101,7 @@ ShadowMaps::ShadowMaps(ID3D11Device* device, uint32_t dim)
 
 
     // create shadow constant buffer
-    m_constantBufferShadows = CreateConstantBuffer(device, sizeof(ConstantBufferShadowMapping));
+    m_cbShadow.Construct(device);    
 }
 
 
@@ -109,8 +109,7 @@ ShadowMaps::~ShadowMaps()
 {
     SAFE_RELEASE(m_samplerState);
     SAFE_RELEASE(m_resourceView);
-    SAFE_RELEASE(m_depthStencilView);
-    SAFE_RELEASE(m_constantBufferShadows);
+    SAFE_RELEASE(m_depthStencilView);    
 }
 
 //---------------------------------------------------------------------------
@@ -168,9 +167,8 @@ void ShadowMaps::UpdateLightCamera( ID3D11DeviceContext* dc, const DirLight* lig
     //Matrix proj = Matrix::CreateOrthographicOffCenter(vmin.x, vmax.x, vmin.y, vmax.y, nearz, farz);
     m_lightCamera.SetViewProj(view, proj);
 
-      // update cb
-    ConstantBufferShadowMapping constBuffer;            
-    constBuffer.cb_smTexelSize  = ( 1.0f / MapSize() );        
+    // update cb        
+    m_cbShadow.Data.texelSize  = ( 1.0f / MapSize() );        
 
     // udpate constant buffer using lightcamera.
     // transform coords from NDC space to texture space.
@@ -180,16 +178,13 @@ void ShadowMaps::UpdateLightCamera( ID3D11DeviceContext* dc, const DirLight* lig
                              0.5f,  0.5f, 0.0f, 1.0f);
                                  
     float4x4 shadowViewProjection = (m_lightCamera.View() * m_lightCamera.Proj()) * ndcToTexSpace;
-    Matrix::Transpose(shadowViewProjection, constBuffer.cb_smShadowTransform);    
-    UpdateConstantBuffer(dc, m_constantBufferShadows, &constBuffer, sizeof(constBuffer));
-
+    Matrix::Transpose(shadowViewProjection, m_cbShadow.Data.xform);    
+    m_cbShadow.Update(dc);
 }
 
 void ShadowMaps::SetAndClear(ID3D11DeviceContext* dc)
 {
-    dc->RSSetViewports(1,&m_viewport);
-    ID3D11RenderTargetView* renderTargets[1] = {0};
-    dc->OMSetRenderTargets(1, renderTargets, m_depthStencilView);
+    dc->RSSetViewports(1,&m_viewport);    
+    dc->OMSetRenderTargets(0, NULL, m_depthStencilView);
     dc->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
 }

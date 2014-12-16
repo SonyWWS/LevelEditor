@@ -2,7 +2,7 @@
 
 using System;
 using System.Drawing;
-
+using LevelEditorCore;
 using Sce.Atf.VectorMath;
 using LevelEditorCore.VectorMath;
 
@@ -23,8 +23,9 @@ namespace RenderingInterop
             XZSquare,
         }
 
-        public HitRegion Pick(Matrix4F world, Matrix4F view, Ray3F rayL, Ray3F rayV, float s)
+        public HitRegion Pick(ViewControl vc, Matrix4F world, Matrix4F view, Ray3F rayL, Ray3F rayV)
         {
+            float s = Util.CalcAxisScale(vc.Camera, world.Translation, Manipulator.AxisLength, vc.Height);
             m_hitRegion = HitRegion.None;
             m_hitRayV = rayV;
 
@@ -98,7 +99,7 @@ namespace RenderingInterop
             Matrix4F BoxMtrx = new Matrix4F();
 
             // X axis
-            boxScale.Scale(new Vec3F(s, s * br, s * br));
+            boxScale.Scale(new Vec3F(s, s * ConeDiameter, s * ConeDiameter));
             boxTrans.Translation = new Vec3F(s / 2, 0, 0);
             BoxMtrx = boxScale * boxTrans;
 
@@ -112,7 +113,7 @@ namespace RenderingInterop
             }
 
             // y axis
-            boxScale.Scale(new Vec3F(s * br, s, s * br));
+            boxScale.Scale(new Vec3F(s * ConeDiameter, s, s * ConeDiameter));
             boxTrans.Translation = new Vec3F(0, s / 2, 0);
             BoxMtrx = boxScale * boxTrans;
             ray = rayL;
@@ -125,7 +126,7 @@ namespace RenderingInterop
             }
 
             // z axis
-            boxScale.Scale(new Vec3F(s * br, s * br, s));
+            boxScale.Scale(new Vec3F(s * ConeDiameter, s * ConeDiameter, s));
             boxTrans.Translation = new Vec3F(0, 0, s / 2);
             BoxMtrx = boxScale * boxTrans;
 
@@ -141,36 +142,54 @@ namespace RenderingInterop
         }
 
 
-        public void Render(Matrix4F normWorld, float s)
+        public void Render(ViewControl vc, Matrix4F normWorld)
         {
-            BasicRendererFlags solid = BasicRendererFlags.Solid | BasicRendererFlags.DisableDepthTest;
-            BasicRendererFlags wire = BasicRendererFlags.WireFrame | BasicRendererFlags.DisableDepthTest;
+            float s = Util.CalcAxisScale(vc.Camera, normWorld.Translation, Manipulator.AxisLength, vc.Height);
+            Color xcolor = (m_hitRegion == HitRegion.XAxis || m_hitRegion == HitRegion.XYSquare || m_hitRegion == HitRegion.XZSquare) ? Color.Gold : Manipulator.XAxisColor;
+            Color ycolor = (m_hitRegion == HitRegion.YAxis || m_hitRegion == HitRegion.XYSquare || m_hitRegion == HitRegion.YZSquare) ? Color.Gold : Manipulator.YAxisColor;
+            Color Zcolor = (m_hitRegion == HitRegion.ZAxis || m_hitRegion == HitRegion.XZSquare || m_hitRegion == HitRegion.YZSquare) ? Color.Gold : Manipulator.ZAxisColor;
 
-            Color xcolor = (m_hitRegion == HitRegion.XAxis || m_hitRegion == HitRegion.XYSquare || m_hitRegion == HitRegion.XZSquare) ? Color.Gold : Color.Red;
-            Color ycolor = (m_hitRegion == HitRegion.YAxis || m_hitRegion == HitRegion.XYSquare || m_hitRegion == HitRegion.YZSquare) ? Color.Gold : Color.Green;
-            Color Zcolor = (m_hitRegion == HitRegion.ZAxis || m_hitRegion == HitRegion.XZSquare || m_hitRegion == HitRegion.YZSquare) ? Color.Gold : Color.Blue;
-
-            Color XYx = m_hitRegion == HitRegion.XYSquare ? Color.Gold : Color.Red;
-            Color XYy = m_hitRegion == HitRegion.XYSquare ? Color.Gold : Color.Green;
+            Color XYx = m_hitRegion == HitRegion.XYSquare ? Color.Gold : Manipulator.XAxisColor;
+            Color XYy = m_hitRegion == HitRegion.XYSquare ? Color.Gold : Manipulator.YAxisColor;
 
 
-            Color XZx = m_hitRegion == HitRegion.XZSquare ? Color.Gold : Color.Red;
-            Color XZz = m_hitRegion == HitRegion.XZSquare ? Color.Gold : Color.Blue;
+            Color XZx = m_hitRegion == HitRegion.XZSquare ? Color.Gold : Manipulator.XAxisColor;
+            Color XZz = m_hitRegion == HitRegion.XZSquare ? Color.Gold : Manipulator.ZAxisColor;
 
 
-            Color YZy = m_hitRegion == HitRegion.YZSquare ? Color.Gold : Color.Green;
-            Color YZz = m_hitRegion == HitRegion.YZSquare ? Color.Gold : Color.Blue;
+            Color YZy = m_hitRegion == HitRegion.YZSquare ? Color.Gold : Manipulator.YAxisColor;
+            Color YZz = m_hitRegion == HitRegion.YZSquare ? Color.Gold : Manipulator.ZAxisColor;
+
+           
+            var axisScale = new Matrix4F();
+            axisScale.Scale(new Vec3F(s * Manipulator.AxisThickness, s * (1 - ConeHeight), s * Manipulator.AxisThickness));
+            var axisrot = new Matrix4F();
             
-            Vec3F axScale = new Vec3F(s, s, s);
-            Matrix4F axisXform = ComputeAxis(normWorld, axScale);
-            Util3D.RenderFlag = wire;
-            Util3D.DrawX(axisXform, xcolor);
-            Util3D.DrawY(axisXform, ycolor);
-            Util3D.DrawZ(axisXform, Zcolor);
 
-            Matrix4F arrowHead = ComputeXhead(normWorld, s);
-            Util3D.RenderFlag = solid;
+            // Draw X axis
+            axisrot.RotZ(-MathHelper.PiOver2);
+            Matrix4F scaleRot  = axisScale * axisrot;
+            Matrix4F axisXform = scaleRot * normWorld;            
+            Util3D.DrawCylinder(axisXform, xcolor);
 
+            // draw y
+            axisXform = axisScale * normWorld;
+            Util3D.DrawCylinder(axisXform, ycolor);
+
+            // draw z
+            axisrot.RotX(MathHelper.PiOver2);            
+            scaleRot = axisScale * axisrot;
+            axisXform = scaleRot * normWorld;
+            Util3D.DrawCylinder(axisXform, Zcolor);
+
+            // draw center cube.
+            Matrix4F cubeScale = new Matrix4F();
+            cubeScale.Scale(CenterCube * s);
+            var cubexform = cubeScale * normWorld;
+            Util3D.DrawCube(cubexform, Color.White);
+            
+
+            Matrix4F arrowHead = ComputeXhead(normWorld, s);            
             Util3D.DrawCone(arrowHead, xcolor);
 
             arrowHead = ComputeYhead(normWorld, s);
@@ -178,37 +197,44 @@ namespace RenderingInterop
 
             arrowHead = ComputeZhead(normWorld, s);
             Util3D.DrawCone(arrowHead, Zcolor);
-
-            Util3D.RenderFlag = wire;
+            
             // draw xy rect.
             Matrix4F scale = new Matrix4F();
-            scale.Scale(axScale * SquareLength);
+            scale.Scale(s * Manipulator.AxisThickness, s * SquareLength, s * Manipulator.AxisThickness);
             Matrix4F trans = new Matrix4F();
             trans.Translation = new Vec3F(0, s * SquareLength, 0);
-            Matrix4F squareXform = scale * trans * normWorld;
-            Util3D.DrawX(squareXform, XYy);
+            Matrix4F rot = new Matrix4F();
+            rot.RotZ(-MathHelper.PiOver2);
+            Matrix4F squareXform = scale * rot * trans * normWorld;
+
+
+            Util3D.DrawCylinder(squareXform, XYy);
+
             trans.Translation = new Vec3F(s * SquareLength, 0, 0);
             squareXform = scale * trans * normWorld;
-            Util3D.DrawY(squareXform, XYx);
+            Util3D.DrawCylinder(squareXform, XYx);
+
 
             // draw xz rect.
             trans.Translation = new Vec3F(0, 0, s * SquareLength);
-            squareXform = scale * trans * normWorld;
-            Util3D.DrawX(squareXform, XZz);
+            rot.RotZ(-MathHelper.PiOver2);
+            squareXform = scale * rot * trans * normWorld;
+            Util3D.DrawCylinder(squareXform, XZz);
 
             trans.Translation = new Vec3F(s * SquareLength, 0, 0);
-            squareXform = scale * trans * normWorld;
-            Util3D.DrawZ(squareXform, XZx);
+            rot.RotX(MathHelper.PiOver2);
+            squareXform = scale * rot * trans * normWorld;
+            Util3D.DrawCylinder(squareXform, XZx);
 
             // draw yz
             trans.Translation = new Vec3F(0, s * SquareLength, 0);
-            squareXform = scale * trans * normWorld;
-            Util3D.DrawZ(squareXform, YZy);
+            rot.RotX(MathHelper.PiOver2);
+            squareXform = scale * rot * trans * normWorld;
+            Util3D.DrawCylinder(squareXform, YZy);
 
             trans.Translation = new Vec3F(0, 0, s * SquareLength);
             squareXform = scale * trans * normWorld;
-            Util3D.DrawY(squareXform, YZz);
-
+            Util3D.DrawCylinder(squareXform, YZz);
         }
 
         
@@ -318,9 +344,9 @@ namespace RenderingInterop
             headrot.RotZ(-MathHelper.PiOver2);
 
             Matrix4F trans = new Matrix4F();
-            trans.Translation = new Vec3F(s * (1 - hr), 0, 0);
+            trans.Translation = new Vec3F(s * (1 - ConeHeight), 0, 0);
             Matrix4F scale = new Matrix4F();
-            scale.Scale(new Vec3F(s * br, s * hr, s * br));
+            scale.Scale(new Vec3F(s * ConeDiameter, s * ConeHeight, s * ConeDiameter));
             Matrix4F xform = scale * headrot * trans * normWorld;
             return xform;
         }
@@ -328,9 +354,9 @@ namespace RenderingInterop
         private Matrix4F ComputeYhead(Matrix4F normWorld, float s)
         {
             Matrix4F trans = new Matrix4F();
-            trans.Translation = new Vec3F(0, s * (1 - hr), 0);
+            trans.Translation = new Vec3F(0, s * (1 - ConeHeight), 0);
             Matrix4F scale = new Matrix4F();
-            scale.Scale(new Vec3F(s * br, s * hr, s * br));
+            scale.Scale(new Vec3F(s * ConeDiameter, s * ConeHeight, s * ConeDiameter));
             Matrix4F xform = scale * trans * normWorld;
             return xform;
         }
@@ -341,17 +367,17 @@ namespace RenderingInterop
             headrot.RotX(MathHelper.PiOver2);
 
             Matrix4F trans = new Matrix4F();
-            trans.Translation = new Vec3F(0, 0, s * (1 - hr));
+            trans.Translation = new Vec3F(0, 0, s * (1 - ConeHeight));
             Matrix4F scale = new Matrix4F();
-            scale.Scale(new Vec3F(s * br, s * hr, s * br));
+            scale.Scale(new Vec3F(s * ConeDiameter, s * ConeHeight, s * ConeDiameter));
             Matrix4F xform = scale * headrot * trans * normWorld;
             return xform;
         }
-
-
-        private const float hr = 1.0f / 4.0f;
-        private const float br = 1.0f / 15.0f;
+        
+        private const float ConeHeight = 1.0f / 5.0f;
+        private const float ConeDiameter = 1.0f / 15.0f;        
         private const float SquareLength = 0.3f; //the ratio of square length to arrow length
+        private const float CenterCube = 1.0f / 12.0f; // the ration of the center cube to arrow length.
         private Matrix4F m_hitWorldView = new Matrix4F();
         private Matrix4F m_hitMatrix = new Matrix4F();
         private Ray3F m_hitRayV;

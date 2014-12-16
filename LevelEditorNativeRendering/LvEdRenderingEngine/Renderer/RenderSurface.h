@@ -33,6 +33,7 @@ public:
 
     ID3D11RenderTargetView* GetRenderTargetView() {return m_pRenderTargetView;}
     ID3D11DepthStencilView* GetDepthStencilView() {return m_pDepthStencilView;}
+    ID3D11DepthStencilView* GetDepthStencilViewFg() {return m_pDepthStencilViewFg;}
 
     void  SetBkgColor(const float4& color){ m_bkgColor = color;}
     const float4& GetBkgColor(){ return m_bkgColor;}
@@ -60,6 +61,9 @@ public:
 protected:
     ID3D11RenderTargetView* m_pRenderTargetView;    
     ID3D11DepthStencilView* m_pDepthStencilView;
+    ID3D11DepthStencilView* m_pDepthStencilViewFg;
+
+    
 
     Texture* m_pDepthStencilBuffer;
     Texture* m_pColorBuffer;

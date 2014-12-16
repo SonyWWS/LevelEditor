@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "RenderBuffer.h"
 
 namespace LvEdEngine 
 {
@@ -20,22 +21,18 @@ namespace LvEdEngine
         void Draw( const RenderableNode& r );  
 
     private:
-        ID3D11VertexShader*     m_vertexShader;
-        ID3D11PixelShader*      m_pixelShader;
-        ID3D11InputLayout*      m_vertexLayout;
-        ID3D11Buffer*           m_constantBufferPerFrame;
-        
-        ID3D11SamplerState*     m_samplerState;
-        RenderContext*          m_rc;
-
-        
-        // -------------------------------------------------------------------
-        // NOTE: Must match constant buffer in HLSL
-        struct cbPerFrame
+        struct CbPerFrame
         {
 	        Matrix view;
 	        Matrix proj;            
         };
+
+        ID3D11VertexShader*         m_vertexShader;
+        ID3D11PixelShader*          m_pixelShader;
+        ID3D11InputLayout*          m_vertexLayout;
+        TConstantBuffer<CbPerFrame> m_cbPerFrame;        
+        RenderContext*              m_rc;
+
     };
 
 }

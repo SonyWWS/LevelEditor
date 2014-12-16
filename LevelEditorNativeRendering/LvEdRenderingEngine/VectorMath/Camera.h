@@ -27,9 +27,13 @@ namespace LvEdEngine
         float FarZ()  { return m_farZ; }
 
         // compute world dimensions at the given world position.
-        void ComputeWorldDimensions(const float3& worldPos, float * h, float * w) const;
-        void ComputeViewDimensions(const float3& viewPos, float * h, float * w) const;
+        void ComputeWorldDimensions(const float3& posW, float* h, float* w) const;
 
+        // compute unit per pixel at the given world position.
+        // posW: world positoin.
+        // vh:  view port height in pixels.
+        float ComputeUnitPerPixel(const float3& posW, float vh) const;
+        
         float3 m_position;
         float3 m_direction;
         float3 m_up;

@@ -286,7 +286,7 @@ void CurveGob::Update(float dt)
     {
         ID3D11DeviceContext* context = gD3D11->GetImmediateContext();
         assert(m_mesh.vertexBuffer != NULL);        
-        UpdateVertexBuffer(context, m_mesh.vertexBuffer, m_mesh.vertexBuffer->GetFormat(), (void*)&verts[0], (uint32_t)verts.size());        
+        UpdateVertexBuffer(context, m_mesh.vertexBuffer,(void*)&verts[0], (uint32_t)verts.size());        
     }    
     
     m_needsRebuild = false;    

@@ -89,16 +89,16 @@ void TexturedShader::SetRenderFlag(RenderFlagsEnum rf)
     
     // if solid and wireframe bit are set then choose solid.
     CullModeEnum cullmode = (rf & RenderFlags::RenderBackFace) ? CullMode::NONE : CullMode::BACK;
-    auto rasterState = m_rc->GetRenderStateCache()->GetRasterState( FillMode::Solid, cullmode );
+    auto rasterState = RSCache::Inst()->GetRasterState( FillMode::Solid, cullmode );
     d3dcontext->RSSetState(rasterState);
 
     // set blend state 
-    auto blendState = m_rc->GetRenderStateCache()->GetBlendState(rf);
+    auto blendState = RSCache::Inst()->GetBlendState(rf);
     float blendFactor[4] = {1.0f};
     d3dcontext->OMSetBlendState(blendState, blendFactor, 0xffffffff);        
 
     // set depth stencil state
-    auto depthState  = m_rc->GetRenderStateCache()->GetDepthStencilState(rf);
+    auto depthState  = RSCache::Inst()->GetDepthStencilState(rf);
     d3dcontext->OMSetDepthStencilState(depthState,0);
    
 }
@@ -111,7 +111,7 @@ void TexturedShader::Begin(RenderContext* rc)
     ID3D11DeviceContext*  d3dcontext = m_rc->Context();
 
     // depth stencil state
-    ID3D11DepthStencilState* depth = m_rc->GetRenderStateCache()->GetDepthStencilState(RenderFlags::None);
+    ID3D11DepthStencilState* depth = RSCache::Inst()->GetDepthStencilState(RenderFlags::None);
     d3dcontext->OMSetDepthStencilState(depth, 0);
 
     // update per frame cb   

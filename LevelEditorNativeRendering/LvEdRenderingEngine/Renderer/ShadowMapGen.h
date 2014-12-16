@@ -9,6 +9,7 @@
 #include "../Core/NonCopyable.h"
 #include "ShadowMaps.h"
 #include "RenderSurface.h"
+#include "RenderBuffer.h"
 
 namespace LvEdEngine
 {
@@ -32,27 +33,23 @@ namespace LvEdEngine
 
     private:
         
-        void                        DrawRenderable(const RenderableNode& r);
-                
-        RenderContext*              m_rc;
-        RenderSurface*              m_pSurface;        
-        ID3D11VertexShader*         m_shaderShadowMapsVS;                
-        ID3D11Buffer*               m_pConstantBufferPerFrame;
-        ID3D11Buffer*               m_pConstantBufferPerDraw;
-        ID3D11InputLayout*          m_pVertexLayoutMesh;  
-        ::ID3D11RasterizerState*    m_rasterStateShadow;
-
-        
-        struct ConstantBufferShadowMapGenPerFrame
+        struct CbPerFrame
         {
             Matrix  view;
             Matrix  proj;
         };
 
-        struct ConstantBufferShadowMapGenPerDraw
-        {
-            Matrix  world;    
-        };
+        TConstantBuffer<CbPerFrame> m_cbPerFrame;
+        TConstantBuffer<Matrix>     m_cbPerDraw;
+                
+        RenderContext*              m_rc;
+        RenderSurface*              m_pSurface;
+
+        ID3D11VertexShader*         m_vertexShader;                        
+        ID3D11InputLayout*          m_layoutP;
+        ID3D11RasterizerState*      m_rasterState;
+
+        void DrawRenderable(const RenderableNode& r);
 
     };
 

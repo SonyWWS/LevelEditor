@@ -58,6 +58,9 @@
     <None Include="Shaders\Fog.shh">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\BasicRenderer.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LvEdRenderingEngine.h" />
@@ -363,6 +366,12 @@
     <ClInclude Include="Core\StringUtils.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="Renderer\GpuResourceFactory.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\TorusGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -654,6 +663,12 @@
     </ClCompile>
     <ClCompile Include="Core\StringUtils.cpp">
       <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\GpuResourceFactory.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\TorusGob.cpp">
+      <Filter>GobSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

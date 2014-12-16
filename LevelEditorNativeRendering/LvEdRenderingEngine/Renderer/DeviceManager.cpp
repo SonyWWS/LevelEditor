@@ -173,18 +173,21 @@ DeviceManager::~DeviceManager(void)
     }
     
     SAFE_RELEASE(m_pImmediateContext);    
+
+     /*#ifdef _DEBUG
+    ID3D11Debug* dbg;
+     m_pd3dDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&dbg));
+     if(dbg)
+     {
+         dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);            
+     }
+#endif */
+
     SAFE_RELEASE(m_pd3dDevice);
     SAFE_RELEASE(m_pDXGIFactory1);
 
     
-   /* #ifdef _DEBUG
-    ID3D11Debug* dbg;
-     m_pd3dDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&dbg));
-     if(m_dbg)
-     {
-         m_dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);            
-     }
-#endif */
+   
 
 
     Logger::Log(OutputMessageType::Info, "shutdown DX11\n");

@@ -152,8 +152,8 @@ namespace LevelEditorCore
         /// Creates Billboard matrix from the given parameters.</summary>        
         public static void CreateBillboard(Matrix4F matrix, Vec3F objectPos, Vec3F camPos, Vec3F camUp, Vector3 camLook)
         {
-            
-            Vector3 look = objectPos - camPos;
+
+            Vector3 look = camPos - objectPos;
             float len = look.LengthSquared;
             if (len < 0.0001f)
             {
@@ -196,26 +196,37 @@ namespace LevelEditorCore
             return matrix;
         }
 
-        public static void CalcAxisLengths(Camera camera, Vec3F objectPosW, out float s)
-        {            
-            float axisRatio = 0.24f;
 
-            float worldHeight;                        
+        /// <summary>
+        /// Calculates required scale such that when it applied to an 
+        /// object. The object maintain a constant size in pixel regardless of 
+        /// its distance from camera.
+        /// Used for computing size of 3d manipulators.</summary>
+        /// <param name="camera"></param>
+        /// <param name="objectPosW"></param>
+        /// <param name="sizeInPixels"></param>
+        /// <param name="viewHeight"></param>        
+        public static float CalcAxisScale(Camera camera,
+            Vec3F objectPosW,
+            float sizeInPixels,
+            float viewHeight)
+        {
+            float worldHeight;
             // World height on origin's z value
             if (camera.Frustum.IsOrtho)
             {
-                worldHeight = (camera.Frustum.Top - camera.Frustum.Bottom) / 2;
+                worldHeight = (camera.Frustum.Top - camera.Frustum.Bottom);
             }
             else
             {
                 Matrix4F view = camera.ViewMatrix;
                 Vec3F objPosV;
                 view.Transform(objectPosW, out objPosV);
-                worldHeight = -objPosV.Z * (float)Math.Tan(camera.Frustum.FovY / 2.0f);
+                worldHeight = 2.0f * Math.Abs(objPosV.Z) * (float)Math.Tan(camera.Frustum.FovY / 2.0f);
             }
-            s = (axisRatio*worldHeight);
+            return sizeInPixels * (worldHeight / viewHeight);
         }
-
+        
         public static void ZoomOnSphere(Camera cam, Sphere3F sphere)
         {
             float nearZ = cam.PerspectiveNearZ;

@@ -407,6 +407,13 @@ extern "C" LVEDRENDERINGENGINE_API ObjectGUID __stdcall LvEd_CreateIndexBuffer(u
 extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DeleteBuffer(ObjectGUID buffer);
 
 
+
+/**
+* Set render flag
+* @param renderFlags basic rendering flags
+*/
+extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_SetRendererFlag(BasicRendererFlagsEnum renderFlags);
+
 /**
  * Draws the specified primitive with the specified parameters.
  *
@@ -415,8 +422,7 @@ extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DeleteBuffer(ObjectGUID b
  * @param StartVertex Starting vertex
  * @param vertexCount Vertex count
  * @param color Color component array (Red, Green, Blue, Alpha)
- * @param xform View transform
- * @param renderFlags Render flags
+ * @param xform View transform 
  *
  */
 extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawPrimitive(PrimitiveTypeEnum pt,                                                                 
@@ -424,8 +430,7 @@ extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawPrimitive(PrimitiveTy
                                                                 uint32_t StartVertex,
                                                                 uint32_t vertexCount,
                                                                 float* color,
-                                                                float* xform,
-                                                                BasicRendererFlagsEnum renderFlags);
+                                                                float* xform);
 
 
 /**
@@ -438,8 +443,7 @@ extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawPrimitive(PrimitiveTy
  * @param indexCount Index count
  * @param startVertex Starting vertex
  * @param color Color component array (Red, Green, Blue, Alpha)
- * @param xform View transform
- * @param renderFlags Render flags
+ * @param xform View transform 
  *
  */
 extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawIndexedPrimitive(PrimitiveTypeEnum pt,                                                             
@@ -449,8 +453,8 @@ extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawIndexedPrimitive(Prim
                                                                     uint32_t indexCount,
                                                                     uint32_t startVertex,                        
                                                                     float* color,
-                                                                    float* xform,
-                                                                    BasicRendererFlagsEnum renderFlags);
+                                                                    float* xform);
+                                                                    
 
 
 //=============================================================================

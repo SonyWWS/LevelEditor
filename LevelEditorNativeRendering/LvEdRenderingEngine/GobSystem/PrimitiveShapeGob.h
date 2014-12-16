@@ -18,7 +18,11 @@ namespace LvEdEngine
         PrimitiveShapeGob( RenderShapeEnum shape );
         virtual ~PrimitiveShapeGob();
 
-        void SetColor(int color) { m_color = color; };
+        void SetColor(int color) { ConvertColor(color, &m_color); }
+        void SetEmissive(int color) { ConvertColor(color, &m_emissive); }
+        void SetSpecular(int color) { ConvertColor(color, &m_specular); }
+        void SetSpecularPower(float specPower) { m_specPower = specPower; }
+
         void SetDiffuse(wchar_t* filename){m_diffuse.SetTarget(filename);}
         void SetDiffuse(Resource* res){m_diffuse.SetTarget(res);}
         void SetNormal(wchar_t* filename){m_normal.SetTarget(filename);};
@@ -31,7 +35,10 @@ namespace LvEdEngine
         virtual void SetupRenderable(RenderableNode* r, RenderContext* context);
 
     protected:
-        int m_color;
+        float4 m_color;
+        float3 m_emissive;
+        float3 m_specular;
+        float m_specPower;
         ResourceReference m_diffuse;
         ResourceReference m_normal;
         Matrix m_textureTransform;

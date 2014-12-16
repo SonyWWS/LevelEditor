@@ -149,11 +149,8 @@ namespace RenderingInterop
                         );
                 }
             }
-
-
             return paths;
         }
-
         
         private IGame TargetGame()
         {            
@@ -339,7 +336,6 @@ namespace RenderingInterop
                 }
             }
         }
-
       
         // render the scene.
         public void Render()
@@ -363,13 +359,15 @@ namespace RenderingInterop
             GridRenderer gridRender = game.Grid.Cast<GridRenderer>();
             gridRender.Render(Camera);
 
+          
+            GameEngine.RenderGame();
+
             bool renderSelected = RenderState.DisplayBound == DisplayFlagModes.Selection
                 || RenderState.DisplayCaption == DisplayFlagModes.Selection
                 || RenderState.DisplayPivot == DisplayFlagModes.Selection;
 
-
             if (renderSelected)
-            {                
+            {
                 var selection = DesignView.Context.As<ISelectionContext>().Selection;
                 IEnumerable<DomNode> rootDomNodes = DomNode.GetRoots(selection.AsIEnumerable<DomNode>());
                 RenderProperties(rootDomNodes,
@@ -383,51 +381,47 @@ namespace RenderingInterop
                    RenderState.DisplayBound == DisplayFlagModes.Always,
                    RenderState.DisplayPivot == DisplayFlagModes.Always);
 
-            GameEngine.RenderGame();
-            
-           
+
+            GameEngine.SetRendererFlag(BasicRendererFlags.Foreground | BasicRendererFlags.Lit);            
             if (DesignView.Manipulator != null)
                 DesignView.Manipulator.Render(this);
-
+                                  
             string str = string.Format("View Type: {0}   time-per-frame: {1:0.00} ms", ViewType, m_clk.Milliseconds);
             GameEngine.DrawText2D(str, Util3D.CaptionFont, 1,1, Color.White);          
             GameEngine.End();                                    
         }
         
-
         private void RenderProperties(IEnumerable<object> objects, bool renderCaption, bool renderBound, bool renderPivot)
-        {
-            bool renderAny = renderCaption || renderBound || renderPivot;
-            if (renderAny == false) return;
-
-            Util3D.RenderFlag = BasicRendererFlags.WireFrame;
-            Matrix4F vp = Camera.ViewMatrix * Camera.ProjectionMatrix;
-
-            foreach (object obj in objects)
+        {                      
+            if (renderCaption || renderBound)
             {
-                IBoundable bnode = obj.As<IBoundable>();
-                if (bnode == null || bnode.BoundingBox.IsEmpty || obj.Is<IGameObjectFolder>()) continue;
-
-                INameable nnode = obj.As<INameable>();
-                ITransformable trans = obj.As<ITransformable>();
-
-                if (renderBound)
+                Util3D.RenderFlag = BasicRendererFlags.WireFrame;
+                Matrix4F vp = Camera.ViewMatrix * Camera.ProjectionMatrix;
+                foreach (object obj in objects)
                 {
-                    Util3D.DrawAABB(bnode.BoundingBox);
-                }
-                if (renderCaption && nnode != null)
-                {
-                    Vec3F topCenter = bnode.BoundingBox.Center;
-                    topCenter.Y = bnode.BoundingBox.Max.Y;
-                    Point pt = Project(vp, topCenter);
-                    GameEngine.DrawText2D(nnode.Name, Util3D.CaptionFont, pt.X, pt.Y, Color.White);
+                    IBoundable bnode = obj.As<IBoundable>();
+                    if (bnode == null || bnode.BoundingBox.IsEmpty || obj.Is<IGameObjectFolder>()) continue;
+
+                    INameable nnode = obj.As<INameable>();
+                    ITransformable trans = obj.As<ITransformable>();
+
+                    if (renderBound)
+                    {
+                        Util3D.DrawAABB(bnode.BoundingBox);
+                    }
+                    if (renderCaption && nnode != null)
+                    {
+                        Vec3F topCenter = bnode.BoundingBox.Center;
+                        topCenter.Y = bnode.BoundingBox.Max.Y;
+                        Point pt = Project(vp, topCenter);
+                        GameEngine.DrawText2D(nnode.Name, Util3D.CaptionFont, pt.X, pt.Y, Color.White);
+                    }
                 }
             }
 
             if (renderPivot)
             {
-                Util3D.RenderFlag = BasicRendererFlags.WireFrame
-                             | BasicRendererFlags.DisableDepthTest;
+                Util3D.RenderFlag = BasicRendererFlags.WireFrame | BasicRendererFlags.DisableDepthTest;
 
                 // create few temp matrics to
                 Matrix4F toWorld = new Matrix4F();
@@ -450,21 +444,16 @@ namespace RenderingInterop
                     toWorld.Mul(PV, toWorld);
                     Vec3F pos = toWorld.Translation;
 
-                    float s;
-                    Util.CalcAxisLengths(Camera, pos, out s);
-                    s /= 12.0f;
+                    const float pivotDiameter = 16; // in pixels
+                    float s = Util.CalcAxisScale(Camera, pos, pivotDiameter, Height);                    
                     sc.Scale(s);
                     Util.CreateBillboard(bl, pos, Camera.WorldEye, Camera.Up, Camera.LookAt);
-
-                    Matrix4F.Multiply(sc, bl, recXform);
-
+                    recXform = sc * bl;
                     Util3D.DrawPivot(recXform, Color.Yellow);
-
                 }
             }
         }
        
-
         private IEnumerable<DomNode> Items
         {
             get
@@ -557,7 +546,5 @@ namespace RenderingInterop
         private readonly uint swapChainId;
         private readonly uint SizePropId;
         private readonly uint BkgColorPropId;
-
     }
-
 }

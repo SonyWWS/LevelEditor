@@ -116,6 +116,17 @@ SwapChain::SwapChain(HWND hwnd,ID3D11Device* pd3dDevice, IDXGIFactory1* pDXGIFac
 	{
 		return;
 	}
+
+    // create depth buffer for Forground scene
+    ID3D11Texture2D* pDepthStencilFg; 
+    hr = m_pd3dDevice->CreateTexture2D( &descDepth, NULL, &pDepthStencilFg);
+    if (Logger::IsFailureLog(hr, L"CreateTexture2D"))
+        return;
+    hr = m_pd3dDevice->CreateDepthStencilView( pDepthStencilFg, NULL, &m_pDepthStencilViewFg );
+	if (Logger::IsFailureLog(hr, L"CreateDepthStencilView"))
+        return;
+    pDepthStencilFg->Release();
+	
     m_width = width;
 	m_height = height;	
 
@@ -139,6 +150,7 @@ SwapChain::~SwapChain(void)
     SAFE_RELEASE(m_pSwapChain)
     SAFE_RELEASE(m_pRenderTargetView)
     SAFE_RELEASE(m_pDepthStencilView)
+    SAFE_RELEASE(m_pDepthStencilViewFg)
     SAFE_DELETE(m_pDepthStencilBuffer)
     SAFE_DELETE(m_pColorBuffer);
 
@@ -189,8 +201,7 @@ void SwapChain::Resize(int w, int h)
     Render_SetDebugName(m_pRenderTargetView,"renderTargetView");
     
 	// re-create depth buffer.
-	D3D11_TEXTURE2D_DESC depthDescr;
-	SecureZeroMemory( &depthDescr, sizeof(depthDescr) );
+	D3D11_TEXTURE2D_DESC depthDescr;	
 	m_pDepthStencilBuffer->GetTex()->GetDesc(&depthDescr);
 	SAFE_DELETE(m_pDepthStencilBuffer);
 
@@ -215,6 +226,20 @@ void SwapChain::Resize(int w, int h)
 	}
 
     Render_SetDebugName(m_pDepthStencilView,"depth buffer view");
+
+
+    ID3D11Texture2D* pDepthStencilFg; 
+    hr = m_pd3dDevice->CreateTexture2D( &depthDescr, NULL, &pDepthStencilFg);
+    if (Logger::IsFailureLog(hr, L"CreateTexture2D"))
+        return;
+
+    m_pDepthStencilViewFg->Release();
+    m_pDepthStencilViewFg = NULL;
+    hr = m_pd3dDevice->CreateDepthStencilView( pDepthStencilFg, NULL, &m_pDepthStencilViewFg );
+	if (Logger::IsFailureLog(hr, L"CreateDepthStencilView"))
+        return;
+    pDepthStencilFg->Release();
+
           
     m_viewport.Width    = (float)(m_width);
     m_viewport.Height   = (float)(m_height);    

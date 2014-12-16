@@ -64,7 +64,7 @@ bool BoxLightGob::GetRenderables(RenderableNodeCollector* collector, RenderConte
     RenderableNode renderable;
     GameObject::SetupRenderable(&renderable,context);
     renderable.mesh = m_mesh;
-    renderable.textures[TextureType::DIFFUSE] =  TextureLib::Inst()->GetByName(L"LIGHT.PNG");
+    renderable.textures[TextureType::DIFFUSE] =  TextureLib::Inst()->GetByName(L"Light.png");
     
     float3 objectPos = &m_world.M41;
     Camera& cam = context->Cam();    

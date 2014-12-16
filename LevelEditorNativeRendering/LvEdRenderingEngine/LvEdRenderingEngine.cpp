@@ -36,6 +36,7 @@
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderLib.h"
 #include "Renderer/TextureLib.h"
+#include "Renderer/GpuResourceFactory.h"
 
 #include "ResourceManager/ResourceManager.h"
 #include "Model3d/XmlModelFactory.h"
@@ -181,7 +182,7 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallba
 {    
     // Enable run-time memory check for debug builds.
 #if defined(DEBUG) || defined(_DEBUG)
- //    _crtBreakAlloc = 931; //example break on alloc number 1027, change 
+  //   _crtBreakAlloc = 925; //example break on alloc number 1027, change 
 	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 #endif
 
@@ -197,6 +198,8 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallba
     // you don't need to use DeviceManager class.
     // the game-engine should provide
     gD3D11 = new DeviceManager();
+    GpuResourceFactory::SetDevice(gD3D11->GetDevice());
+    RSCache::InitInstance(gD3D11->GetDevice());
     TextureLib::InitInstance(gD3D11->GetDevice());
     ShapeLibStartup(gD3D11->GetDevice());
     ResourceManager::InitInstance();
@@ -225,8 +228,7 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallba
     resMan->RegisterFactory(L".jpg", texFactory);
     resMan->RegisterFactory(L".bmp", texFactory);
     resMan->RegisterFactory(L".dds", texFactory);
-    resMan->RegisterFactory(L".tif", texFactory);  
-    
+    resMan->RegisterFactory(L".tif", texFactory);
 }
 
 LVEDRENDERINGENGINE_API void __stdcall LvEd_Shutdown(void)
@@ -245,6 +247,7 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Shutdown(void)
     RenderContext::DestroyInstance();    
     ResourceManager::DestroyInstance();
     ShadowMaps::DestroyInstance();
+    RSCache::DestroyInstance();
     SAFE_DELETE(s_engineData);
     SAFE_DELETE(gD3D11);
 
@@ -809,7 +812,10 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Begin(ObjectGUID renderSurface, floa
     }
 
     //Level editor may perform some rendering before LvEd_RenderGame get called.
-    s_engineData->basicRenderer->Begin(RenderContext::Inst()->Context(), RenderContext::Inst()->Cam().View(), RenderContext::Inst()->Cam().Proj());
+    s_engineData->basicRenderer->Begin(RenderContext::Inst()->Context(), 
+        s_engineData->pRenderSurface,
+        RenderContext::Inst()->Cam().View(),
+        RenderContext::Inst()->Cam().Proj());
 }
 
 bool NodeSortGreater(const RenderableNode& n1, const RenderableNode& n2)
@@ -933,7 +939,10 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_RenderGame()
     }
 
     //Level editor may perform additional rendering before LvEd_End() is called 
-    s_engineData->basicRenderer->Begin(RenderContext::Inst()->Context(), RenderContext::Inst()->Cam().View(), RenderContext::Inst()->Cam().Proj());
+    s_engineData->basicRenderer->Begin(RenderContext::Inst()->Context(),
+        s_engineData->pRenderSurface,
+        RenderContext::Inst()->Cam().View(),
+        RenderContext::Inst()->Cam().Proj());
 }
 
 // todo: move this code to C# side.
@@ -1085,17 +1094,23 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_DeleteBuffer(ObjectGUID buffer)
     s_engineData->basicRenderer->DeleteBuffer(buffer);
 }
 
+
+LVEDRENDERINGENGINE_API void __stdcall LvEd_SetRendererFlag(BasicRendererFlagsEnum renderFlags)
+{
+    s_engineData->basicRenderer->SetRendererFlag(renderFlags);
+}
+
+
 // ---------------------------------------------------------------------------------------------------------
 LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawPrimitive(PrimitiveTypeEnum pt,
                                                     ObjectGUID vb,
                                                     uint32_t StartVertex,
                                                     uint32_t vertexCount,
                                                     float* color,
-                                                    float* xform,
-                                                    BasicRendererFlagsEnum renderFlags)
+                                                    float* xform)                                                    
 {
     ErrorHandler::ClearError();
-    s_engineData->basicRenderer->DrawPrimitive(pt,vb,StartVertex, vertexCount,color,xform,renderFlags);
+    s_engineData->basicRenderer->DrawPrimitive(pt,vb,StartVertex, vertexCount,color,xform);
 }
 
 // ---------------------------------------------------------------------------------------------------------
@@ -1106,11 +1121,10 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_DrawIndexedPrimitive(PrimitiveTypeEn
                                                                 uint32_t indexCount,
                                                                 uint32_t startVertex,
                                                                 float* color,
-                                                                float* xform,
-                                                                BasicRendererFlagsEnum renderFlags)
+                                                                float* xform)
 {
     ErrorHandler::ClearError();
-    s_engineData->basicRenderer->DrawIndexedPrimitive(pt,vb,ib,startIndex,indexCount,startVertex,color,xform,renderFlags);
+    s_engineData->basicRenderer->DrawIndexedPrimitive(pt,vb,ib,startIndex,indexCount,startVertex,color,xform);
 }
 
 // ---------------------------------------------------------------------------------------------------------

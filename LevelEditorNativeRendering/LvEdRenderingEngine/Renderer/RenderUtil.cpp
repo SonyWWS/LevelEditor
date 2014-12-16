@@ -11,18 +11,14 @@
 #include <set>
 #include "Model.h"
 #include "Lights.h"
+#include "../Core/ResUtil.h"
 #include "../Core/Logger.h"
 
 namespace LvEdEngine
 {
-
-    // loads embedded shader
-    // shaderName is the embedeed resource name
-    // the caller have to free the returned pointer.
-    static void LoadEmbeddedShader(const wchar_t* shaderName, const void **ppData, UINT* pBytes);
    
     // custom include handler 
-    // helps shader compiler to  resolve #include as embedded resources 
+    // helps shader compiler to resolve #include as embedded resources 
     class IncludeHandler : public ID3DInclude, public NonCopyable
     {
         public:
@@ -35,7 +31,7 @@ namespace LvEdEngine
         {                       
             WCHAR wfile[MAX_PATH];
             MultiByteToWideChar(0, 0, pFileName, MAX_PATH, wfile, MAX_PATH );
-            LoadEmbeddedShader(wfile,ppData,pBytes);                                 
+            *ppData = ResUtil::LoadResource(L"SHADER",wfile,pBytes);            
             return (*pBytes > 0)? S_OK : E_INVALIDARG;
 
         }
@@ -136,54 +132,12 @@ uint32_t GetVerticesPerPrimitive(PrimitiveTypeEnum pt)
 
 //-----------------------------------------------------
 
-ID3DBlob* CompileShaderFromResource(LPCWSTR resourceName, LPCSTR szEntryPoint, LPCSTR szShaderModel, const D3D_SHADER_MACRO *shaderMacros)
-{
-    wchar_t ResName[MAX_PATH];
-    size_t len = wcslen(resourceName);
-    
-    for(unsigned int c =0; c < len; c++) { ResName[c] = towupper(resourceName[c]); }
-    ResName[len] = L'\0';
-
-    HMODULE handle = GetDllModuleHandle();      
-    HRSRC resInfo =  FindResource(handle, ResName,L"SHADER");
-    if(resInfo == NULL)
-    {       
-        Logger::Log(OutputMessageType::Error, L"Could not find specified shader in resource.rc: %s\n", resourceName);
-        return NULL;
-    }
-
-    HGLOBAL hRes = LoadResource(handle, resInfo);
-    if(hRes == NULL)
-    {
-        Logger::Log(OutputMessageType::Error, L"Failed to load specified shader from resource.rc: %s\n", resourceName);
-        return NULL;
-    }
-    DWORD resLen =  SizeofResource(handle, resInfo);
-    const char* data = static_cast<const char*>(LockResource(hRes));
-    char* code = new char[resLen+1];
-    CopyMemory(code,data,resLen);
-    
-    code[resLen] = 0;
-
-
-    char shaderName[MAX_PATH];    
-    WideCharToMultiByte(
-                       CP_ACP,       //__in UINT     CodePage,
-                       0,            //__in DWORD    dwFlags,
-                       resourceName, // __in_ecount(cchWideChar) LPCWSTR  lpWideCharStr,
-                        -1,          // __in int      cchWideChar,
-                        shaderName,  // __out_bcount_opt(cbMultiByte) __transfer(lpWideCharStr) LPSTR   lpMultiByteStr,
-                        MAX_PATH,    //__in int      cbMultiByte,
-                        NULL,        //__in_opt LPCSTR   lpDefaultChar,
-                        NULL         //__out_opt LPBOOL  lpUsedDefaultChar
-                        );        
-    ID3DBlob* blob = CompileShaderFromString(shaderName,code, szEntryPoint, szShaderModel, shaderMacros);
-    delete[] code;
-    return blob;
-}
-
-//-------------------------------------------------------------------------------------------------
-ID3DBlob* CompileShaderFromString(const char * shaderName, const char* szCode, LPCSTR szEntryPoint, LPCSTR szShaderModel, const D3D_SHADER_MACRO *shaderMacros)
+ID3DBlob* CompileShaderFromString(const char* shaderName,
+    void* code,
+    uint32_t codeSize,
+    LPCSTR szEntryPoint, 
+    LPCSTR szShaderModel, 
+    const D3D_SHADER_MACRO *shaderMacros)
 {
 	HRESULT hr = S_OK;
 
@@ -200,8 +154,8 @@ ID3DBlob* CompileShaderFromString(const char * shaderName, const char* szCode, L
     ID3DBlob* pCompiledCode = NULL;
     IncludeHandler incHandler;
 	hr = D3DCompile(
-                (void*)szCode,   //__in   LPCVOID pSrcData,
-				strlen(szCode),  //__in   SIZE_T SrcDataSize,
+                code,   //__in   LPCVOID pSrcData,
+				codeSize,  //__in   SIZE_T SrcDataSize,
 				shaderName,	      //__in   LPCSTR pSourceName,
 				shaderMacros,     //  __in   const D3D_SHADER_MACRO *pDefines,
 				&incHandler,   // __in   ID3DInclude pInclude,
@@ -228,6 +182,43 @@ ID3DBlob* CompileShaderFromString(const char * shaderName, const char* szCode, L
     if( pErrorBlob ) pErrorBlob->Release();
 	return pCompiledCode;
 }
+
+ID3DBlob* CompileShaderFromResource(LPCWSTR resourceName, LPCSTR szEntryPoint, LPCSTR szShaderModel, const D3D_SHADER_MACRO *shaderMacros)
+{
+    wchar_t ResName[MAX_PATH];
+    size_t len = wcslen(resourceName);
+    
+    for(unsigned int c =0; c < len; c++) { ResName[c] = towupper(resourceName[c]); }
+    ResName[len] = L'\0';
+
+    uint32_t resLen = 0;
+    void* code = ResUtil::LoadResource(L"SHADER",ResName,&resLen);
+
+    
+    char shaderName[MAX_PATH];    
+    WideCharToMultiByte(
+                       CP_ACP,       //__in UINT     CodePage,
+                       0,            //__in DWORD    dwFlags,
+                       resourceName, // __in_ecount(cchWideChar) LPCWSTR  lpWideCharStr,
+                        -1,          // __in int      cchWideChar,
+                        shaderName,  // __out_bcount_opt(cbMultiByte) __transfer(lpWideCharStr) LPSTR   lpMultiByteStr,
+                        MAX_PATH,    //__in int      cbMultiByte,
+                        NULL,        //__in_opt LPCSTR   lpDefaultChar,
+                        NULL         //__out_opt LPBOOL  lpUsedDefaultChar
+                        );        
+
+    ID3DBlob* blob = CompileShaderFromString(shaderName,
+        code, 
+        resLen,
+        szEntryPoint,
+        szShaderModel,
+        shaderMacros);
+    free(code);
+    return blob;
+}
+
+//-------------------------------------------------------------------------------------------------
+
 
 //-------------------------------------------------------------------------------------------------
 ID3D11VertexShader* CreateVertexShader(ID3D11Device* device, ID3DBlob* blob)
@@ -298,7 +289,7 @@ IndexBuffer* CreateIndexBuffer(ID3D11Device* device, uint32_t* buffer, uint32_t 
         return 0;
     }
 
-    IndexBuffer* ib = new IndexBuffer(gpuBuffer, indexCount);
+    IndexBuffer* ib = new IndexBuffer(gpuBuffer, sizeof( DWORD32 ));
     return ib;
 }
 
@@ -336,7 +327,7 @@ VertexBuffer* CreateVertexBuffer(ID3D11Device* device, VertexFormatEnum vf, void
 	{
 		return 0;	 
 	}
-    VertexBuffer* vb = new VertexBuffer(gpuBuffer, vertexCount, vf);
+    VertexBuffer* vb = new VertexBuffer(gpuBuffer, vertexSize);
     return vb;
 }
 
@@ -356,6 +347,20 @@ ID3D11Buffer* CreateConstantBuffer(ID3D11Device* device, uint32_t sizeInBytes)
     hr = device->CreateBuffer(&desc, 0, &buffer );
     LvEdEngine::Logger::IsFailureLog(hr,L"Failed to create constant buffer");	
     return buffer;    
+}
+
+void UpdateConstantBuffer(ID3D11DeviceContext* dc, ID3D11Buffer* buffer,void *data, uint32_t size)
+{
+    assert(buffer);
+    if(buffer == NULL) return;
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT hr = dc->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if (SUCCEEDED(hr))
+    {
+        CopyMemory(mappedResource.pData, data, size);          
+        dc->Unmap(buffer, 0);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -381,6 +386,7 @@ bool UpdateIndexBuffer(ID3D11DeviceContext* context, IndexBuffer* buffer, uint32
 bool UpdateVertexBuffer(ID3D11DeviceContext* context, VertexBuffer* buffer, void* data, uint32_t count)
 {    
     assert(count <= buffer->GetCount());
+    if(buffer->GetCount() != count) return false;
     HRESULT hr;
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     hr = context->Map(buffer->GetBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -392,31 +398,7 @@ bool UpdateVertexBuffer(ID3D11DeviceContext* context, VertexBuffer* buffer, void
     }
     return false;
 }
-//-------------------------------------------------------------------------------------------------
-bool UpdateVertexBuffer(ID3D11DeviceContext* context, VertexBuffer* buffer, VertexFormatEnum vf, void* data, uint32_t count)
-{
-    HRESULT result;
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    if(buffer->GetFormat() != vf)
-    {
-        return false;
-    }
-    if(buffer->GetCount() != count)
-    {
-        return false;
-    }
-    buffer->GetStride();
-    result = context->Map(buffer->GetBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if( FAILED(result) )
-    {
-        return false;
-    }
 
-
-    CopyMemory(mappedResource.pData, (void*)data, (buffer->GetStride() * count));
-    context->Unmap(buffer->GetBuffer(), 0);
-    return true;
-}
 
 
 static void SetLayout(D3D11_INPUT_ELEMENT_DESC * desc, LPCSTR name, UINT index, DXGI_FORMAT format, UINT slot, UINT offset, D3D11_INPUT_CLASSIFICATION slotClass, UINT rate)
@@ -637,42 +619,6 @@ ID3D11SamplerState* CreateSamplerState(ID3D11Device* device)
     HRESULT hr = device->CreateSamplerState( &SamDesc, &sampler );
     Logger::IsFailureLog(hr, L"CreateSamplerState");
     return sampler;
-}
-
-// ----------------------------------------------------------------------------------------------
-static void LoadEmbeddedShader(const wchar_t* shaderName, const void **ppData, UINT* pBytes)
-{
-    *ppData = NULL;
-    *pBytes = 0;
-
-    wchar_t ResName[MAX_PATH];
-    size_t len = wcslen(shaderName);
-
-    for(unsigned int c =0; c < len; c++) { ResName[c] = towupper(shaderName[c]); }
-    ResName[len] = L'\0';
-
-    HMODULE handle = GetDllModuleHandle();      
-    HRSRC resInfo =  FindResource(handle, ResName,L"SHADER");
-    if(resInfo == NULL)
-    {
-        // print error msg.
-        return;
-    }
-
-    HGLOBAL hRes = LoadResource(handle, resInfo);
-    if(hRes == NULL)
-    {
-        // use GetLastError() to print errror msg
-        return;
-    }
-
-    DWORD resLen =  SizeofResource(handle, resInfo);
-    *pBytes = resLen;
-    const char* data = static_cast<const char*>(LockResource(hRes));
-    char* buffer = (char*)malloc(resLen+1);
-    ::CopyMemory(buffer,data,resLen);
-    buffer[resLen] = '\0';
-    *ppData = buffer;        
 }
     
 }; // namespace

@@ -9,7 +9,11 @@ using namespace LvEdEngine;
 //---------------------------------------------------------------------------
 PrimitiveShapeGob::PrimitiveShapeGob( RenderShapeEnum shape )
 {
-    m_mesh = ShapeLibGetMesh( shape );  
+    m_mesh = ShapeLibGetMesh( shape );
+    m_color = float4(1,1,1,1);
+    m_emissive = float3(0,0,0);
+    m_specular = float3(0,0,0);
+    m_specPower = 1;
 }
 
 //---------------------------------------------------------------------------
@@ -57,7 +61,10 @@ void PrimitiveShapeGob::SetupRenderable(RenderableNode* r, RenderContext* contex
 {
     GameObject::SetupRenderable(r, context);
     r->mesh = m_mesh;
-    ConvertColor(m_color, &r->diffuse);
+    r->diffuse = m_color;  
+    r->specPower = m_specPower;
+    r->emissive = m_emissive;
+    r->specular = m_specular;
     r->TextureXForm = m_textureTransform;
     r->textures[TextureType::DIFFUSE] = (Texture*)m_diffuse.GetTarget();
     r->textures[TextureType::NORMAL] = (Texture*)m_normal.GetTarget();

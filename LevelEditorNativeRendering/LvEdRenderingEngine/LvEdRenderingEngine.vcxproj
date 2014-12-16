@@ -106,6 +106,7 @@
     <None Include="rapidxml-1.13\license.txt" />
     <None Include="rapidxml-1.13\manual.html" />
     <None Include="Resources\Light.png" />
+    <None Include="Shaders\BasicRenderer.hlsl" />
     <None Include="Shaders\BasicShader.hlsl" />
     <None Include="Shaders\Billboard.hlsl" />
     <None Include="Shaders\Fog.shh" />
@@ -170,6 +171,7 @@
     <ClInclude Include="GobSystem\Terrain\LayerMap.h" />
     <ClInclude Include="GobSystem\Terrain\TerrainGob.h" />
     <ClInclude Include="GobSystem\Terrain\TerrainMap.h" />
+    <ClInclude Include="GobSystem\TorusGob.h" />
     <ClInclude Include="Model3d\AtgiModelFactory.h" />
     <ClInclude Include="Model3d\ColladaModelFactory.h" />
     <ClInclude Include="Model3d\XmlModelFactory.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="Renderer\BasicShader.h" />
     <ClInclude Include="Renderer\BillboardShader.h" />
     <ClInclude Include="Renderer\CustomDataAttribute.h" />
+    <ClInclude Include="Renderer\GpuResourceFactory.h" />
     <ClInclude Include="Renderer\LineRenderer.h" />
     <ClInclude Include="Renderer\NormalsShader.h" />
     <ClInclude Include="Renderer\RenderableNodeCollector.h" />
@@ -286,6 +289,7 @@
     <ClCompile Include="GobSystem\Terrain\LayerMap.cpp" />
     <ClCompile Include="GobSystem\Terrain\TerrainGob.cpp" />
     <ClCompile Include="GobSystem\Terrain\TerrainMap.cpp" />
+    <ClCompile Include="GobSystem\TorusGob.cpp" />
     <ClCompile Include="LvEdRenderingEngine.cpp" />
     <ClCompile Include="Model3d\AtgiModelFactory.cpp" />
     <ClCompile Include="Model3d\ColladaModelFactory.cpp" />
@@ -296,6 +300,7 @@
     <ClCompile Include="Renderer\BasicShader.cpp" />
     <ClCompile Include="Renderer\BillboardShader.cpp" />
     <ClCompile Include="Renderer\CustomDataAttribute.cpp" />
+    <ClCompile Include="Renderer\GpuResourceFactory.cpp" />
     <ClCompile Include="Renderer\LineRenderer.cpp" />
     <ClCompile Include="Renderer\NormalsShader.cpp" />
     <ClCompile Include="Renderer\RenderContext.cpp" />

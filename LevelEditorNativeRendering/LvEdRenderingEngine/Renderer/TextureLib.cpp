@@ -96,62 +96,35 @@ void TextureLib::InitInstance(ID3D11Device* device)
 
     typedef std::pair<std::wstring, Texture*> NameTexPair;
 
+    const wchar_t* resName = L"Light.png";
+    const wchar_t* resType = L"Texture";
+    HRESULT hr = E_FAIL;
 
-    uint32_t resCount = ResUtil::ResourceCount();
-    for(uint32_t i = 0; i < resCount; i++)
-    {        
-        const wchar_t* resName = ResUtil::GetResourceName(i);
-        const std::wstring ext = FileUtils::GetExtensionLower(resName);
-        HRESULT hr = E_FAIL;
-
-        Texture* tex = NULL;
-        ID3D11Resource* dxresource = NULL;
-        ID3D11ShaderResourceView* dxTexView = NULL;
-        uint32_t  resSize = 0;
-
-        if(ext == L".dds")
-        {            
-            uint8_t* data = ResUtil::LoadResource(resName,&resSize);
-            if(resSize == 0) continue;
-            
-            hr = CreateDDSTextureFromMemory( device,
-                                             data,
-                                             resSize,
-                                             &dxresource,
-                                             &dxTexView);   
-            free(data);
-        }
-        else if(ext == L".png" || ext == L".bmp" || ext == L".jpeg")
-        {
-            uint8_t* data = ResUtil::LoadResource(resName,&resSize);
-            if(resSize == 0) continue;
-            
-            hr = CreateWICTextureFromMemory( device,
+    Texture* tex = NULL;
+    ID3D11Resource* dxresource = NULL;
+    ID3D11ShaderResourceView* dxTexView = NULL;
+    uint32_t  resSize = 0;
+    uint8_t* data = (uint8_t*)ResUtil::LoadResource(resType, resName,&resSize);
+    hr = CreateWICTextureFromMemory( device,
                                              NULL,
                                              data,
                                              resSize,
                                              &dxresource,
                                              &dxTexView);
-            free(data);
-
-        }
-
-        if (Logger::IsFailureLog(hr, L"Error loading %s\n", resName))
-        {
-            continue;
-        }
-
-        D3D11_RESOURCE_DIMENSION resType = D3D11_RESOURCE_DIMENSION_UNKNOWN;
-        dxresource->GetType( &resType );
-        assert( resType == D3D11_RESOURCE_DIMENSION_TEXTURE2D);
-        ID3D11Texture2D* dxTex = NULL;
-        hr = dxresource->QueryInterface( __uuidof(ID3D11Texture2D), (void**) &dxTex );
-        dxresource->Release();
-        assert(dxTex);
-        tex = new Texture(dxTex,dxTexView);
-        auto insertResult = pImple->m_textures.insert(NameTexPair(resName,tex));
-        assert(insertResult.second);            
-    }
+   free(data);
+   if (!Logger::IsFailureLog(hr, L"Error loading %s\n", resName))
+   {
+       D3D11_RESOURCE_DIMENSION resDim = D3D11_RESOURCE_DIMENSION_UNKNOWN;
+       dxresource->GetType( &resDim );
+       assert( resDim == D3D11_RESOURCE_DIMENSION_TEXTURE2D);
+       ID3D11Texture2D* dxTex = NULL;
+       hr = dxresource->QueryInterface( __uuidof(ID3D11Texture2D), (void**) &dxTex );
+       dxresource->Release();
+       assert(dxTex);
+       tex = new Texture(dxTex,dxTexView);
+       auto insertResult = pImple->m_textures.insert(NameTexPair(resName,tex));
+       assert(insertResult.second);
+   }
 }
 
  void TextureLib::DestroyInstance(void)

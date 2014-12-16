@@ -15,14 +15,12 @@ void RenderContext:: InitInstance(ID3D11Device* device)
     if(s_inst == NULL)
         s_inst = new RenderContext();
 
-    s_inst->m_device = device;
-    s_inst->m_rsCache = new RenderStateCache(device);
+    s_inst->m_device = device;    
     s_inst->LightEnvDirty = true;
 }
 
 RenderContext::~RenderContext()
-{
-    SAFE_DELETE(m_rsCache);
+{ 
 }
 
 void RenderContext::DestroyInstance()

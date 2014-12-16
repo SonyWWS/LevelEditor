@@ -475,6 +475,33 @@ void PrimitiveShapeGob_Color_Set(ObjectGUID instanceId, void* data, int size)
 }
 
 //-----------------------------------------------------------------------------
+void PrimitiveShapeGob_Emissive_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    PrimitiveShapeGob* instance = reinterpret_cast<PrimitiveShapeGob*>(instanceId);
+    int localData = *reinterpret_cast<int*>(data);
+    instance->SetEmissive(localData);
+}
+
+//-----------------------------------------------------------------------------
+void PrimitiveShapeGob_Specular_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    PrimitiveShapeGob* instance = reinterpret_cast<PrimitiveShapeGob*>(instanceId);
+    int localData = *reinterpret_cast<int*>(data);
+    instance->SetSpecular(localData);
+}
+
+//-----------------------------------------------------------------------------
+void PrimitiveShapeGob_SpecularPower_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    PrimitiveShapeGob* instance = reinterpret_cast<PrimitiveShapeGob*>(instanceId);
+    float localData = *reinterpret_cast<float*>(data);
+    instance->SetSpecularPower(localData);
+}
+
+//-----------------------------------------------------------------------------
 void PrimitiveShapeGob_Diffuse_Set(ObjectGUID instanceId, void* data, int size)
 {
     assert((data && size > 0) || (!data && size == 0));
@@ -507,6 +534,14 @@ void PrimitiveShapeGob_TextureTransform_Set(ObjectGUID instanceId, void* data, i
 Object* CubeGob_Create(ObjectTypeGUID tid, void* data, int size)
 {
     return new CubeGob();
+}
+
+//-----------------------------------------------------------------------------
+//TorusGob
+//-----------------------------------------------------------------------------
+Object* TorusGob_Create(ObjectTypeGUID tid, void* data, int size)
+{
+    return new TorusGob();
 }
 
 //-----------------------------------------------------------------------------
@@ -987,11 +1022,16 @@ void InitGobBridge(GobBridge& bridge)
 
   bridge.RegisterObject( "PrimitiveShapeGob", &PrimitiveShapeGob_Create );
   bridge.RegisterProperty( "PrimitiveShapeGob", "Color", &PrimitiveShapeGob_Color_Set, NULL );
+  bridge.RegisterProperty( "PrimitiveShapeGob", "Emissive", &PrimitiveShapeGob_Emissive_Set, NULL );
+  bridge.RegisterProperty( "PrimitiveShapeGob", "Specular", &PrimitiveShapeGob_Specular_Set, NULL );
+  bridge.RegisterProperty( "PrimitiveShapeGob", "SpecularPower", &PrimitiveShapeGob_SpecularPower_Set, NULL );
   bridge.RegisterProperty( "PrimitiveShapeGob", "Diffuse", &PrimitiveShapeGob_Diffuse_Set, NULL );
   bridge.RegisterProperty( "PrimitiveShapeGob", "Normal", &PrimitiveShapeGob_Normal_Set, NULL );
   bridge.RegisterProperty( "PrimitiveShapeGob", "TextureTransform", &PrimitiveShapeGob_TextureTransform_Set, NULL );
 
   bridge.RegisterObject( "CubeGob", &CubeGob_Create );
+
+  bridge.RegisterObject( "TorusGob", &TorusGob_Create );
 
   bridge.RegisterObject( "SphereGob", &SphereGob_Create );
 

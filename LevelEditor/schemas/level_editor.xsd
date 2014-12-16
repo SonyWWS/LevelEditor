@@ -216,22 +216,31 @@
     <xs:annotation>
       <xs:appinfo>
         <LeGe.NativeType nativeName="PrimitiveShapeGob"/>
-        <LeGe.NativeProperty name="color" nativeName="Color" nativeType="int" access="set"/>
-        <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
-        <LeGe.NativeProperty name="normal" nativeName="Normal" nativeType="wchar_t*" access="set"/>
-        <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
-        <scea.dom.editors.attribute category="Shape" name="color" displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
-        <scea.dom.editors.attribute category="Shape" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
-        <scea.dom.editors.attribute category="Shape" name="normal" displayName="Normal" description = "normal texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
-        <scea.dom.editors.attribute category="Shape" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
+          <LeGe.NativeProperty name="color" nativeName="Color" nativeType="int" access="set"/>
+          <LeGe.NativeProperty name="emissive" nativeName="Emissive" nativeType="int" access="set"/>
+          <LeGe.NativeProperty name="specular" nativeName="Specular" nativeType="int" access="set"/>
+          <LeGe.NativeProperty name="specularPower" nativeName="SpecularPower" nativeType="float" access="set"/>
+          <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
+          <LeGe.NativeProperty name="normal" nativeName="Normal" nativeType="wchar_t*" access="set"/>
+          <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
+          <scea.dom.editors.attribute category="Shape" name="color"            displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+          <scea.dom.editors.attribute category="Shape" name="emissive"         displayName="Emissive" description="Object emissive Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:false" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+          <scea.dom.editors.attribute category="Shape" name="specular"         displayName="specular" description="Object specular Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:false" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
+          <scea.dom.editors.attribute category="Shape" name="specularPower"    displayName="Specular Power" description="specular power"/>
+          <scea.dom.editors.attribute category="Shape" name="diffuse"          displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+          <scea.dom.editors.attribute category="Shape" name="normal"           displayName="Normal" description = "normal texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
+          <scea.dom.editors.attribute category="Shape" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
       </xs:appinfo>
     </xs:annotation>
     <xs:complexContent>
       <xs:extension base="gameObjectType" >
-        <xs:attribute name="color" type="xs:int" default="-1"/>
-        <xs:attribute name="diffuse" type="xs:anyURI"/>
-        <xs:attribute name="normal" type="xs:anyURI"/>
-        <xs:attribute name="textureTransform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+          <xs:attribute name="color" type="xs:int" default="-1"/>
+          <xs:attribute name="emissive" type="xs:int" default="0"/>
+          <xs:attribute name="specular" type="xs:int" default="0"/>
+          <xs:attribute name="specularPower " type="xs:float" default="1"/>
+          <xs:attribute name="diffuse" type="xs:anyURI"/>
+          <xs:attribute name="normal" type="xs:anyURI"/>
+          <xs:attribute name="textureTransform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -247,18 +256,31 @@
         <xs:extension base="shapeTestType" />
     </xs:complexContent>
   </xs:complexType>
-  
-  <xs:complexType name="sphereTestType">
-    <xs:annotation>
-      <xs:appinfo>
-        <LeGe.NativeType nativeName="SphereGob"/>
-          <scea.dom.editors name="SphereTest" category="Examples" menuText="Game Objects/SphereTest" description="Test Sphere"/>
-      </xs:appinfo>
-    </xs:annotation>
-    <xs:complexContent>
-        <xs:extension base="shapeTestType" />
-    </xs:complexContent>
-  </xs:complexType>
+
+    <xs:complexType name="TorusTestType">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="TorusGob"/>
+                <scea.dom.editors name="TorusTest" category="Examples" menuText="Game Objects/TorusTest" description="Test Torus"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="shapeTestType" />
+        </xs:complexContent>
+    </xs:complexType>
+    
+
+    <xs:complexType name="sphereTestType">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="SphereGob"/>
+                <scea.dom.editors name="SphereTest" category="Examples" menuText="Game Objects/SphereTest" description="Test Sphere"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="shapeTestType" />
+        </xs:complexContent>
+    </xs:complexType>
 
   <xs:complexType name="coneTestType">
     <xs:annotation>

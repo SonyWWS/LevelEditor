@@ -64,6 +64,6 @@ void GS( point VS_OUTPUT gIn[1],
 
 float4 PS( GS_OUT PIn ) : SV_Target                        
 {
-   return float4(1,0,0,1);
+   return color;
 }    
         

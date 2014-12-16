@@ -29,6 +29,7 @@ namespace LvEdEngine
             Cube,
             Sphere,
             Cylinder,
+            Torus,
             Cone,
 
             MAX,

@@ -69,7 +69,7 @@ struct VS_INPUT
 {
     float4 posL                             : POSITION;
     float3 normL                            : NORMAL;
-    float2 tex0                             : TEXCOORD0;
+    float2 tex0                             : TEXCOORD;
     float3 tanL                             : TANGENT;
 };
 
@@ -82,10 +82,6 @@ struct PS_INPUT
     float2 tex0                             : TEXCOORD0;
     float4 texShadow                        : TEXCOORD1;
 };
-
-
-
-
 
 //--------------------------------------------------------------------------------------
 // VSMain
@@ -176,7 +172,7 @@ float4 PSMain( PS_INPUT input ) : SV_TARGET
 							    cb_lightEnv, 
 								A,D,S);
 
-		fc.xyz = matdiffuse.xyz * (A + D) + matspecular.xyz * S;				       
+		fc.xyz = cb_matEmissive.xyz + matdiffuse.xyz * (A + D) + matspecular.xyz * S;
     }
 
 	if(fog.enabled)

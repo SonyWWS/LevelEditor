@@ -18,6 +18,7 @@
 #include "FontRenderer.h"
 #include "..\LvEdUtils.h"
 #include "../Core/Logger.h"
+#include "GpuResourceFactory.h"
 
 using namespace LvEdEngine;
 using namespace LvEdEngine::LvEdFonts;
@@ -26,64 +27,47 @@ using namespace LvEdEngine::LvEdFonts;
 //---------------------------------------------------------------------------
 ShadowMapGen::~ShadowMapGen()
 {
-    SAFE_RELEASE( m_shaderShadowMapsVS );    
-    SAFE_RELEASE( m_pVertexLayoutMesh );
-    SAFE_RELEASE( m_pConstantBufferPerFrame );
-    SAFE_RELEASE( m_pConstantBufferPerDraw );    
-    SAFE_RELEASE( m_rasterStateShadow );        
+    SAFE_RELEASE( m_vertexShader);    
+    SAFE_RELEASE( m_layoutP );    
+    SAFE_RELEASE( m_rasterState );        
 }
 
 //---------------------------------------------------------------------------
 ShadowMapGen::ShadowMapGen( ID3D11Device* device ) : 
     m_rc( NULL ),
     m_pSurface( NULL ),    
-    m_shaderShadowMapsVS( NULL ),    
-    m_pVertexLayoutMesh( NULL ),    
-    m_pConstantBufferPerFrame( NULL ),
-    m_pConstantBufferPerDraw( NULL),
-    m_rasterStateShadow(NULL)
+    m_vertexShader( NULL ),    
+    m_layoutP( NULL ),        
+    m_rasterState(NULL)
 {
 
+    //GpuResourceFactory
     // compile and create vertex shader.
-    ID3DBlob* shaderShadowMapsVSBlob =  CompileShaderFromResource(L"ShadowMapGen.hlsl","VSMain","vs_4_0", NULL);
-    assert(shaderShadowMapsVSBlob);
-    m_shaderShadowMapsVS = CreateVertexShader(device, shaderShadowMapsVSBlob);
-    assert(m_shaderShadowMapsVS);
+    ID3DBlob* vsBlob =  CompileShaderFromResource(L"ShadowMapGen.hlsl","VSMain","vs_4_0", NULL);
+    assert(vsBlob);
+    m_vertexShader = GpuResourceFactory::CreateVertexShader(vsBlob);
+    assert(m_vertexShader);
 
     // create input layout
-    m_pVertexLayoutMesh = CreateInputLayout(device,shaderShadowMapsVSBlob,VertexFormat::VF_P);
-    assert(m_pVertexLayoutMesh);
-    SAFE_RELEASE(shaderShadowMapsVSBlob);
-
+    m_layoutP = GpuResourceFactory::CreateInputLayout(vsBlob, VertexFormat::VF_P);
+    assert(m_layoutP);
+    vsBlob->Release();
+    
     // create raster state.
-    D3D11_RASTERIZER_DESC rsDcr;
-    SecureZeroMemory( &rsDcr, sizeof(rsDcr));
-    rsDcr.DepthClipEnable = TRUE;
-    rsDcr.CullMode =  D3D11_CULL_BACK; //D3D11_CULL_NONE;
-    rsDcr.FillMode =  D3D11_FILL_SOLID;
-    rsDcr.FrontCounterClockwise = TRUE;
+    D3D11_RASTERIZER_DESC rsDcr = RSCache::Inst()->GetDefaultRsDcr();       
     rsDcr.AntialiasedLineEnable = FALSE;
     rsDcr.MultisampleEnable = FALSE;    
     rsDcr.DepthBias = 25000;
     rsDcr.SlopeScaledDepthBias = 1.0f;
     rsDcr.DepthBiasClamp = 0.f;
-    HRESULT hr = device->CreateRasterizerState( &rsDcr, &m_rasterStateShadow );
+
+    HRESULT hr = device->CreateRasterizerState( &rsDcr, &m_rasterState );
     Logger::IsFailureLog(hr, L"CreateRasterizerState");
-    assert(m_rasterStateShadow);
+    assert(m_rasterState);
 
-
-    // create constant buffers.
-    D3D11_BUFFER_DESC Desc;
-    Desc.Usage = D3D11_USAGE_DYNAMIC;
-    Desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    Desc.MiscFlags = 0;
-
-    m_pConstantBufferPerFrame = CreateConstantBuffer(device,sizeof(ConstantBufferShadowMapGenPerFrame));
-    assert(m_pConstantBufferPerFrame);
-
-    m_pConstantBufferPerDraw = CreateConstantBuffer(device,sizeof(ConstantBufferShadowMapGenPerDraw));
-    assert(m_pConstantBufferPerFrame);      
+    // create constant buffers.    
+    m_cbPerFrame.Construct(device);
+    m_cbPerDraw.Construct(device);    
 }
 
 //---------------------------------------------------------------------------
@@ -99,28 +83,26 @@ void ShadowMapGen::Begin(RenderContext* rc, RenderSurface* pSurface, const AABB&
     ShadowMaps::Inst()->UpdateLightCamera(dc, LightingState::Inst()->ProminentDirLight(), bounds);
     ShadowMaps::Inst()->SetAndClear(dc);
         
-    dc->RSSetState( m_rasterStateShadow );
+    dc->RSSetState( m_rasterState );
     
     const Camera& lightCam = ShadowMaps::Inst()->GetCamera();    
 
-    // update per frame cb    
-    ConstantBufferShadowMapGenPerFrame constBuffer;
-    Matrix::Transpose(lightCam.View() ,constBuffer.view);
-    Matrix::Transpose(lightCam.Proj(),constBuffer.proj);
-    UpdateConstantBuffer(dc,m_pConstantBufferPerFrame,&constBuffer,sizeof(constBuffer));
+    // update per frame cb         
+    Matrix::Transpose(lightCam.View() ,m_cbPerFrame.Data.view);
+    Matrix::Transpose(lightCam.Proj(),m_cbPerFrame.Data.proj);
+    m_cbPerFrame.Update(dc);
     
     // set imput layout.
-    dc->IASetInputLayout( m_pVertexLayoutMesh );
+    dc->IASetInputLayout( m_layoutP );
 
     // set shaders
-    dc->VSSetShader( m_shaderShadowMapsVS, NULL, 0 );
+    dc->VSSetShader( m_vertexShader, NULL, 0 );
     dc->PSSetShader( NULL, NULL, 0 );
     dc->GSSetShader( NULL, NULL, 0 );
 
     ID3D11Buffer* constantBuffers[] = {
-        m_pConstantBufferPerFrame,
-        m_pConstantBufferPerDraw
-    };
+        m_cbPerFrame.GetBuffer(),
+        m_cbPerDraw.GetBuffer() };
 
     // set const buffers for vertex shader.
     dc->VSSetConstantBuffers( 0, ARRAY_SIZE(constantBuffers), constantBuffers );
@@ -150,6 +132,7 @@ void ShadowMapGen::End()
     dc->RSSetViewports( 1, &m_pSurface->GetViewPort() );
     
     m_rc = NULL;
+    m_pSurface = NULL;
 }
 
 //---------------------------------------------------------------------------
@@ -159,11 +142,10 @@ void ShadowMapGen::DrawRenderable(const RenderableNode& r)
         return;
 
     ID3D11DeviceContext* dc = m_rc->Context();
-
-    ConstantBufferShadowMapGenPerDraw constBuffer;
-    Matrix::Transpose(r.WorldXform, constBuffer.world );    
-    UpdateConstantBuffer(dc,m_pConstantBufferPerDraw,&constBuffer,sizeof(constBuffer));
-    
+        
+    Matrix::Transpose(r.WorldXform, m_cbPerDraw.Data);    
+    m_cbPerDraw.Update(dc);
+        
     uint32_t stride = r.mesh->vertexBuffer->GetStride();
     uint32_t offset = 0;
     uint32_t startIndex = 0;
@@ -174,7 +156,7 @@ void ShadowMapGen::DrawRenderable(const RenderableNode& r)
 
     dc->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)r.mesh->primitiveType );
     dc->IASetVertexBuffers( 0, 1, &d3dvb, &stride, &offset );
-    dc->IASetIndexBuffer(d3dib, DXGI_FORMAT_R32_UINT, 0);
+    dc->IASetIndexBuffer(d3dib, (DXGI_FORMAT) r.mesh->indexBuffer->GetFormat(), 0);
 
     dc->DrawIndexed(indexCount, startIndex, startVertex);
 }

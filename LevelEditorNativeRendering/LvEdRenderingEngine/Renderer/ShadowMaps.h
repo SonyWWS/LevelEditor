@@ -8,7 +8,7 @@
 #include <string>
 #include "Lights.h"
 #include "Shader.h"
-
+#include "RenderBuffer.h"
 
 namespace LvEdEngine
 {
@@ -22,6 +22,11 @@ namespace LvEdEngine
     class ShadowMaps : public NonCopyable
     {
     public:
+
+        static void InitInstance(ID3D11Device* device, uint32_t dim);
+        static void DestroyInstance();
+        static      ShadowMaps*  Inst() { return s_inst; }
+
         
         ID3D11SamplerState*  GetSamplerState(){ return m_samplerState; }        
         ID3D11ShaderResourceView*   GetShaderResourceView() { return m_resourceView; }
@@ -31,13 +36,19 @@ namespace LvEdEngine
         // sets and clears depth stencil buffer and set render target to null.
         void SetAndClear(ID3D11DeviceContext* dc);
         void UpdateLightCamera(ID3D11DeviceContext* dc, const DirLight* light, const AABB& renderedArea );
-        ID3D11Buffer* GetShadowConstantBuffer() { return m_constantBufferShadows; }        
+        ID3D11Buffer* GetShadowConstantBuffer() { return m_cbShadow.GetBuffer(); }        
         bool IsEnabled() {return m_enabled;}
         void SetEnabled(bool enabled) { m_enabled = enabled;}
-        static void InitInstance(ID3D11Device* device, uint32_t dim);
-        static void DestroyInstance();
-        static      ShadowMaps*  Inst() { return s_inst; }
+        
     private:
+
+        __declspec(align(16))
+        struct CbShadow
+        {
+            Matrix xform;    
+            float  texelSize; // Shadow map texel size.
+            float pad[3];
+        };
 
         static ShadowMaps*   s_inst;
         ShadowMaps(ID3D11Device* device, uint32_t dim);
@@ -46,22 +57,10 @@ namespace LvEdEngine
         ID3D11DepthStencilView*     m_depthStencilView;        
         ID3D11SamplerState*         m_samplerState;
         ID3D11ShaderResourceView*   m_resourceView;
-        ID3D11Buffer*               m_constantBufferShadows;
+        TConstantBuffer<CbShadow>   m_cbShadow;
         D3D11_VIEWPORT m_viewport;
         bool m_enabled;
-        Camera                      m_lightCamera;
-
-        
-        //---------------------------------------------------------------------------
-        //  ConstantBufferShadowMapping
-        //---------------------------------------------------------------------------
-        __declspec(align(16))
-        struct ConstantBufferShadowMapping
-        {
-            Matrix cb_smShadowTransform;    
-            float  cb_smTexelSize;                 // Shadow map texel size.            
-            float pad[3];
-        };
+        Camera                      m_lightCamera;        
     };
 
 }   // namespace LvEdEngine

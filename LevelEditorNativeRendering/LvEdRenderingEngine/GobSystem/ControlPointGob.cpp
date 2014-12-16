@@ -26,11 +26,11 @@ bool ControlPointGob::GetRenderables(RenderableNodeCollector* collector, RenderC
     Mesh* mesh = ShapeLibGetMesh(RenderShape::QuadLineStrip);
     m_localBounds = mesh->bounds;
 
-    float w,h;
-    context->Cam().ComputeWorldDimensions(float3(&m_world.M41), &h, &w);
-    h *= 0.02f;
-        
-    Matrix scaleM = Matrix::CreateScale(h);
+    const float pointSize = 8; // control point size in pixels
+    float upp = context->Cam().ComputeUnitPerPixel(float3(&m_world.M41),
+        context->ViewPort().y);
+    float scale = pointSize * upp;        
+    Matrix scaleM = Matrix::CreateScale(scale);
     float3 objectPos = float3(m_world.M41,m_world.M42,m_world.M43);
     Matrix b = Matrix::CreateBillboard(objectPos,context->Cam().CamPos(),context->Cam().CamUp(),context->Cam().CamLook());
     Matrix billboard = scaleM * b;

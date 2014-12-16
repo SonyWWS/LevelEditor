@@ -30,12 +30,12 @@ namespace RenderingInterop
                                          Keys.None);
 
             m_axisColor = new Color[Enum.GetValues(typeof(HitRegion)).Length];
-            m_axisColor[(int)HitRegion.XAxis] = Color.Red;
-            m_axisColor[(int)HitRegion.YAxis] = Color.Green;
-            m_axisColor[(int)HitRegion.ZAxis] = Color.Blue;
-            m_axisColor[(int)HitRegion.NegXAxis] = ControlPaint.LightLight(Color.Red);
-            m_axisColor[(int)HitRegion.NegYAxis] = ControlPaint.LightLight(Color.Green);
-            m_axisColor[(int)HitRegion.NegZAxis] = ControlPaint.LightLight(Color.Blue);
+            m_axisColor[(int)HitRegion.XAxis] = XAxisColor;
+            m_axisColor[(int)HitRegion.YAxis] = YAxisColor;
+            m_axisColor[(int)HitRegion.ZAxis] = ZAxisColor;
+            m_axisColor[(int)HitRegion.NegXAxis] = ControlPaint.LightLight(XAxisColor);
+            m_axisColor[(int)HitRegion.NegYAxis] = ControlPaint.LightLight(YAxisColor);
+            m_axisColor[(int)HitRegion.NegZAxis] = ControlPaint.LightLight(ZAxisColor);
             m_highlightColor = Color.Gold;
 
         }
@@ -47,9 +47,8 @@ namespace RenderingInterop
             if (base.Pick(vc, scrPt) == false)
                 return false;
 
-            Camera camera = vc.Camera;
-            float s;
-            Util.CalcAxisLengths(camera, HitMatrix.Translation, out s);
+            Camera camera = vc.Camera;            
+            float s = Util.CalcAxisScale(vc.Camera, HitMatrix.Translation, AxisLength, vc.Height);
 
             Matrix4F vp = camera.ViewMatrix * camera.ProjectionMatrix;
             Matrix4F wvp = HitMatrix * vp;
@@ -68,7 +67,7 @@ namespace RenderingInterop
             Matrix4F boxTrans = new Matrix4F();
             Matrix4F BoxMtrx = new Matrix4F();
 
-            float handleScale = s * HandleRatio;
+            float handleScale = s * AxisHandle;
 
             // +X axis
             boxScale.Scale(new Vec3F(s, handleScale, handleScale));
@@ -158,15 +157,10 @@ namespace RenderingInterop
 
         public override void Render(ViewControl vc)
         {
-            BasicRendererFlags solid = BasicRendererFlags.Solid
-                | BasicRendererFlags.DisableDepthTest;
-            BasicRendererFlags wire = BasicRendererFlags.WireFrame
-                               | BasicRendererFlags.DisableDepthTest;
-
+                       
             Matrix4F normWorld = GetManipulatorMatrix();
             if (normWorld == null) return;
-            Camera camera = vc.Camera;
-                        
+            
             int axis = (int)m_hitRegion;
 
             // axis colors
@@ -180,87 +174,107 @@ namespace RenderingInterop
             Color nzcolor = m_axisColor[(int)HitRegion.NegZAxis];
             m_axisColor[axis] = saveColor;
 
-            Vec3F deltaTrans = Vec3F.ZeroVector;            
+          
             if (m_hitRegion != HitRegion.None)
             {
-                normWorld.Translation = HitMatrix.Translation;
-                    
+                normWorld.Translation = HitMatrix.Translation;                    
             }
 
-            Vec3F pos = normWorld.Translation;
-            float s;
-            Util.CalcAxisLengths(vc.Camera, pos, out s);
+            Vec3F pos = normWorld.Translation;            
+            float s = Util.CalcAxisScale(vc.Camera, pos, AxisLength, vc.Height);
 
             Vec3F sv = new Vec3F(s, s, s);
-            Vec3F axscale = new Vec3F(s, s, s);
-            Vec3F negAxscale = new Vec3F(-s, -s, -s);
+            Vec3F axscale = new Vec3F(s*AxisThickness, s, s*AxisThickness);            
             bool negativeAxis = m_hitRegion == HitRegion.NegXAxis || m_hitRegion == HitRegion.NegYAxis || m_hitRegion == HitRegion.NegZAxis;
-            if (negativeAxis)
-            {
-                negAxscale.X *= Math.Abs(m_scale.X);
-                negAxscale.Y *= Math.Abs(m_scale.Y);
-                negAxscale.Z *= Math.Abs(m_scale.Z);
-            }
-            else
-            {
-                axscale.X *= Math.Abs(m_scale.X);
-                axscale.Y *= Math.Abs(m_scale.Y);
-                axscale.Z *= Math.Abs(m_scale.Z);                
-            }
+            Vec3F dragScale = new Vec3F(Math.Abs(m_scale.X),
+                Math.Abs(m_scale.Y), Math.Abs(m_scale.Z));
+          
             
+
+            Matrix4F rot = new Matrix4F();
             Matrix4F scale = new Matrix4F();
+            axscale.Y = negativeAxis ? s : s * dragScale.X;
+            scale.Scale(axscale);           
+            rot.RotZ(-MathHelper.PiOver2);
+            Matrix4F xform = scale * rot * normWorld;
+            Util3D.DrawCylinder(xform, xcolor);
+
+            axscale.Y = negativeAxis ? s : s * dragScale.Y;
             scale.Scale(axscale);
-            Matrix4F xform = scale * normWorld;
-            Util3D.RenderFlag = wire;
-
-            Util3D.DrawX(xform, xcolor);
-            Util3D.DrawY(xform, ycolor);
-            Util3D.DrawZ(xform, zcolor);
-
-            scale.Scale(negAxscale);
             xform = scale * normWorld;
+            Util3D.DrawCylinder(xform, ycolor);
 
-            Util3D.DrawX(xform, nxcolor);
-            Util3D.DrawY(xform, nycolor);
-            Util3D.DrawZ(xform, nzcolor);
+            axscale.Y = negativeAxis ? s : s * dragScale.Z;
+            scale.Scale(axscale);
+            rot.RotX(MathHelper.PiOver2);
+            xform = scale * rot * normWorld;
+            Util3D.DrawCylinder(xform, zcolor);
 
-            Vec3F handle = sv*HandleRatio;
+
+            rot.RotZ(MathHelper.PiOver2);
+            axscale.Y = negativeAxis ? s * dragScale.X : s;
+            scale.Scale(axscale);
+            xform = scale * rot * normWorld;
+            Util3D.DrawCylinder(xform, nxcolor);
+
+            rot.RotZ(MathHelper.Pi);
+            axscale.Y = negativeAxis ? s * dragScale.Y : s;
+            scale.Scale(axscale);
+            xform = scale * rot * normWorld;
+            Util3D.DrawCylinder(xform, nycolor);
+
+            rot.RotX(-MathHelper.PiOver2);
+            axscale.Y = negativeAxis ? s * dragScale.Z : s;
+            scale.Scale(axscale);
+            xform = scale * rot * normWorld;
+            Util3D.DrawCylinder(xform, nzcolor);
+
+
+            // draw center cube
+            scale.Scale(s*(1.0f / 16.0f));
+            xform = scale * normWorld;
+            Util3D.DrawCube(xform, Color.White);
+            
+            Vec3F handle = sv*AxisHandle;
             float handleWidth = handle.X/2;
             scale.Scale(handle);
             Matrix4F trans = new Matrix4F();
 
             
-
-            Util3D.RenderFlag = solid;
-
             // X handle
-            trans.Translation = new Vec3F(axscale.X - handleWidth, 0, 0);
+            float drag = m_hitRegion == HitRegion.XAxis ? dragScale.X : 1.0f;
+            trans.Translation = new Vec3F(drag * sv.X - handleWidth, 0, 0);            
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, xcolor);
 
             // y handle
-            trans.Translation = new Vec3F(0, axscale.Y - handleWidth, 0);
+            drag = m_hitRegion == HitRegion.YAxis ? dragScale.Y : 1.0f;
+            trans.Translation = new Vec3F(0, drag * sv.Y - handleWidth, 0);
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, ycolor);
 
             // z handle
-            trans.Translation = new Vec3F(0, 0, axscale.Z - handleWidth);
+            drag = m_hitRegion == HitRegion.ZAxis ? dragScale.Z : 1.0f;
+            trans.Translation = new Vec3F(0, 0, drag * sv.Z - handleWidth);
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, zcolor);
 
 
             // -x handle
-            trans.Translation = new Vec3F(negAxscale.X + handleWidth, 0, 0);
+            drag = m_hitRegion == HitRegion.NegXAxis ? dragScale.X : 1.0f;
+            trans.Translation = new Vec3F(-sv.X * drag + handleWidth, 0, 0);
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, nxcolor);
 
             // -y handle
-            trans.Translation = new Vec3F(0, negAxscale.Y + handleWidth, 0);
+            drag = m_hitRegion == HitRegion.NegYAxis ? dragScale.Y : 1.0f;
+            trans.Translation = new Vec3F(0, -sv.Y * drag + handleWidth, 0);
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, nycolor);
 
             // -z handle
-            trans.Translation = new Vec3F(0, 0, negAxscale.Z + handleWidth);
+            drag = m_hitRegion == HitRegion.NegZAxis ? dragScale.Z : 1.0f;
+            trans.Translation = new Vec3F(0, 0, -sv.Z * drag + handleWidth);
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, nzcolor);
         }
@@ -516,7 +530,7 @@ namespace RenderingInterop
         private Vec3F[] m_originalTranslations;        
         private float m_hitScale;
         private Vec3F m_scale;                
-        private const float HandleRatio = 1.0f / 8.0f;
+        
         private enum HitRegion
         {            
             XAxis,

@@ -77,14 +77,15 @@ namespace LevelEditorCore
                 {// either regular pick or manipulator pick.                    
                     if (DesignView.Manipulator != null && DesignView.Manipulator.Pick(this, e.Location))
                     {
-                        m_mouseDownAction = MouseDownAction.Manipulating;
+                        m_mouseDownAction = MouseDownAction.Manipulating;                        
                     }
                     else
                     {
                         m_mouseDownAction = MouseDownAction.Picking;
                     }
                 }
-            }           
+            }
+            DesignView.InvalidateViews();
             base.OnMouseDown(e);
             
         }        
@@ -119,14 +120,16 @@ namespace LevelEditorCore
                 {
                     CameraController.MouseMove(this, e);
                 }
-                else if (m_dragOverThreshold
-                    && m_mouseDownAction == MouseDownAction.Manipulating)
-                {                    
-                    DesignView.Manipulator.OnDragging(this, e.Location);
-                    DesignView.Tick();
-                    if(m_propEditor == null)                        
-                        m_propEditor = Globals.MEFContainer.GetExportedValue<PropertyEditor>();
-                    m_propEditor.PropertyGrid.RefreshProperties();                                            
+                else if (m_mouseDownAction == MouseDownAction.Manipulating)
+                {
+                    if (m_dragOverThreshold)
+                    {
+                        DesignView.Manipulator.OnDragging(this, e.Location);
+                        DesignView.Tick();
+                        if (m_propEditor == null)
+                            m_propEditor = Globals.MEFContainer.GetExportedValue<PropertyEditor>();
+                        m_propEditor.PropertyGrid.RefreshProperties();
+                    }
                 }
                 else if (DesignView.Manipulator != null)
                 {                    

@@ -13,6 +13,7 @@
 #include "RenderUtil.h"
 #include "Lights.h"
 #include "Model.h"
+#include "GpuResourceFactory.h"
 
 using namespace LvEdEngine;
 
@@ -24,37 +25,21 @@ SkyDomeShader::SkyDomeShader(ID3D11Device* device)
 {
     assert(device);    
     // create constant buffers
-    m_constantBufferPerFrame = CreateConstantBuffer(device, sizeof(cbPerFrame));
-    assert(m_constantBufferPerFrame);
+    m_cbPerFrame.Construct(device);
 
-    
     // create shaders        
     ID3DBlob* pVSBlob = CompileShaderFromResource(L"SkySphere.hlsl", "VS_Render","vs_4_0", NULL);    
     ID3DBlob* pPSBlob = CompileShaderFromResource(L"SkySphere.hlsl", "PS_Render","ps_4_0", NULL);
     assert(pVSBlob);
     assert(pPSBlob);
 
-    m_vertexShader = CreateVertexShader(device, pVSBlob);
-    m_pixelShader = CreatePixelShader(device, pPSBlob);
+    m_vertexShader = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    m_pixelShader  = GpuResourceFactory::CreatePixelShader(pPSBlob);
     assert(m_vertexShader);
     assert(m_pixelShader);
 
-    m_vertexLayout = CreateInputLayout(device, pVSBlob, VertexFormat::VF_P);
+    m_vertexLayout = GpuResourceFactory::CreateInputLayout(pVSBlob, VertexFormat::VF_P);
     assert(m_vertexLayout);
-
-    // create sampler state
-    // TODO: Get this from cache.
-    D3D11_SAMPLER_DESC sampDesc;
-    SecureZeroMemory( &sampDesc, sizeof(sampDesc) );
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;// 
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-    sampDesc.MinLOD = 0;
-    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;		
-    device->CreateSamplerState( &sampDesc, &m_samplerState );
-    assert(m_samplerState);
 
     // release blob memory
     pVSBlob->Release();
@@ -68,8 +53,6 @@ SkyDomeShader::~SkyDomeShader()
     SAFE_RELEASE(m_vertexShader);
     SAFE_RELEASE(m_pixelShader);
     SAFE_RELEASE(m_vertexLayout);
-    SAFE_RELEASE(m_constantBufferPerFrame);
-    SAFE_RELEASE(m_samplerState);
 }
 
 //---------------------------------------------------------------------------
@@ -87,31 +70,31 @@ void SkyDomeShader::Begin(RenderContext* rc)
     view.M42 = 0;
     view.M43 = 0;
     
-    cbPerFrame cb;	            
-    Matrix::Transpose(view,cb.view);
-    Matrix::Transpose(proj,cb.proj);    
-    UpdateConstantBuffer(d3dcontext,m_constantBufferPerFrame,&cb,sizeof(cb));
-    	
+    
+    Matrix::Transpose(view,m_cbPerFrame.Data.view);
+    Matrix::Transpose(proj,m_cbPerFrame.Data.proj);    
+    m_cbPerFrame.Update(d3dcontext);
+        	
     // set per frame buffer.
-	d3dcontext->VSSetConstantBuffers(0,1,&m_constantBufferPerFrame);
+    auto perframe = m_cbPerFrame.GetBuffer();
+	d3dcontext->VSSetConstantBuffers(0,1,&perframe);
         
 	// set vs, ps and layout.
 	d3dcontext->VSSetShader(m_vertexShader,NULL,0);
 	d3dcontext->PSSetShader(m_pixelShader,NULL,0);
 
     // sampler state
-    d3dcontext->PSSetSamplers( 0, 1, &m_samplerState );
+    auto sampler = RSCache::Inst()->LinearWrap();
+    d3dcontext->PSSetSamplers( 0, 1, &sampler );
 
     // raster state
-    ID3D11RasterizerState* rasterState = rc->GetRenderStateCache()->GetRasterState(FillMode::Solid, CullMode::NONE);
+    ID3D11RasterizerState* rasterState = RSCache::Inst()->GetRasterState(FillMode::Solid, CullMode::NONE);
 	d3dcontext->RSSetState(rasterState);                
 
     // depth stencil state
-    ID3D11DepthStencilState* depthState = m_rc->GetRenderStateCache()->GetDepthStencilState((RenderFlagsEnum)(RenderFlags::DisableDepthTest | RenderFlags::DisableDepthWrite) );
+    ID3D11DepthStencilState* depthState = RSCache::Inst()->GetDepthStencilState((RenderFlagsEnum)(RenderFlags::DisableDepthTest | RenderFlags::DisableDepthWrite) );
     d3dcontext->OMSetDepthStencilState(depthState, 0);
-
-    // default topology
-    d3dcontext->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+    
 }
 
 
@@ -159,7 +142,7 @@ void SkyDomeShader::Draw(const RenderableNode& r)
     d3dcontext->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)r.mesh->primitiveType );
     d3dcontext->IASetInputLayout(m_vertexLayout);
     d3dcontext->IASetVertexBuffers( 0, 1, &d3dvb, &stride, &offset );
-    d3dcontext->IASetIndexBuffer(d3dib, DXGI_FORMAT_R32_UINT, 0);
+    d3dcontext->IASetIndexBuffer(d3dib, (DXGI_FORMAT)r.mesh->indexBuffer->GetFormat(), 0);
     
     d3dcontext->DrawIndexed(indexCount, startIndex, startVertex);
 }

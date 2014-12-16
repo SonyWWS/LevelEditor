@@ -49,10 +49,11 @@ namespace RenderingInterop
     public enum BasicRendererFlags : uint
     {
         None              = 0,
-        Solid             = 1 << 0,
+        Lit               = 1 << 0,
         WireFrame         = 1 << 1,
         DisableDepthTest  = 1 << 2,
-        DisableDepthWrite = 1 << 3,        
+        DisableDepthWrite = 1 << 3,
+        Foreground        = 1 << 4,   // foreground layer.
     };   
 
     [Flags]

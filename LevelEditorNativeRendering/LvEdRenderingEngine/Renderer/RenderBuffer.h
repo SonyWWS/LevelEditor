@@ -7,8 +7,8 @@
 #include "../Core/NonCopyable.h"
 #include "../Core/Logger.h"
 #include "../VectorMath/V3dMath.h"
-
 #include "RenderEnums.h"
+#include "RenderUtil.h"
 
 namespace LvEdEngine
 {
@@ -122,50 +122,108 @@ public:
 
 
 // --------------------------------------------------------------------------------------------------
+// Base class for Vertex,Index, and Constant buffer
 class GpuBuffer : public NonCopyable
 {
 public:
-    
-    GpuBuffer(ID3D11Buffer* buffer, uint32_t count);
+            
+    GpuBuffer(ID3D11Buffer* buffer);
     virtual ~GpuBuffer();
     ID3D11Buffer* GetBuffer() const {return m_buffer;}
-    uint32_t GetCount() const {return m_count;}
 
+    // Gets buffer size in bytes
+    uint32_t GetSize() { return m_size;}
+   
     void SetDebugName(const char* name);
 
+    // update buffer from data
+    // count number of elements     
+    void Update(ID3D11DeviceContext* dc, void* data,uint32_t count = 1);
+
+
+protected:
+    uint32_t m_stride;
 private:
-    ID3D11Buffer* m_buffer;
-    uint32_t m_count;
+    ID3D11Buffer* m_buffer;    
+    uint32_t m_size;
+    bool m_writable; // the buffer can be updated
+
 };
 
 // --------------------------------------------------------------------------------------------------
 class VertexBuffer : public GpuBuffer
 {
 public:
-    VertexBuffer(ID3D11Buffer* buffer, uint32_t numVerts, VertexFormatEnum vf);
-    VertexFormatEnum GetFormat() const { return m_format;}
+    VertexBuffer(ID3D11Buffer* buffer, uint32_t stride);
+    //VertexFormatEnum GetFormat() const { return m_format;}
+
+    // Gets the size of one vertex in bytes.
     uint32_t GetStride() const {return m_stride;}
 
+    //Gets number of vertices
+    uint32_t GetCount() const {return m_count;}
+
 private:
-    VertexFormatEnum m_format;
-    uint32_t m_stride;
+    //VertexFormatEnum m_format;    
+    uint32_t m_count;       
 };
 
 // --------------------------------------------------------------------------------------------------
 class IndexBuffer : public GpuBuffer
 {
 public:
-    IndexBuffer(ID3D11Buffer* buffer, uint32_t numindices);
+    IndexBuffer(ID3D11Buffer* buffer, uint32_t stride);
+
+    //Gets number of indices
+    uint32_t GetCount() const {return m_count;}
+    uint32_t GetFormat() const;
+private:
+    uint32_t m_count;    
 };
 
-inline void UpdateConstantBuffer(ID3D11DeviceContext* dc, ID3D11Buffer* buffer,void *data, uint32_t size)
+class ConstantBuffer : public GpuBuffer
 {
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT hr = dc->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    Logger::IsFailureLog(hr,L"failed map cb");
-    CopyMemory(mappedResource.pData, data, size);          
-    dc->Unmap(buffer, 0);
-}
+public:
+    ConstantBuffer(ID3D11Buffer* buffer)
+        :GpuBuffer(buffer){}
+
+};
+
+// templated version of Constant buffer.
+template<typename T>
+class TConstantBuffer
+{
+public:
+	TConstantBuffer() : m_buffer(NULL) { }
+	~TConstantBuffer() { SAFE_RELEASE(m_buffer);	}
+
+	T Data;
+
+	ID3D11Buffer* GetBuffer() const {return m_buffer;}
+
+    // creates constant buffer in gpu memory.
+    void Construct(ID3D11Device* device)
+    {
+        if(m_buffer) return;        
+        m_buffer = CreateConstantBuffer(device,sizeof(T));
+    }
+	
+	/// Copies the Data in system memory GPU constant buffer.	
+	void Update(ID3D11DeviceContext* dc)
+	{ 
+        assert(m_buffer);
+        if(m_buffer)
+            UpdateConstantBuffer(dc,m_buffer,&Data,sizeof(Data));
+    }
+
+private:
+	TConstantBuffer(const TConstantBuffer&);
+	TConstantBuffer& operator=(const TConstantBuffer&);   
+private:
+	ID3D11Buffer* m_buffer;	
+};
+
+
 
 }; // namespace LvEdEngine
 

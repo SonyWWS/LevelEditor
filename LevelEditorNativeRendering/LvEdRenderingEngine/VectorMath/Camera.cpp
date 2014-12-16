@@ -35,10 +35,16 @@ void Camera::UpdateInternals()
     m_frustum.InitFromMatrix(m_view * m_proj);
 }
 
-
-void Camera::ComputeWorldDimensions(const float3& worldPos, float * h, float * w) const
+float Camera::ComputeUnitPerPixel(const float3& posW, float vh) const
 {
-    // transform worldPos to view space.        
+    float worldHeight, worldWidth;
+    ComputeWorldDimensions(posW,&worldHeight,&worldWidth);
+    return (worldHeight / vh);
+}
+
+void Camera::ComputeWorldDimensions(const float3& posW, float* h, float* w) const
+{
+    
     if (IsOrtho())
     {
         *w = 2.0f / m_proj.M11;
@@ -46,25 +52,11 @@ void Camera::ComputeWorldDimensions(const float3& worldPos, float * h, float * w
     }
     else
     {
-        float3 posV = float3::Transform(worldPos, m_view);
+        // Transform worldPos to view space.
+        float3 posV = float3::Transform(posW, m_view);
         float  dist = abs(posV.z);
         *w = (2.0f * dist) / m_proj.M11;
         *h = (2.0f * dist) / m_proj.M22;        
-    }
-}
-
-void Camera::ComputeViewDimensions(const float3& viewPos, float * h, float * w) const
-{       
-    if (IsOrtho())
-    {
-        *w = 2.0f / m_proj.M11;
-        *h = 2.0f / m_proj.M22;
-    }
-    else
-    {
-        float  dist = abs(viewPos.z);
-        *w = (2.0f * dist) / m_proj.M11;
-        *h = (2.0f * dist) / m_proj.M22;
     }
 }
 

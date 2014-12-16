@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "RenderEnums.h"
 #include "Renderable.h"
+#include "RenderBuffer.h"
 
 struct ID3D11Device;
 struct ID3D11VertexShader;
@@ -35,9 +36,22 @@ namespace LvEdEngine
        
 
     private:
+        struct CbPerFrame
+        {
+            Matrix viewXform;
+            Matrix projXform;   
+            float4 viewport;
+        };
+
+        struct CbPerObject
+        {
+            Matrix worldXform;   
+            float4 color;
+        };
+
         void SetCullMode(CullModeEnum cullMode);
-        ID3D11Buffer*          m_cbPerFrame;
-        ID3D11Buffer*          m_cbPerObject;
+        TConstantBuffer<CbPerFrame>  m_cbPerFrame;
+        TConstantBuffer<CbPerObject> m_cbPerObject;
                 
         ID3D11VertexShader*    m_vsShader;
         ID3D11PixelShader*     m_psShader;
@@ -53,18 +67,7 @@ namespace LvEdEngine
 
         RenderContext*         m_rcntx; // render context
 
-        struct CbPerFrame
-        {
-            Matrix viewXform;
-            Matrix projXform;   
-            float4 viewport;
-        };
-
-        struct CbPerObject
-        {
-            Matrix worldXform;   
-            float4 color;
-        };
+        
 
     };
 }

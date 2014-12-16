@@ -30,8 +30,7 @@ namespace LvEdEngine
     uint32_t GetVerticesPerPrimitive(PrimitiveTypeEnum pt);
 
     // SHADERS
-    ID3DBlob* CompileShaderFromResource(LPCWSTR resourceName, LPCSTR szEntryPoint, LPCSTR szShaderModel, const D3D_SHADER_MACRO *shaderMacros);
-    ID3DBlob* CompileShaderFromString(const char * shaderName, const char* szCode, LPCSTR szEntryPoint, LPCSTR szShaderModel, const D3D_SHADER_MACRO *shaderMacros);
+    ID3DBlob* CompileShaderFromResource(LPCWSTR resourceName, LPCSTR szEntryPoint, LPCSTR szShaderModel, const D3D_SHADER_MACRO *shaderMacros);    
     ID3D11VertexShader* CreateVertexShader(ID3D11Device* device, ID3DBlob* pVSBlob);
     ID3D11GeometryShader* CreateGeometryShader(ID3D11Device* device, ID3DBlob* blob);
     ID3D11PixelShader* CreatePixelShader(ID3D11Device* device, ID3DBlob* pVSBlob);
@@ -42,7 +41,8 @@ namespace LvEdEngine
     
     VertexBuffer* CreateVertexBuffer(ID3D11Device* device, VertexFormatEnum vf, void* buffer, uint32_t vertexCount, D3D11_USAGE usage = D3D11_USAGE_DEFAULT);
     bool UpdateIndexBuffer(ID3D11DeviceContext* context, IndexBuffer* buffer, uint32_t* data, uint32_t count);
-    bool UpdateVertexBuffer(ID3D11DeviceContext* context, VertexBuffer* buffer, VertexFormatEnum vf, void* data, uint32_t count);
+    bool UpdateVertexBuffer(ID3D11DeviceContext* context, VertexBuffer* buffer, void* data, uint32_t count);
+    void UpdateConstantBuffer(ID3D11DeviceContext* dc, ID3D11Buffer* buffer,void *data, uint32_t size);
 
     // MISC
     ID3D11InputLayout* CreateInputLayout(ID3D11Device* device, ID3DBlob* shaderBlob, VertexFormatEnum vf);

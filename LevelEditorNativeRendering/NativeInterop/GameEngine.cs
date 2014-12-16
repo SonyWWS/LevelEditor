@@ -591,6 +591,12 @@ namespace RenderingInterop
             NativeDeleteBuffer(bufferId);
         }
 
+        /// <summary>
+        /// Sets render flags used for basic drawing.</summary>        
+        public static void SetRendererFlag(BasicRendererFlags renderFlags)
+        {
+            NativeSetRendererFlag(renderFlags);
+        }
 
         //Draw primitive with the given parameters.
         public static void DrawPrimitive(PrimitiveType pt,
@@ -598,8 +604,8 @@ namespace RenderingInterop
                                             uint StartVertex,
                                             uint vertexCount,
                                             Color color,
-                                            Matrix4F xform,
-                                            BasicRendererFlags renderFlag)
+                                            Matrix4F xform)
+                                            
         {
             Vec4F vc;
             vc.X = color.R / 255.0f;
@@ -608,7 +614,7 @@ namespace RenderingInterop
             vc.W = color.A / 255.0f;
             fixed (float* mtrx = &xform.M11)
             {
-                NativeDrawPrimitive(pt, vb, StartVertex, vertexCount, &vc.X, mtrx, renderFlag);
+                NativeDrawPrimitive(pt, vb, StartVertex, vertexCount, &vc.X, mtrx);
             }
 
         }
@@ -620,8 +626,8 @@ namespace RenderingInterop
                                                 uint indexCount,
                                                 uint startVertex,
                                                 Color color,
-                                                Matrix4F xform,
-                                                BasicRendererFlags renderFlag)
+                                                Matrix4F xform)
+                                                
         {
             Vec4F vc;
             vc.X = color.R / 255.0f;
@@ -630,7 +636,7 @@ namespace RenderingInterop
             vc.W = color.A / 255.0f;
             fixed (float* mtrx = &xform.M11)
             {
-                NativeDrawIndexedPrimitive(pt, vb, ib, startIndex, indexCount, startVertex, &vc.X, mtrx, renderFlag);
+                NativeDrawIndexedPrimitive(pt, vb, ib, startIndex, indexCount, startVertex, &vc.X, mtrx);
             }
 
         }
@@ -755,14 +761,20 @@ namespace RenderingInterop
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_DeleteBuffer", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeDeleteBuffer(ulong buffer);
 
+
+
+        [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_SetRendererFlag", CallingConvention = CallingConvention.StdCall)]
+        private static extern void NativeSetRendererFlag(BasicRendererFlags renderFlag);
+        
+
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_DrawPrimitive", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeDrawPrimitive(PrimitiveType pt,
                                                         ulong vb,
                                                         uint StartVertex,
                                                         uint vertexCount,
                                                         float* color,
-                                                        float* xform,
-                                                        BasicRendererFlags renderFlag);
+                                                        float* xform);
+                                                    
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_DrawIndexedPrimitive", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeDrawIndexedPrimitive(PrimitiveType pt,
@@ -772,10 +784,8 @@ namespace RenderingInterop
                                                         uint indexCount,
                                                         uint startVertex,
                                                         float* color,
-                                                        float* xform,
-                                                        BasicRendererFlags renderFlag);
-
-
+                                                        float* xform);
+                                                        
         [DllImport("LvEdRenderingEngine", EntryPoint = "LvEd_CreateFont", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Unicode)]
         private static extern ulong NativeCreateFont(string fontName, float pixelHeight, FontStyle fontStyles);
 

@@ -210,7 +210,7 @@ void TerrainShader::Initialize(ID3D11Device* device)
     assert(m_perPatchCb);
     assert(m_perDecomapCb);
 
-    RenderStateCache* rscache = RenderContext::Inst()->GetRenderStateCache();
+    RSCache* rscache = RSCache::Inst();
     D3D11_SAMPLER_DESC smpDescr = rscache->GetDefaultSampler();
     smpDescr.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
     smpDescr.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -233,7 +233,7 @@ void TerrainShader::Initialize(ID3D11Device* device)
     
 
     // create depth state for rendering wireframe overlay.
-    D3D11_DEPTH_STENCIL_DESC depthDescr = RenderContext::Inst()->GetRenderStateCache()->GetDefaultDpDcr();
+    D3D11_DEPTH_STENCIL_DESC depthDescr = RSCache::Inst()->GetDefaultDpDcr();
     depthDescr.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     device->CreateDepthStencilState(&depthDescr,&m_dpLessEqual);
     assert(m_dpLessEqual);  
@@ -252,16 +252,16 @@ void TerrainShader::SetRenderFlag(RenderFlagsEnum rf)
     }
 
     CullModeEnum cullmode = (rf & RenderFlags::RenderBackFace) ? CullMode::NONE : CullMode::BACK;
-    auto rasterState = m_rc->GetRenderStateCache()->GetRasterState( FillMode::Solid, cullmode );
+    auto rasterState = RSCache::Inst()->GetRasterState( FillMode::Solid, cullmode );
     d3dcontext->RSSetState(rasterState);
 
      // set blend state 
-    auto blendState = m_rc->GetRenderStateCache()->GetBlendState(rf);
+    auto blendState = RSCache::Inst()->GetBlendState(rf);
     float blendFactor[4] = {1.0f};
     d3dcontext->OMSetBlendState(blendState, blendFactor, 0xffffffff);        
 
     // set depth stencil state
-    auto depthState  = m_rc->GetRenderStateCache()->GetDepthStencilState(rf);
+    auto depthState  = RSCache::Inst()->GetDepthStencilState(rf);
     d3dcontext->OMSetDepthStencilState(depthState,0);
 }
 
@@ -469,7 +469,7 @@ void TerrainShader::RenderTerrain(TerrainGob* terrain)
     flags |= RenderFlags::RenderBackFace;
     SetRenderFlag((RenderFlagsEnum)flags);
      // set blend state 
-    auto blendState = m_rc->GetRenderStateCache()->GetAlphaToCoverageState();
+    auto blendState = RSCache::Inst()->GetAlphaToCoverageState();
     float blendFactor[4] = {1.0f};
     d3dcontext->OMSetBlendState(blendState, blendFactor, 0xffffffff);        
     

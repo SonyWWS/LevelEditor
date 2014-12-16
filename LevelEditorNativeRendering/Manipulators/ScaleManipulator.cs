@@ -37,9 +37,9 @@ namespace RenderingInterop
                 return false;
                                    
             Camera camera = vc.Camera;
-            float s;
-            Util.CalcAxisLengths(camera, HitMatrix.Translation, out s);
-                        
+
+            float s = Util.CalcAxisScale(vc.Camera, HitMatrix.Translation, AxisLength, vc.Height);
+            
             Matrix4F vp = camera.ViewMatrix * camera.ProjectionMatrix;
             Matrix4F wvp = HitMatrix * vp;
             
@@ -48,49 +48,34 @@ namespace RenderingInterop
             
             m_scale = new Vec3F(1, 1, 1);            
             m_hitScale = s;
-                                               
-            float rectScale = s*FreeRectRatio;                                               
-            Vec3F topRight    = rectScale * (new Vec3F(1, 1, 0));
-            Vec3F topLeft     = rectScale * (new Vec3F(-1, 1, 0));
-            Vec3F bottomLeft  = rectScale * (new Vec3F(-1, -1, 0));
-            Vec3F bottomRight = rectScale * (new Vec3F(1, -1, 0));
-            Matrix4F planeXform = Util.CreateBillboard(HitMatrix.Translation, camera.WorldEye, camera.Up, camera.LookAt);
-            Matrix4F wvpPlane = planeXform * vp;
-
-            // create ray in plane's local space.
-            Ray3F rayP = vc.GetRay(scrPt, wvpPlane);
-
-            Plane3F plane = new Plane3F(topRight,topLeft,bottomLeft);
-            Vec3F p;
-
-            bool intersect = rayP.IntersectPlane(plane, out p);            
-            if(intersect)
-            {                
-                bool inside = p.X > topLeft.X
-                              && p.X < topRight.X
-                              && p.Y > bottomLeft.Y
-                              && p.Y < topLeft.Y;
-                if (inside)
-                {
-                    m_hitRegion = HitRegion.FreeRect;
-                    return true;
-                }                    
-            }
-
+         
             Vec3F min = new Vec3F(-0.5f, -0.5f, -0.5f);
             Vec3F max = new Vec3F(0.5f, 0.5f, 0.5f);
             AABB box = new AABB(min, max);
+
+            float centerCubeScale = s * CenterCubeSize;
+            Matrix4F centerCubeXform = new Matrix4F();
+            centerCubeXform.Scale(centerCubeScale);
+            centerCubeXform.Invert(centerCubeXform);
+            Ray3F ray = rayL;
+            ray.Transform(centerCubeXform);
+            if (box.Intersect(ray))
+            {
+                m_hitRegion = HitRegion.CenterCube;
+                return true;
+            }
+
             Matrix4F boxScale = new Matrix4F();
             Matrix4F boxTrans = new Matrix4F();
             Matrix4F BoxMtrx = new Matrix4F();
 
-            float handleScale = s * HandleRatio;
+            float handleScale = s * AxisHandle;
             // X axis
 
             boxScale.Scale(new Vec3F(s, handleScale, handleScale));
             boxTrans.Translation = new Vec3F(s / 2, 0, 0);
-            BoxMtrx = boxScale * boxTrans;            
-            Ray3F ray = rayL;
+            BoxMtrx = boxScale * boxTrans;
+            ray = rayL;
             BoxMtrx.Invert(BoxMtrx);
             ray.Transform(BoxMtrx);
 
@@ -132,61 +117,64 @@ namespace RenderingInterop
 
         public override void Render(ViewControl vc)
         {
-            BasicRendererFlags solid = BasicRendererFlags.Solid
-                | BasicRendererFlags.DisableDepthTest;
-            BasicRendererFlags wire = BasicRendererFlags.WireFrame
-                               | BasicRendererFlags.DisableDepthTest;
-
-                       
+                                               
             Matrix4F normWorld = GetManipulatorMatrix();
             if (normWorld == null) return;
 
-            Camera camera = vc.Camera;
+            
             Vec3F pos = normWorld.Translation;
-            float s;
-            Util.CalcAxisLengths(vc.Camera, pos, out s);
+            float s = Util.CalcAxisScale(vc.Camera, pos, AxisLength, vc.Height);
+            
+            Color xcolor = (m_hitRegion == HitRegion.XAxis || m_hitRegion == HitRegion.CenterCube ) ? Color.Gold : XAxisColor;
+            Color ycolor = (m_hitRegion == HitRegion.YAxis || m_hitRegion == HitRegion.CenterCube ) ? Color.Gold : YAxisColor;
+            Color zcolor = (m_hitRegion == HitRegion.ZAxis || m_hitRegion == HitRegion.CenterCube ) ? Color.Gold : ZAxisColor;
+            Color centerCubeColor = (m_hitRegion == HitRegion.CenterCube) ? Color.Gold : Color.White;
 
+           
             Vec3F sv = new Vec3F(s, s, s);
-            Vec3F axscale = new Vec3F( Math.Abs(s*m_scale.X), Math.Abs(s*m_scale.Y), Math.Abs(s*m_scale.Z));
-
-            Color xcolor = (m_hitRegion == HitRegion.XAxis || m_hitRegion == HitRegion.FreeRect ) ? Color.Gold : Color.Red;
-            Color ycolor = (m_hitRegion == HitRegion.YAxis || m_hitRegion == HitRegion.FreeRect ) ? Color.Gold : Color.Green;
-            Color Zcolor = (m_hitRegion == HitRegion.ZAxis || m_hitRegion == HitRegion.FreeRect ) ? Color.Gold : Color.Blue;
-            Color freeRect = (m_hitRegion == HitRegion.FreeRect) ? Color.Gold : Color.White;
-
+            Vec3F axscale = new Vec3F(s * AxisThickness, s, s * AxisThickness);
 
             Matrix4F scale = new Matrix4F();
+            axscale.Y = Math.Abs(s * m_scale.X);
             scale.Scale(axscale);
-            Matrix4F xform = scale * normWorld;
-            Util3D.RenderFlag = wire;
-            Util3D.DrawX(xform, xcolor);
-            Util3D.DrawY(xform, ycolor);
-            Util3D.DrawZ(xform, Zcolor);
+            Matrix4F rot = new Matrix4F();
+            rot.RotZ(-MathHelper.PiOver2);
+            Matrix4F xform = scale * rot * normWorld;           
+            Util3D.DrawCylinder(xform, xcolor);
 
-            Vec3F rectScale = sv*FreeRectRatio;
-            scale.Scale(rectScale);
-            Matrix4F b = Util.CreateBillboard(pos, camera.WorldEye, camera.Up, camera.LookAt);
-            Matrix4F recXform = Matrix4F.Multiply(scale, b);
-            Util3D.DrawRect(recXform, freeRect);
+            axscale.Y = Math.Abs(s * m_scale.Y);
+            scale.Scale(axscale);
+            xform = scale * normWorld;           
+            Util3D.DrawCylinder(xform, ycolor);
+            rot.RotX(MathHelper.PiOver2);
+            axscale.Y = Math.Abs(s * m_scale.Z);
+            scale.Scale(axscale);
+            xform = scale * rot * normWorld;
+            Util3D.DrawCylinder(xform, zcolor);
+            
+            Vec3F centerCubeScale = sv * CenterCubeSize;
+            scale.Scale(centerCubeScale);            
+            Matrix4F centerCubeXform = scale * normWorld;
+            Util3D.DrawCube(centerCubeXform, centerCubeColor);
 
-            Vec3F handle = sv*HandleRatio;
-            float handleWidth = handle.X/2;
+
+            Vec3F handleScale = new Vec3F(Math.Abs(s * m_scale.X), Math.Abs(s * m_scale.Y), Math.Abs(s * m_scale.Z));
+            Vec3F handle = sv * AxisHandle;
+            float handleWidth = handle.X / 2;
             scale.Scale(handle);
             Matrix4F trans = new Matrix4F();
-            trans.Translation = new Vec3F(axscale.X - handleWidth, 0, 0);
+            trans.Translation = new Vec3F(handleScale.X - handleWidth, 0, 0);
             xform = scale * trans * normWorld;
-
-            Util3D.RenderFlag = solid;
 
             Util3D.DrawCube(xform, xcolor);
 
-            trans.Translation = new Vec3F(0, axscale.Y - handleWidth, 0);
+            trans.Translation = new Vec3F(0, handleScale.Y - handleWidth, 0);
             xform = scale * trans * normWorld;
             Util3D.DrawCube(xform, ycolor);
 
-            trans.Translation = new Vec3F(0, 0, axscale.Z - handleWidth);
+            trans.Translation = new Vec3F(0, 0, handleScale.Z - handleWidth);
             xform = scale * trans * normWorld;
-            Util3D.DrawCube(xform, Zcolor);
+            Util3D.DrawCube(xform, zcolor);
         }
 
         public override void OnBeginDrag()
@@ -296,7 +284,7 @@ namespace RenderingInterop
                         scale = m_scale.Z;
                     }
                     break;
-                case HitRegion.FreeRect:
+                case HitRegion.CenterCube:
                     {
 
                         Vec3F axis = new Vec3F(0, 0, 1);
@@ -382,20 +370,20 @@ namespace RenderingInterop
 
             return toworld;
         }
-        
+
+                
         private bool m_isUniformScaling;        
         private Vec3F[] m_originalValues;        
         private float m_hitScale;
         private Vec3F m_scale;        
-        private const float FreeRectRatio = 1.0f / 7.0f;
-        private const float HandleRatio = 1.0f / 8.0f;
+        private const float CenterCubeSize = 1.0f / 6.0f;        
         private enum HitRegion
         {
             None,
             XAxis,
             YAxis,
             ZAxis,
-            FreeRect,
+            CenterCube,
         }
     }
 }

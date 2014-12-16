@@ -10,7 +10,6 @@ using Vector2 = Sce.Atf.VectorMath.Vec2F;
 using Vector3 = Sce.Atf.VectorMath.Vec3F;
 using Vector4 = Sce.Atf.VectorMath.Vec4F;
 
-using LevelEditorCore;
 using LevelEditorCore.VectorMath;
 
 
@@ -19,7 +18,10 @@ namespace RenderingInterop
     // utility class for drawing simple 2d/3d shapes
     public static class Util3D
     {
-        public static BasicRendererFlags RenderFlag { get; set; }
+        public static BasicRendererFlags RenderFlag
+        {
+            set { GameEngine.SetRendererFlag(value);}
+        }
 
         public static void DrawSphere(Sphere3F sphere, Color c)
         {
@@ -45,9 +47,7 @@ namespace RenderingInterop
               0,
               s_pivotVertexCount,
               c,
-              xform,
-              RenderFlag
-              );            
+              xform);            
         }
         public static void DrawAABB(AABB bound)
         {
@@ -66,8 +66,7 @@ namespace RenderingInterop
                s_boxIndicesCount,
                0,
                Color.White,
-               T1,
-               RenderFlag);
+               T1);
         }
 
         public static void DrawCircle(Matrix4F xform, Color color)
@@ -77,9 +76,7 @@ namespace RenderingInterop
                0,
                s_circleVertexCount,
                color,
-               xform,
-               RenderFlag
-               );
+               xform);
         }
         public static void DrawUnitSquare(Matrix4F xform, Color color)
         {
@@ -88,9 +85,7 @@ namespace RenderingInterop
                 s_unitSquareStartVertex,
                 s_unitSquareVertexCount,
                 color,
-                xform,
-                RenderFlag
-                );
+                xform);
         }
 
         public static void DrawRect(Matrix4F xform, Color color)
@@ -100,13 +95,10 @@ namespace RenderingInterop
                 s_rectStartVertex,
                 s_rectVertexCount,
                 color,
-                xform,
-                RenderFlag
-                );
+                xform);
             
         }
-
-        //public static void DrawLine()
+        
         public static void DrawAxis(Matrix4F xform, Color color)
         {
             GameEngine.DrawPrimitive(PrimitiveType.LineList,
@@ -114,9 +106,7 @@ namespace RenderingInterop
                 s_axisStartVertex,
                 s_axisVertexCount,
                 color,
-                xform,
-                RenderFlag
-                );
+                xform);
         }
 
 
@@ -128,8 +118,7 @@ namespace RenderingInterop
                                      s_axisStartVertex,
                                      2,
                                      color,
-                                     xform,
-                                     RenderFlag);
+                                     xform);
 
         }
 
@@ -140,8 +129,7 @@ namespace RenderingInterop
                                      s_axisStartVertex + 2,
                                      2,
                                      color,
-                                     xform,
-                                     RenderFlag);
+                                     xform);
 
         }
 
@@ -152,31 +140,55 @@ namespace RenderingInterop
                                      s_axisStartVertex + 4,
                                      2,
                                      color,
-                                     xform,
-                                     RenderFlag);
+                                     xform);
 
         }
 
         public static void DrawSphere(Matrix4F xform, System.Drawing.Color color)
-        {
-            GameEngine.DrawIndexedPrimitive(PrimitiveType.TriangleList, 
-                s_triLisVbId, 
-                s_triListIbid,
-                s_sphereStartIndex,
+        {            
+            GameEngine.DrawIndexedPrimitive(PrimitiveType.TriangleList,
+                s_sphereVertId,
+                s_sphereIndexId,
+                0,
                 s_sphereIndexCount,
-                s_sphereStartVertex,
+                0,
                 color,
-                xform,
-                RenderFlag);
+                xform);
 
         }
 
-        public static void DrawCone(Matrix4F xform, Color color)
+
+        // few constants used for creating Ring (a thin torus).
+        public const float RingInnerRadias = 0.475f;
+        public const float RingOuterRadias = 0.5f;
+        public const float RingThickness = (RingOuterRadias - RingInnerRadias);
+        public const float RingCenterRadias = 0.5f * (RingInnerRadias + RingOuterRadias);
+
+        public static void DrawRing(Matrix4F xform, Color color)
         {            
-            Matrix4F transposeOfInverse = new Matrix4F(xform);
-            transposeOfInverse.Transpose(transposeOfInverse);
-            transposeOfInverse.Invert(transposeOfInverse);
-            
+            GameEngine.DrawIndexedPrimitive(PrimitiveType.TriangleList,
+               s_torusVertId,
+               s_torusIndexId,
+               0,
+               s_torusIndexCount,
+               0,
+               color,
+               xform);
+        }
+        public static void DrawCylinder(Matrix4F xform, Color color)
+        {
+            GameEngine.DrawIndexedPrimitive(PrimitiveType.TriangleList,
+               s_cylinderVertId,
+               s_cylinderIndexId,
+               0,
+               s_cylinderIndexCount,
+               0,
+               color,
+               xform);
+        }
+
+        public static void DrawCone(Matrix4F xform, Color color)
+        {                                   
             GameEngine.DrawIndexedPrimitive(PrimitiveType.TriangleList,
                s_coneVertId,
                s_coneIndexId,
@@ -184,8 +196,7 @@ namespace RenderingInterop
                s_coneIndexCount,
                0,
                color,
-               xform,
-               RenderFlag);
+               xform);
         }
       
         public static void DrawCube(Matrix4F xform, Color color)
@@ -197,8 +208,7 @@ namespace RenderingInterop
                s_cubeIndexCount,
                0,
                color,
-               xform,
-               RenderFlag);
+               xform);
 
         }
 
@@ -206,51 +216,65 @@ namespace RenderingInterop
         {
             if (s_inited) return;
 
-            List<Vector3> sphereVerts = new List<Vec3F>();
+
+            List<VertexPN> vertList = new List<VertexPN>();
+
+
+            List<Vector3> spherePositions = new List<Vec3F>();
             List<Vector3> sphereNormals = new List<Vec3F>();
-            List<uint> sphereIndices = new List<uint>();
-                        
-            GeometryHelper.CreateSphere(0.5f,FastSphereSlices,FastSphereStacks, sphereVerts
+            List<uint> sphereIndices = new List<uint>();                        
+            GeometryHelper.CreateSphere(0.5f,FastSphereSlices,FastSphereStacks, spherePositions
                 ,  sphereNormals, null, sphereIndices);
 
-            s_triLisVbId = GameEngine.CreateVertexBuffer(sphereVerts.ToArray());
-            s_triListIbid = GameEngine.CreateIndexBuffer(sphereIndices.ToArray());
-            s_sphereIndexCount = (uint) sphereIndices.Count;
-            s_sphereStartVertex = 0;
-            s_sphereStartVertex = 0;
 
+            GeometryHelper.AssembleVertexPN(spherePositions, sphereNormals, vertList);
+
+            s_sphereVertId = GameEngine.CreateVertexBuffer(vertList.ToArray());
+            s_sphereIndexId = GameEngine.CreateIndexBuffer(sphereIndices.ToArray());
+            s_sphereIndexCount = (uint) sphereIndices.Count;
+            
             List<Vec3F> conePos = new List<Vec3F>();
             List<uint> coneIndices = new List<uint>();
             List<Vec3F> coneNorms = new List<Vec3F>();
             GeometryHelper.CreateCylinder(1.0f, 0.0f, 1.0f, 16, 1, conePos, coneNorms, coneIndices);
-
             s_coneIndexCount = (uint)coneIndices.Count;
 
-            VertexPN[] conveVB = new VertexPN[conePos.Count];
-
-            for (int i = 0; i < conveVB.Length; i++)
-            {
-
-                conveVB[i].Position = conePos[i];
-                conveVB[i].Normal = coneNorms[i];
-            }
-
-            s_coneVertId = GameEngine.CreateVertexBuffer(conveVB);
+            GeometryHelper.AssembleVertexPN(conePos, coneNorms, vertList);
+            s_coneVertId = GameEngine.CreateVertexBuffer(vertList.ToArray());
             s_coneIndexId = GameEngine.CreateIndexBuffer(coneIndices.ToArray());
+
+
+            // create unit cylinder
+            List<Vec3F> cyPos = new List<Vec3F>();
+            List<uint> cyIndices = new List<uint>();
+            List<Vec3F> cyNorms = new List<Vec3F>();
+            GeometryHelper.CreateCylinder(0.5f, 0.5f, 1.0f, 16, 2, cyPos, cyNorms, cyIndices);
+            GeometryHelper.AssembleVertexPN(cyPos, cyNorms, vertList);
+            s_cylinderVertId = GameEngine.CreateVertexBuffer(vertList.ToArray());
+            s_cylinderIndexId = GameEngine.CreateIndexBuffer(cyIndices.ToArray());
+            s_cylinderIndexCount =(uint)cyIndices.Count;
+
+            // create slim unit torus.
+            List<Vec3F> torPos = new List<Vec3F>();            
+            List<Vec3F> torNorms = new List<Vec3F>();
+            List<uint> torIndices = new List<uint>();
+            GeometryHelper.CreateTorus(RingInnerRadias, RingOuterRadias, 40, 6, torPos, torNorms, null, torIndices);
+            GeometryHelper.AssembleVertexPN(torPos, torNorms, vertList);
+            s_torusVertId = GameEngine.CreateVertexBuffer(vertList.ToArray());
+            s_torusIndexId = GameEngine.CreateIndexBuffer(torIndices.ToArray());
+            s_torusIndexCount = (uint)torIndices.Count;
+
+
 
             List<Vector3> cubePos = new List<Vector3>();
             List<Vector3> cubeNormals = new List<Vector3>();
-            List<Vector2> cubeTex = new List<Vector2>();
+            
             List<uint> cubeIndices = new List<uint>();
 
-            GeometryHelper.CreateUnitCube(cubePos,cubeNormals,cubeTex,cubeIndices);
-            VertexPN[] cubeVerts = new VertexPN[cubePos.Count];
-            for (int i = 0; i < cubeVerts.Length; i++)
-            {
-                cubeVerts[i].Position = cubePos[i];
-                cubeVerts[i].Normal = cubeNormals[i];
-            }
-            s_cubeVertId = GameEngine.CreateVertexBuffer(cubeVerts);
+            GeometryHelper.CreateUnitCube(cubePos,cubeNormals,null,cubeIndices);
+            GeometryHelper.AssembleVertexPN(cubePos, cubeNormals, vertList);
+
+            s_cubeVertId = GameEngine.CreateVertexBuffer(vertList.ToArray());
             s_cubeIndexId = GameEngine.CreateIndexBuffer(cubeIndices.ToArray());
             s_cubeIndexCount = (uint) cubeIndices.Count;
 
@@ -316,8 +340,7 @@ namespace RenderingInterop
             GeometryHelper.CreateCircle(1.0f,32,circlePos);
             s_circleVertexCount = (uint) circlePos.Count;
             s_circleVerts = GameEngine.CreateVertexBuffer(circlePos.ToArray());
-            RenderFlag = BasicRendererFlags.WireFrame;
-
+            
             List<Vec3F>  boxVerts = new List<Vec3F>();
             List<uint> boxIndices = new List<uint>();
             GeometryHelper.CreateUnitBox(boxVerts,boxIndices);
@@ -328,10 +351,10 @@ namespace RenderingInterop
 
 
             List<Vec3F> pivotVerts = new List<Vec3F>();
-            GeometryHelper.CreateCircle(1.0f, 16, pivotVerts);
-            GeometryHelper.CreateCircle(0.75f, 16, pivotVerts);
             GeometryHelper.CreateCircle(0.5f, 16, pivotVerts);
+            GeometryHelper.CreateCircle(0.375f, 16, pivotVerts);
             GeometryHelper.CreateCircle(0.25f, 16, pivotVerts);
+            GeometryHelper.CreateCircle(0.125f, 16, pivotVerts);
             s_pivotVerts = GameEngine.CreateVertexBuffer(pivotVerts.ToArray());
             s_pivotVertexCount = (uint)pivotVerts.Count;
 
@@ -342,10 +365,14 @@ namespace RenderingInterop
         }
 
         public static void Shutdown()
-        {
-            GameEngine.DeleteBuffer(s_circleVerts);            
-            GameEngine.DeleteBuffer(s_triLisVbId);
-            GameEngine.DeleteBuffer(s_triListIbid);
+        {         
+            GameEngine.DeleteBuffer(s_torusVertId);
+            GameEngine.DeleteBuffer(s_torusIndexId);
+            GameEngine.DeleteBuffer(s_cylinderVertId );
+            GameEngine.DeleteBuffer(s_cylinderIndexId);
+            GameEngine.DeleteBuffer(s_circleVerts);
+            GameEngine.DeleteBuffer(s_sphereVertId);
+            GameEngine.DeleteBuffer(s_sphereIndexId);
             GameEngine.DeleteBuffer(s_coneVertId);
             GameEngine.DeleteBuffer(s_coneIndexId);                        
             GameEngine.DeleteBuffer(s_cubeVertId);
@@ -354,8 +381,7 @@ namespace RenderingInterop
             GameEngine.DeleteBuffer(s_boxVertsId);
             GameEngine.DeleteBuffer(s_boxIndicesId);
             GameEngine.DeleteBuffer(s_pivotVerts);            
-            GameEngine.DeleteFont(s_captionFont);
-            
+            GameEngine.DeleteFont(s_captionFont);            
         }
         private static bool s_inited;
 
@@ -365,21 +391,23 @@ namespace RenderingInterop
         private static ulong s_pivotVerts;
         private static uint s_pivotVertexCount;
 
-        //private static ulong 
-        
-        // cumulative vertex buffer for all the shapes using triangle list.
-        private static ulong s_triLisVbId;
-        private static ulong s_triListIbid;
 
-        private static uint s_sphereStartVertex;
-        private static uint s_sphereStartIndex;
+        private static ulong s_sphereVertId;
+        private static ulong s_sphereIndexId;
         private static uint s_sphereIndexCount;
 
+        private static ulong s_torusVertId;
+        private static ulong s_torusIndexId;
+        private static uint s_torusIndexCount;
 
+       
         private static ulong s_coneVertId;
         private static ulong s_coneIndexId;
         private static uint s_coneIndexCount;
 
+        private static ulong s_cylinderVertId;
+        private static ulong s_cylinderIndexId;
+        private static uint s_cylinderIndexCount;
 
         private static ulong s_boxVertsId;
         private static ulong s_boxIndicesId;
@@ -409,14 +437,29 @@ namespace RenderingInterop
         // this no longer be needed if/when 
         // Matrix4F converted to struct.
         private static Matrix4F T1 = new Matrix4F();
-        private static Matrix4F T2 = new Matrix4F();
-        private static Matrix4F T3 = new Matrix4F();
-        private static Matrix4F T4 = new Matrix4F();
+       // private static Matrix4F T2 = new Matrix4F();
+       // private static Matrix4F T3 = new Matrix4F();
+       // private static Matrix4F T4 = new Matrix4F();
         
     }
 
     public static class GeometryHelper
     {
+
+        public static void AssembleVertexPN(List<Vec3F> pos, List<Vec3F> norm,
+            List<VertexPN> outVertList)
+        {
+            if (pos.Count != norm.Count)
+                throw new ArgumentException("pos count not equal norm count");
+            outVertList.Clear();
+            VertexPN vertex = new VertexPN();
+            for(int k = 0; k < pos.Count; k++)
+            {
+                vertex.Position = pos[k];
+                vertex.Normal = norm[k];
+                outVertList.Add(vertex);
+            }
+        }
         /// <summary>
         /// Create circle from linestrip.</summary>        
         public static void CreateCircle(float radius, uint segs, List<Vector3> pos)
@@ -725,6 +768,80 @@ namespace RenderingInterop
         }
 
 
+        public static void CreateTorus(float innerRadius,
+            float outerRadius,
+            uint rings,
+            uint sides,
+            List<Vec3F> pos,
+            List<Vec3F> nor,
+            List<Vec2F> tex,
+            List<uint> indices)
+        {
+
+            uint ringStride = rings + 1;
+            uint sideStride = sides + 1;
+
+            // radiusC: distance to center of the ring
+            float radiusC = (innerRadius + outerRadius) * 0.5f;
+
+            //radiusR: the radius of the ring
+            float radiusR = (outerRadius - radiusC);
+
+            for (uint i = 0; i <= rings; i++)
+            {
+                float u = (float)i / rings;
+
+                float outerAngle = i * MathHelper.TwoPi / rings;
+
+                // xform from ring space to torus space.
+                Matrix4F trans = new Matrix4F();
+                trans.Translation = new Vec3F(radiusC, 0, 0);
+                Matrix4F roty = new Matrix4F();
+                roty.RotY(outerAngle);
+                Matrix4F transform = trans * roty;
+
+                // create vertices for each ring.
+                for (uint j = 0; j <= sides; j++)
+                {
+                    float v = (float)j / sides;
+
+                    float innerAngle = j * MathHelper.TwoPi / sides + MathHelper.Pi;
+                    float dx = (float)Math.Cos(innerAngle);
+                    float dy = (float)Math.Sin(innerAngle);
+
+                    // normal, position ,and texture coordinates
+                    Vec3F n = new Vec3F(dx, dy, 0);
+                    Vec3F p = n * radiusR;
+
+                    if (tex != null)
+                    {
+                        Vec2F t = new Vec2F(u, v);
+                        tex.Add(t);
+                    }
+
+                    transform.Transform(ref p);
+                    transform.TransformVector(n, out n);
+
+                    pos.Add(p);
+                    nor.Add(n);
+                    
+
+                    // And create indices for two triangles.
+                    uint nextI = (i + 1) % ringStride;
+                    uint nextJ = (j + 1) % sideStride;
+
+                    indices.Add(nextI * sideStride + j);
+                    indices.Add(i * sideStride + nextJ);
+                    indices.Add(i * sideStride + j);
+
+                    indices.Add(nextI * sideStride + j);
+                    indices.Add(nextI * sideStride + nextJ);
+                    indices.Add(i * sideStride + nextJ);
+                }
+            }
+        }
+
+
         public static void CreateUnitBox(List<Vector3> pos, List<uint> indices)
         {
            
@@ -817,7 +934,8 @@ namespace RenderingInterop
 
                 pos.Add(v[i].Position);
                 normal.Add(v[i].Normal);
-                tex.Add(v[i].Tex);
+                if(tex != null)
+                    tex.Add(v[i].Tex);
             }
 
 
@@ -857,7 +975,7 @@ namespace RenderingInterop
             }
 
         }
-
+        
     }
 
     public static class MathHelper

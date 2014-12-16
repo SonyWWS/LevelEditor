@@ -319,6 +319,9 @@ namespace LevelEditor
             shapeTestType.lockedAttribute = shapeTestType.Type.GetAttributeInfo("locked");
             shapeTestType.transformationTypeAttribute = shapeTestType.Type.GetAttributeInfo("transformationType");
             shapeTestType.colorAttribute = shapeTestType.Type.GetAttributeInfo("color");
+            shapeTestType.emissiveAttribute = shapeTestType.Type.GetAttributeInfo("emissive");
+            shapeTestType.specularAttribute = shapeTestType.Type.GetAttributeInfo("specular");
+            shapeTestType.specularPowerAttribute = shapeTestType.Type.GetAttributeInfo("specularPower");
             shapeTestType.diffuseAttribute = shapeTestType.Type.GetAttributeInfo("diffuse");
             shapeTestType.normalAttribute = shapeTestType.Type.GetAttributeInfo("normal");
             shapeTestType.textureTransformAttribute = shapeTestType.Type.GetAttributeInfo("textureTransform");
@@ -334,9 +337,30 @@ namespace LevelEditor
             cubeTestType.lockedAttribute = cubeTestType.Type.GetAttributeInfo("locked");
             cubeTestType.transformationTypeAttribute = cubeTestType.Type.GetAttributeInfo("transformationType");
             cubeTestType.colorAttribute = cubeTestType.Type.GetAttributeInfo("color");
+            cubeTestType.emissiveAttribute = cubeTestType.Type.GetAttributeInfo("emissive");
+            cubeTestType.specularAttribute = cubeTestType.Type.GetAttributeInfo("specular");
+            cubeTestType.specularPowerAttribute = cubeTestType.Type.GetAttributeInfo("specularPower");
             cubeTestType.diffuseAttribute = cubeTestType.Type.GetAttributeInfo("diffuse");
             cubeTestType.normalAttribute = cubeTestType.Type.GetAttributeInfo("normal");
             cubeTestType.textureTransformAttribute = cubeTestType.Type.GetAttributeInfo("textureTransform");
+
+            TorusTestType.Type = getNodeType("gap", "TorusTestType");
+            TorusTestType.transformAttribute = TorusTestType.Type.GetAttributeInfo("transform");
+            TorusTestType.translateAttribute = TorusTestType.Type.GetAttributeInfo("translate");
+            TorusTestType.rotateAttribute = TorusTestType.Type.GetAttributeInfo("rotate");
+            TorusTestType.scaleAttribute = TorusTestType.Type.GetAttributeInfo("scale");
+            TorusTestType.pivotAttribute = TorusTestType.Type.GetAttributeInfo("pivot");
+            TorusTestType.nameAttribute = TorusTestType.Type.GetAttributeInfo("name");
+            TorusTestType.visibleAttribute = TorusTestType.Type.GetAttributeInfo("visible");
+            TorusTestType.lockedAttribute = TorusTestType.Type.GetAttributeInfo("locked");
+            TorusTestType.transformationTypeAttribute = TorusTestType.Type.GetAttributeInfo("transformationType");
+            TorusTestType.colorAttribute = TorusTestType.Type.GetAttributeInfo("color");
+            TorusTestType.emissiveAttribute = TorusTestType.Type.GetAttributeInfo("emissive");
+            TorusTestType.specularAttribute = TorusTestType.Type.GetAttributeInfo("specular");
+            TorusTestType.specularPowerAttribute = TorusTestType.Type.GetAttributeInfo("specularPower");
+            TorusTestType.diffuseAttribute = TorusTestType.Type.GetAttributeInfo("diffuse");
+            TorusTestType.normalAttribute = TorusTestType.Type.GetAttributeInfo("normal");
+            TorusTestType.textureTransformAttribute = TorusTestType.Type.GetAttributeInfo("textureTransform");
 
             sphereTestType.Type = getNodeType("gap", "sphereTestType");
             sphereTestType.transformAttribute = sphereTestType.Type.GetAttributeInfo("transform");
@@ -349,6 +373,9 @@ namespace LevelEditor
             sphereTestType.lockedAttribute = sphereTestType.Type.GetAttributeInfo("locked");
             sphereTestType.transformationTypeAttribute = sphereTestType.Type.GetAttributeInfo("transformationType");
             sphereTestType.colorAttribute = sphereTestType.Type.GetAttributeInfo("color");
+            sphereTestType.emissiveAttribute = sphereTestType.Type.GetAttributeInfo("emissive");
+            sphereTestType.specularAttribute = sphereTestType.Type.GetAttributeInfo("specular");
+            sphereTestType.specularPowerAttribute = sphereTestType.Type.GetAttributeInfo("specularPower");
             sphereTestType.diffuseAttribute = sphereTestType.Type.GetAttributeInfo("diffuse");
             sphereTestType.normalAttribute = sphereTestType.Type.GetAttributeInfo("normal");
             sphereTestType.textureTransformAttribute = sphereTestType.Type.GetAttributeInfo("textureTransform");
@@ -364,6 +391,9 @@ namespace LevelEditor
             coneTestType.lockedAttribute = coneTestType.Type.GetAttributeInfo("locked");
             coneTestType.transformationTypeAttribute = coneTestType.Type.GetAttributeInfo("transformationType");
             coneTestType.colorAttribute = coneTestType.Type.GetAttributeInfo("color");
+            coneTestType.emissiveAttribute = coneTestType.Type.GetAttributeInfo("emissive");
+            coneTestType.specularAttribute = coneTestType.Type.GetAttributeInfo("specular");
+            coneTestType.specularPowerAttribute = coneTestType.Type.GetAttributeInfo("specularPower");
             coneTestType.diffuseAttribute = coneTestType.Type.GetAttributeInfo("diffuse");
             coneTestType.normalAttribute = coneTestType.Type.GetAttributeInfo("normal");
             coneTestType.textureTransformAttribute = coneTestType.Type.GetAttributeInfo("textureTransform");
@@ -379,6 +409,9 @@ namespace LevelEditor
             cylinderTestType.lockedAttribute = cylinderTestType.Type.GetAttributeInfo("locked");
             cylinderTestType.transformationTypeAttribute = cylinderTestType.Type.GetAttributeInfo("transformationType");
             cylinderTestType.colorAttribute = cylinderTestType.Type.GetAttributeInfo("color");
+            cylinderTestType.emissiveAttribute = cylinderTestType.Type.GetAttributeInfo("emissive");
+            cylinderTestType.specularAttribute = cylinderTestType.Type.GetAttributeInfo("specular");
+            cylinderTestType.specularPowerAttribute = cylinderTestType.Type.GetAttributeInfo("specularPower");
             cylinderTestType.diffuseAttribute = cylinderTestType.Type.GetAttributeInfo("diffuse");
             cylinderTestType.normalAttribute = cylinderTestType.Type.GetAttributeInfo("normal");
             cylinderTestType.textureTransformAttribute = cylinderTestType.Type.GetAttributeInfo("textureTransform");
@@ -394,6 +427,9 @@ namespace LevelEditor
             planeTestType.lockedAttribute = planeTestType.Type.GetAttributeInfo("locked");
             planeTestType.transformationTypeAttribute = planeTestType.Type.GetAttributeInfo("transformationType");
             planeTestType.colorAttribute = planeTestType.Type.GetAttributeInfo("color");
+            planeTestType.emissiveAttribute = planeTestType.Type.GetAttributeInfo("emissive");
+            planeTestType.specularAttribute = planeTestType.Type.GetAttributeInfo("specular");
+            planeTestType.specularPowerAttribute = planeTestType.Type.GetAttributeInfo("specularPower");
             planeTestType.diffuseAttribute = planeTestType.Type.GetAttributeInfo("diffuse");
             planeTestType.normalAttribute = planeTestType.Type.GetAttributeInfo("normal");
             planeTestType.textureTransformAttribute = planeTestType.Type.GetAttributeInfo("textureTransform");
@@ -889,6 +925,9 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo normalAttribute;
             public static AttributeInfo textureTransformAttribute;
@@ -907,6 +946,30 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
+            public static AttributeInfo diffuseAttribute;
+            public static AttributeInfo normalAttribute;
+            public static AttributeInfo textureTransformAttribute;
+        }
+
+        public static class TorusTestType
+        {
+            public static DomNodeType Type;
+            public static AttributeInfo transformAttribute;
+            public static AttributeInfo translateAttribute;
+            public static AttributeInfo rotateAttribute;
+            public static AttributeInfo scaleAttribute;
+            public static AttributeInfo pivotAttribute;
+            public static AttributeInfo nameAttribute;
+            public static AttributeInfo visibleAttribute;
+            public static AttributeInfo lockedAttribute;
+            public static AttributeInfo transformationTypeAttribute;
+            public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo normalAttribute;
             public static AttributeInfo textureTransformAttribute;
@@ -925,6 +988,9 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo normalAttribute;
             public static AttributeInfo textureTransformAttribute;
@@ -943,6 +1009,9 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo normalAttribute;
             public static AttributeInfo textureTransformAttribute;
@@ -961,6 +1030,9 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo normalAttribute;
             public static AttributeInfo textureTransformAttribute;
@@ -979,6 +1051,9 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo colorAttribute;
+            public static AttributeInfo emissiveAttribute;
+            public static AttributeInfo specularAttribute;
+            public static AttributeInfo specularPowerAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo normalAttribute;
             public static AttributeInfo textureTransformAttribute;

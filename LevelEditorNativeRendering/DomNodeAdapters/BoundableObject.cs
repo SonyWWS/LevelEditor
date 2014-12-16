@@ -65,7 +65,8 @@ namespace RenderingInterop
                     IntPtr data;
                     GameEngine.GetObjectProperty(attrInfo.TypeId, attrInfo.PropertyId, this.Cast<NativeObjectAdapter>().InstanceId
                         , out data, out datasize);
-                    AABB bound = *(AABB*)data.ToPointer();
+                    Vec3F* vecptr = (Vec3F*)data.ToPointer();                    
+                    AABB bound = new AABB(vecptr[0], vecptr[1]);
                     return bound;
                 }
                 return new AABB();

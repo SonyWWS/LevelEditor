@@ -12,7 +12,7 @@ namespace LvEdEngine
 float3 RenderSurface::Project(const float3& v, const Matrix& m)
 {
 
-    float w = v.x * m.M14 + v.y * m.M24 + v.z * m.M34 + m.M44;
+//    float w = v.x * m.M14 + v.y * m.M24 + v.z * m.M34 + m.M44;
     float3 vscr = v.Transform(v,m);    
     vscr.x =((vscr.x + 1) * 0.5f * m_width);
     vscr.y =((1.0f - vscr.y) * 0.5f * m_height);
@@ -33,6 +33,7 @@ float3 RenderSurface::Unproject(const float3 &v, const Matrix& invVP)
 RenderSurface::RenderSurface() :
       m_pRenderTargetView(NULL),	  
 	  m_pDepthStencilView(NULL),
+      m_pDepthStencilViewFg(NULL),
       m_pDepthStencilBuffer(NULL),
       m_pColorBuffer(NULL),
 	  m_width(0),

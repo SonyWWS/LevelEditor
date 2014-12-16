@@ -1,47 +1,158 @@
+
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
-#include <D3Dcompiler.h>
+//#include <D3Dcompiler.h>
 #include <d3d11.h>
 #include "BasicRenderer.h"
 #include "RenderBuffer.h"
+#include "GpuResourceFactory.h"
+#include "RenderState.h"
 #include "Texture.h"
 #include "RenderUtil.h"
 #include "../Core/Logger.h"
+#include "RenderSurface.h"
 
+using namespace LvEdEngine;
 
-bool UseRightHand = true; // for testing.
-
-
-void BasicRenderer::Begin(ID3D11DeviceContext* d3dContext, const Matrix& view, const Matrix& proj)
+void BasicRenderer::Begin(ID3D11DeviceContext* d3dContext,RenderSurface* surface, const Matrix& view, const Matrix& proj)
 {
 	if(m_context) return;
-		
-	this->m_context = d3dContext;
-    
-	ConstantBufferPerFrame cb;
+    m_context = d3dContext;
+    m_surface = surface;    
+    m_primaryDepthBufferActive = true;
+    m_clearForegroundDepthBuffer = true;
+    Camera cam;
+    cam.SetViewProj(view,proj);
+
     Matrix v,p;    
     Matrix::Transpose(view,v);
-    Matrix::Transpose(proj,p);    
-	cb.viewXform = v;
-    cb.projXform = p;    
-	d3dContext->UpdateSubresource(m_pConstantBufferPerFrame,0,NULL,	&cb,0,0);
-	
+    Matrix::Transpose(proj,p); 
+        
+	m_cbPerFrame.Data.viewXform = v;
+    m_cbPerFrame.Data.projXform = p; 
+    m_cbPerFrame.Data.camPosW = cam.CamPos();
+    m_cbPerFrame.Data.pad = 0.0f;
+    //m_light.dir = normalize(cam.CamLook() - cam.CamUp());    
+    m_light.dir = cam.CamLook();
+    m_cbPerFrame.Data.dirlight = m_light;
+    m_cbPerFrame.Update(d3dContext);
+   
     // set per call buffer.
-	d3dContext->VSSetConstantBuffers(0,1,&m_pConstantBufferPerFrame);    
-    d3dContext->VSSetConstantBuffers(1,1,&m_pConstantBufferPerDraw);    
-    m_context->PSSetConstantBuffers(1,1,&m_pConstantBufferPerDraw);	
 
+    ID3D11Buffer* perframeBuffer = m_cbPerFrame.GetBuffer();
+    ID3D11Buffer* perDrawBuffer  = m_cbPerDraw.GetBuffer();
+
+    ID3D11Buffer* cbuffers[] = {perframeBuffer,perDrawBuffer};
+    m_context->VSSetConstantBuffers(0,ARRAY_SIZE(cbuffers),cbuffers);
+    m_context->PSSetConstantBuffers(0,ARRAY_SIZE(cbuffers),cbuffers);
+   
     m_context->VSSetShader(m_pVertexShaderP,NULL,0);
     m_context->PSSetShader(m_pPixelShaderP,NULL,0);
+    m_context->GSSetShader(NULL,NULL,0);
+
     m_context->IASetInputLayout( m_pVertexLayout );
 	
 }
 void BasicRenderer::End()
 {
 	if(!m_context) return;	
+    if(!m_primaryDepthBufferActive)
+    {
+        m_primaryDepthBufferActive = true;
+        SetDepthBuffer(m_surface->GetDepthStencilView());       
+    }
+
+    m_context->VSSetConstantBuffers(0,0,NULL);    
+    m_context->VSSetConstantBuffers(1,0,NULL);    
+    m_context->PSSetConstantBuffers(1,0,NULL);	
+    m_context->VSSetShader(NULL,NULL,0);
+    m_context->PSSetShader(NULL,NULL,0);
+    m_context->IASetInputLayout( NULL );
+
     m_context->RSSetState(NULL);
     m_context->OMSetDepthStencilState(NULL,0);
-    m_context = NULL;    
+    m_context = NULL; 
+    m_surface = NULL;
+}
+
+
+void BasicRenderer::SetRendererFlag(BasicRendererFlagsEnum renderFlags)
+{
+    m_renderFlags = renderFlags;
+    RSCache* states = RSCache::Inst();
+    
+    if( (renderFlags & BasicRendererFlags::DisableDepthTest) 
+        && (renderFlags & BasicRendererFlags::DisableDepthWrite))
+    {
+        
+        m_context->OMSetDepthStencilState(states->DepthNoTestNoWrite(),0);
+    }
+    else if(renderFlags & BasicRendererFlags::DisableDepthTest) 
+    {
+        m_context->OMSetDepthStencilState(states->DepthWriteOnly(),0);
+    }
+    else if(renderFlags & BasicRendererFlags::DisableDepthWrite)
+    {
+        m_context->OMSetDepthStencilState(states->DepthTestOnly(),0);
+    }
+    else
+    {
+        m_context->OMSetDepthStencilState(states->DepthTestAndWrite(),0);
+    }
+
+    if(renderFlags & BasicRendererFlags::WireFrame)
+        m_context->RSSetState(states->WireCullBack());        
+    else
+        m_context->RSSetState(states->SolidCullBack());        
+
+    if(m_surface->GetDepthStencilViewFg())
+    {
+        if(renderFlags & BasicRendererFlags::Foreground)
+        {
+            if(m_primaryDepthBufferActive)
+            {
+                m_primaryDepthBufferActive = false;
+                // set foreground depth buffer.                
+                SetDepthBuffer(m_surface->GetDepthStencilViewFg());
+                if(m_clearForegroundDepthBuffer)
+                {
+                    m_clearForegroundDepthBuffer = false;
+                    m_context->ClearDepthStencilView( m_surface->GetDepthStencilViewFg(), D3D11_CLEAR_DEPTH, 1.0f, 0 );
+                }
+            }
+        }
+        else if(!m_primaryDepthBufferActive)
+        {
+            m_primaryDepthBufferActive = true;
+            // set primary depth buffer.
+            SetDepthBuffer(m_surface->GetDepthStencilView());            
+        }
+    }
+}
+
+void BasicRenderer::SetDepthBuffer(ID3D11DepthStencilView* dv)
+{
+    ID3D11RenderTargetView* rt  = m_surface->GetRenderTargetView();    
+    m_context->OMSetRenderTargets(1, &rt, dv);        
+}
+
+
+void BasicRenderer::UpdateCbPerDraw(const Matrix& xform, const float4& color)
+{    
+    Matrix m;
+    Matrix::Transpose(xform,m);        
+	m_cbPerDraw.Data.worldXform = m;    
+	m_cbPerDraw.Data.color = color;	
+    m_cbPerDraw.Data.lit =  (m_renderFlags & BasicRendererFlags::Lit) != 0;
+    if(m_cbPerDraw.Data.lit)
+    {
+        m_cbPerDraw.Data.specular = float4(0.0f,0.0f,0.0f,1.0f);
+        Matrix w = xform;
+        w.M41 = w.M42 = w.M43 = 0; w.M44 = 1;
+        Matrix::Invert(w,m_cbPerDraw.Data.worldInvTrans);
+    }
+    m_cbPerDraw.Update(m_context);   
+
 }
 
 void BasicRenderer::DrawPrimitive(PrimitiveTypeEnum pt, 
@@ -49,19 +160,12 @@ void BasicRenderer::DrawPrimitive(PrimitiveTypeEnum pt,
                        uint32_t StartVertex,
                        uint32_t vertexCount,
                        float* color, 
-                       float* xform,
-                       BasicRendererFlagsEnum renderFlags)
+                       float* xform)
 {
     if(!m_context) return;  
 
-	ConstantBufferPerDraw cb;
-    Matrix m;
-    Matrix::Transpose(xform,m);        
-	cb.worldXform = m;    
-	cb.color = color;
-	m_context->UpdateSubresource(m_pConstantBufferPerDraw,0,NULL,&cb,0,0);	
-	
-	
+    UpdateCbPerDraw(xform,color);
+		
 	// Set primitive topology
     m_context->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)pt );	
 
@@ -69,38 +173,9 @@ void BasicRenderer::DrawPrimitive(PrimitiveTypeEnum pt,
     UINT stride = vb->GetStride();
     UINT offset = 0;
     ID3D11Buffer* buffer = vb->GetBuffer();
-    m_context->IASetVertexBuffers( 0, 1, &buffer, &stride, &offset );
-        
-    // todo use  RenderStateCache to set depth and raster state blocks
-    if( (renderFlags & BasicRendererFlags::DisableDepthTest) 
-        && (renderFlags & BasicRendererFlags::DisableDepthWrite))
-    {
-        m_context->OMSetDepthStencilState(m_dsNoTestNoWrite,0);
-    }
-    else if(renderFlags & BasicRendererFlags::DisableDepthTest) 
-    {
-        m_context->OMSetDepthStencilState(m_dsNoTestWrite,0);
-    }
-    else if(renderFlags & BasicRendererFlags::DisableDepthWrite)
-    {
-        m_context->OMSetDepthStencilState(m_dsTestNoWrite,0);
-    }
-    else
-    {
-        m_context->OMSetDepthStencilState(m_dsTestWrite,0);
-    }
-
-    if(renderFlags & BasicRendererFlags::Solid)
-    {        
-        m_context->RSSetState(m_pSolidRS);        
-    }
-    else if(renderFlags & BasicRendererFlags::WireFrame)
-    {                
-        m_context->RSSetState(m_pWireFrameRS);        
-    }	
+    m_context->IASetVertexBuffers( 0, 1, &buffer, &stride, &offset );           
     m_context->Draw(vertexCount , StartVertex);	
 }
-
  
 void BasicRenderer::DrawIndexedPrimitive(PrimitiveTypeEnum pt,                                                             
                         ObjectGUID vbId, 
@@ -109,56 +184,24 @@ void BasicRenderer::DrawIndexedPrimitive(PrimitiveTypeEnum pt,
                         uint32_t indexCount,
                         uint32_t startVertex,                        
                         float* color,
-                        float* xform,
-                        BasicRendererFlagsEnum renderFlags)
+                        float* xform)                        
  {
-    if(!m_context) return;    
-	ConstantBufferPerDraw cb;
-    Matrix m(xform);
-    m.Transpose();        
-	cb.worldXform = m;    
-    cb.color =  color;	
-	m_context->UpdateSubresource(m_pConstantBufferPerDraw,0,NULL,&cb,0,0);
+    if(!m_context) return; 
+    UpdateCbPerDraw(xform,color);
 	
 	// Set primitive topology
     m_context->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)pt );	
 
+    // set vertex buffer
     VertexBuffer* vb = reinterpret_cast<VertexBuffer*>(vbId);
-    IndexBuffer* ib = reinterpret_cast<IndexBuffer*>(ibId);
-
-    UINT stride = vb->GetStride();
-    UINT offset = 0;
+    UINT stride = vb->GetStride();    
+    UINT Offset = 0;
     ID3D11Buffer* buffer = vb->GetBuffer();
-    m_context->IASetVertexBuffers( 0, 1, &buffer, &stride, &offset );
-    m_context->IASetIndexBuffer(ib->GetBuffer(),DXGI_FORMAT_R32_UINT,0);
+    m_context->IASetVertexBuffers( 0, 1, &buffer, &stride, &Offset);
 
-     // todo use  RenderStateCache to set depth and raster state blocks
-    if( (renderFlags & BasicRendererFlags::DisableDepthTest) 
-        && (renderFlags & BasicRendererFlags::DisableDepthWrite))
-    {
-        m_context->OMSetDepthStencilState(m_dsNoTestNoWrite,0);
-    }
-    else if(renderFlags & BasicRendererFlags::DisableDepthTest) 
-    {
-        m_context->OMSetDepthStencilState(m_dsNoTestWrite,0);
-    }
-    else if(renderFlags & BasicRendererFlags::DisableDepthWrite)
-    {
-        m_context->OMSetDepthStencilState(m_dsTestNoWrite,0);
-    }
-    else
-    {
-        m_context->OMSetDepthStencilState(m_dsTestWrite,0);
-    }
-
-    if(renderFlags & BasicRendererFlags::Solid)
-    {        
-        m_context->RSSetState(m_pSolidRS);        
-    }
-    else if(renderFlags & BasicRendererFlags::WireFrame)
-    {                
-        m_context->RSSetState(m_pWireFrameRS);        
-    }	
+    // set index buffer
+    IndexBuffer* ib = reinterpret_cast<IndexBuffer*>(ibId);
+    m_context->IASetIndexBuffer(ib->GetBuffer(),(DXGI_FORMAT)ib->GetFormat(),0);
 
     m_context->DrawIndexed(indexCount,startIndex,startVertex);	
    
@@ -166,14 +209,14 @@ void BasicRenderer::DrawIndexedPrimitive(PrimitiveTypeEnum pt,
 
 
 ObjectGUID BasicRenderer::CreateVertexBuffer(VertexFormatEnum vf, void* buffer, uint32_t vertexCount)
-{
-    VertexBuffer* vb =  LvEdEngine::CreateVertexBuffer(m_pd3dDevice, vf, buffer, vertexCount);
+{    
+    VertexBuffer* vb =  GpuResourceFactory::CreateVertexBuffer(buffer, vf, vertexCount, BufferUsage::DEFAULT);
     return (ObjectGUID)vb;
 }
 
 ObjectGUID BasicRenderer::CreateIndexBuffer(uint32_t* buffer, uint32_t indexCount)
-{
-    IndexBuffer* ib = LvEdEngine::CreateIndexBuffer(m_pd3dDevice, buffer, indexCount);
+{    
+    IndexBuffer* ib = GpuResourceFactory::CreateIndexBuffer(buffer,indexCount,IndexBufferFormat::U32,BufferUsage::DEFAULT);
     return (ObjectGUID)ib;
 }
 
@@ -183,147 +226,44 @@ void BasicRenderer::DeleteBuffer(ObjectGUID bufferId)
     delete buffer;
 }
 
-BasicRenderer::BasicRenderer(ID3D11Device* pd3dDevice) 	
+BasicRenderer::BasicRenderer(ID3D11Device* device) 	
 {	    
-    m_pd3dDevice =pd3dDevice;
-	m_pVertexShaderP = NULL;
-	m_pPixelShaderP = NULL;
-	m_pVertexLayout = NULL;    
-	m_pConstantBufferPerFrame = NULL;
-	m_pConstantBufferPerDraw = NULL;	
-	m_pWireFrameRS = NULL;  
+    assert(device);
+	
     m_context = NULL;
-	CreateBuffers();
+    m_primaryDepthBufferActive = true;
+    m_light.ambient  = float3(0.3f,0.3f,0.3f);
+    m_light.diffuse  = float3(0.8f,0.8f,0.8f);
+    m_light.specular = float3(0.9f,0.9f,0.9f);
+    m_renderFlags = BasicRendererFlags::None;
+	
+    m_cbPerFrame.Construct(device);
+    m_cbPerDraw.Construct(device);
+
+	// Compile the vertex shader
+    ID3DBlob* pVSBlob = CompileShaderFromResource(L"BasicRenderer.hlsl", "VS", "vs_4_0", NULL);
+    
+    // Create the vertex shader
+    m_pVertexShaderP = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    assert(m_pVertexShaderP);
+          
+    // create input layout
+    m_pVertexLayout  = GpuResourceFactory::CreateInputLayout(pVSBlob,VertexFormat::VF_PN);    
+    assert(m_pVertexLayout);    
+    pVSBlob->Release();
+    
+    
+    // Compile the pixel shader
+    ID3DBlob* pPSBlob = CompileShaderFromResource(L"BasicRenderer.hlsl", "PS", "ps_4_0", NULL);
+    // Create the pixel shader
+    m_pPixelShaderP = GpuResourceFactory::CreatePixelShader(pPSBlob);    
+    pPSBlob->Release();      
+
 }
 
 BasicRenderer::~BasicRenderer()
 {    
-	m_pVertexShaderP->Release();
-    m_pPixelShaderP->Release();
-    m_pVertexLayout->Release();    
-
-    // position and normal    
-	m_pConstantBufferPerFrame->Release();
-	m_pConstantBufferPerDraw->Release();
-	m_pWireFrameRS->Release();
-    m_pSolidRS->Release();
-
-    m_dsTestWrite->Release();
-    m_dsTestNoWrite->Release();
-    m_dsNoTestWrite->Release();
-    m_dsNoTestNoWrite->Release();
+    SAFE_RELEASE(m_pVertexShaderP);
+    SAFE_RELEASE(m_pPixelShaderP);
+    SAFE_RELEASE(m_pVertexLayout);    
 }
-
-void BasicRenderer::CreateBuffers()
-{	
-	HRESULT hr = S_OK;
-    	
-    D3D11_BUFFER_DESC bufDcr;
-    
-	// Create the constant buffer
-	SecureZeroMemory( &bufDcr, sizeof(bufDcr));
-	bufDcr.Usage =  D3D11_USAGE_DEFAULT; //D3D11_USAGE_DYNAMIC;	
-	bufDcr.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufDcr.CPUAccessFlags = 0;  //D3D11_CPU_ACCESS_WRITE;
-    
-    bufDcr.ByteWidth = sizeof(ConstantBufferPerFrame);
-    hr = m_pd3dDevice->CreateBuffer( &bufDcr, NULL, &m_pConstantBufferPerFrame );
-    if (Logger::IsFailureLog(hr))
-	{
-		return;			 
-	}
-    	
-    bufDcr.ByteWidth = sizeof(ConstantBufferPerDraw);
-    hr = m_pd3dDevice->CreateBuffer( &bufDcr, NULL, &m_pConstantBufferPerDraw );
-    if (Logger::IsFailureLog(hr))
-	{
-		return;			 
-	}
-    
-	// Compile the vertex shader
-    ID3DBlob* pVSBlob = CompileShaderFromResource(L"BasicShader.hlsl", "VS", "vs_4_0", NULL);
-    
-    // Create the vertex shader
-    hr = m_pd3dDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &m_pVertexShaderP );
-    if( FAILED( hr ) )
-    {    
-        pVSBlob->Release();
-        return;
-    }
-
-    // Define the input layout
-    D3D11_INPUT_ELEMENT_DESC layoutP[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },        
-    };
-    UINT numElements = ARRAYSIZE( layoutP );
-
-    // Create the input layout
-    hr = m_pd3dDevice->CreateInputLayout( layoutP, numElements, pVSBlob->GetBufferPointer(),
-                                          pVSBlob->GetBufferSize(), &m_pVertexLayout );
-    pVSBlob->Release();
-    pVSBlob = NULL;
-
-    if( FAILED( hr ) )
-        return;
-
-    
-    // Compile the pixel shader
-    ID3DBlob* pPSBlob = CompileShaderFromResource(L"BasicShader.hlsl", "PS", "ps_4_0", NULL);
-    // Create the pixel shader
-    hr = m_pd3dDevice->CreatePixelShader( pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &m_pPixelShaderP );
-    pPSBlob->Release();
-    pPSBlob = NULL;
-  
-    // create raster states.
-	D3D11_RASTERIZER_DESC rsDcr;
-	SecureZeroMemory( &rsDcr, sizeof(rsDcr));		
-    rsDcr.DepthClipEnable = true;
-	rsDcr.CullMode =  D3D11_CULL_BACK;
-	rsDcr.FillMode =  D3D11_FILL_WIREFRAME;
-	rsDcr.FrontCounterClockwise = UseRightHand; // front face is CCW for right hand	
-	rsDcr.AntialiasedLineEnable = false;
-	rsDcr.MultisampleEnable = true;
-		
-	m_pd3dDevice->CreateRasterizerState(&rsDcr,  &m_pWireFrameRS);
-    
-    rsDcr.FillMode =  D3D11_FILL_SOLID;
-    m_pd3dDevice->CreateRasterizerState(&rsDcr,  &m_pSolidRS);
-      
-    D3D11_DEPTH_STENCIL_DESC dsDcr;
-    SecureZeroMemory( &dsDcr, sizeof(dsDcr));		    
-    dsDcr.DepthEnable = TRUE;
-    dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    dsDcr.DepthFunc = D3D11_COMPARISON_LESS;
-    dsDcr.StencilEnable = FALSE;
-    dsDcr.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-    dsDcr.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-
-    dsDcr.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-    dsDcr.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-    
-    dsDcr.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP; 
-    dsDcr.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-
-    dsDcr.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-    dsDcr.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-
-    dsDcr.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP; 
-    dsDcr.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-
-    m_pd3dDevice->CreateDepthStencilState(&dsDcr,&m_dsTestWrite);
-
-    dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-    m_pd3dDevice->CreateDepthStencilState(&dsDcr,&m_dsTestNoWrite);
-        
-    dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    dsDcr.DepthFunc = D3D11_COMPARISON_ALWAYS;
-    m_pd3dDevice->CreateDepthStencilState(&dsDcr,&m_dsNoTestWrite);
-
-    dsDcr.DepthEnable = FALSE;
-    dsDcr.DepthFunc = D3D11_COMPARISON_NEVER;
-    dsDcr.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-    m_pd3dDevice->CreateDepthStencilState(&dsDcr,&m_dsNoTestNoWrite);
-}
-
-

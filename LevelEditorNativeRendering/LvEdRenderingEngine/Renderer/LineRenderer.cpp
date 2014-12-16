@@ -4,6 +4,7 @@
 #include "RenderUtil.h"
 #include "RenderContext.h"
 #include "RenderState.h"
+#include "GpuResourceFactory.h"
 
 namespace LvEdEngine
 {
@@ -108,12 +109,12 @@ void LineRenderer::RenderAll(RenderContext* rc)
 
     // update constant buffer
 
-    Matrix viewProj = rc->Cam().View() * rc->Cam().Proj();
-    viewProj.Transpose();
-    UpdateConstantBuffer(d3dContext,m_perframeCB,&viewProj,sizeof(viewProj));
-        	
+    Matrix viewProj = rc->Cam().View() * rc->Cam().Proj();    
+    Matrix::Transpose(viewProj,m_perframeCB.Data);
+    m_perframeCB.Update(d3dContext);
+            	
     // set constant buffer to vertex shader    
-    ID3D11Buffer* cbuffers[1] = {m_perframeCB};
+    ID3D11Buffer* cbuffers[1] = {m_perframeCB.GetBuffer()};
     d3dContext->VSSetConstantBuffers(0,1,cbuffers);
 
     // set shaders
@@ -125,7 +126,7 @@ void LineRenderer::RenderAll(RenderContext* rc)
     d3dContext->IASetInputLayout(m_vertexLayoutPC);
     d3dContext->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_LINELIST );
 
-    RenderStateCache* rscache = rc->GetRenderStateCache();
+    RSCache* rscache = RSCache::Inst();
     // set state-blocks ( raster, depth, and blend states)     
     d3dContext->RSSetState(rscache->GetRasterState(FillMode::Wireframe,CullMode::BACK));    
     d3dContext->OMSetDepthStencilState(NULL,0);    
@@ -141,18 +142,11 @@ void LineRenderer::RenderAll(RenderContext* rc)
     uint32_t totalVertexCount = (uint32_t) m_vertsPC.size();
     uint32_t start = 0;
     uint32_t count =  (totalVertexCount < bufSize) ? totalVertexCount : bufSize;
-     
-    HRESULT hr;
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
     
     while(start < totalVertexCount)
     {        
-        hr = d3dContext->Map(m_vbPC->GetBuffer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-        if(FAILED(hr)) break;
-        CopyMemory(mappedResource.pData, &m_vertsPC[start], m_vbPC->GetStride() * count);
-        d3dContext->Unmap(m_vbPC->GetBuffer(), 0);            
+        m_vbPC->Update(d3dContext,&m_vertsPC[start],count);        
         d3dContext->Draw(count,0);
-
         start += count;
         if( (start + count) > totalVertexCount)
             count = totalVertexCount - start;
@@ -175,7 +169,9 @@ LineRenderer::LineRenderer(ID3D11Device* device)
 {
     // create vertex buffer.
     uint32_t vertCount = 1000;
-    m_vbPC = CreateVertexBuffer(device, VertexFormat::VF_PC, NULL, vertCount, D3D11_USAGE_DYNAMIC);
+
+  
+    m_vbPC = GpuResourceFactory::CreateVertexBuffer(NULL,VertexFormat::VF_PC,vertCount,BufferUsage::DYNAMIC);    
     assert(m_vbPC);
 
     // compile shaders
@@ -183,15 +179,16 @@ LineRenderer::LineRenderer(ID3D11Device* device)
     ID3DBlob* psBlob = CompileShaderFromResource(L"LineShader.hlsl", "PS","ps_4_0", NULL);
     assert(vsBlob);
     assert(psBlob);
-    m_vsShader = CreateVertexShader(device, vsBlob);
-    m_psShader = CreatePixelShader(device, psBlob);
+
+    
+    m_vsShader = GpuResourceFactory::CreateVertexShader(vsBlob);
+    m_psShader = GpuResourceFactory::CreatePixelShader(psBlob);
     assert(m_vsShader);
     assert(m_psShader);
 
-    m_vertexLayoutPC = CreateInputLayout(device, vsBlob, VertexFormat::VF_PC);
-
-    // create constant buffer.
-    m_perframeCB = CreateConstantBuffer(device,sizeof(Matrix));
+    m_vertexLayoutPC = GpuResourceFactory::CreateInputLayout(vsBlob, VertexFormat::VF_PC);
+        
+    m_perframeCB.Construct(device);
 
     vsBlob->Release();
     psBlob->Release();
@@ -203,8 +200,7 @@ LineRenderer::~LineRenderer()
     SAFE_DELETE(m_vbPC);
     SAFE_RELEASE(m_vsShader);
     SAFE_RELEASE(m_psShader);
-    SAFE_RELEASE(m_vertexLayoutPC);
-    SAFE_RELEASE(m_perframeCB);    
+    SAFE_RELEASE(m_vertexLayoutPC);    
 }
 
 }//namespace LvEdEngine
