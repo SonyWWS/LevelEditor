@@ -2,6 +2,7 @@
 
 #include "PrimitiveShapeGob.h"
 #include "../Renderer/Texture.h"
+#include "../Renderer/TextureLib.h"
 #include "../Renderer/Model.h"
 
 using namespace LvEdEngine;
@@ -14,6 +15,18 @@ PrimitiveShapeGob::PrimitiveShapeGob( RenderShapeEnum shape )
     m_emissive = float3(0,0,0);
     m_specular = float3(0,0,0);
     m_specPower = 1;
+}
+
+void PrimitiveShapeGob::SetDiffuse(wchar_t* filename)
+{
+    Texture* def  = TextureLib::Inst()->GetDefault(TextureType::DIFFUSE);
+    m_diffuse.SetTarget(filename, def);
+}        
+
+void PrimitiveShapeGob::SetNormal(wchar_t* filename)
+{
+    Texture* def  = TextureLib::Inst()->GetDefault(TextureType::NORMAL);
+    m_normal.SetTarget(filename,def);
 }
 
 //---------------------------------------------------------------------------

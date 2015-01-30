@@ -19,7 +19,14 @@ public:
     // Gets wic codec from file extension
     // extension must be in lower case.
     static REFGUID GetWICCodecFromFileExtension(const wchar_t* extension);
-     
+    
+    inline static void SetDebugName( ID3D11DeviceChild* pObj, const CHAR* pstrName )
+    {
+        #if defined(PROFILE) || defined(DEBUG) || defined(_DEBUG)
+        if ( pObj )
+            pObj->SetPrivateData( WKPDID_D3DDebugObjectName, lstrlenA(pstrName), pstrName );
+        #endif
+    }
 };
 
 

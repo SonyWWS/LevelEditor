@@ -159,7 +159,7 @@ namespace RenderingInterop
 
 
         // few constants used for creating Ring (a thin torus).
-        public const float RingInnerRadias = 0.475f;
+        public const float RingInnerRadias = 0.47f;
         public const float RingOuterRadias = 0.5f;
         public const float RingThickness = (RingOuterRadias - RingInnerRadias);
         public const float RingCenterRadias = 0.5f * (RingInnerRadias + RingOuterRadias);

@@ -35,7 +35,7 @@ float4 PS_Render(VS_OUT pIn) : SV_Target
 
    float3 fc;	
    float skcLerp = saturate(pIn.posW.y * 2);
-   float r = 0.2f;
+   float r = 0.1f;
    if( skcLerp <= r)
    {
      fc = lerp(skyc1,skyc2, skcLerp / r);
@@ -45,8 +45,8 @@ float4 PS_Render(VS_OUT pIn) : SV_Target
      fc = lerp(skyc2,skyc3, (skcLerp-r)/(1-r));
    }
    //float3 fc = gCubeMap.Sample(cubeMapSampler, pIn.posW).xyz;
-   float3 fogC = float3(150.0f/255.0f, 178.0f/255.0f, 220.0f/255.0f);
-   fc = lerp(fc, fogC,0.15f);	
+   //float3 fogC = float3(150.0f/255.0f, 178.0f/255.0f, 220.0f/255.0f);
+   //fc = lerp(fc, fogC,0.15f);	
    return float4(fc,1);
 
 }

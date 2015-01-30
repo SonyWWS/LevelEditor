@@ -54,23 +54,25 @@ namespace LevelEditor
         public void Initialize()
         {
             
+            string addNewSubGame = "Add new SubGame".Localize();
             CommandService.RegisterCommand(
                Command.CreateNewSubGame,
                StandardMenu.File,
                StandardCommandGroup.FileNew,
-               "Add new SubGame".Localize(),
-               "Add new SubGame".Localize(),
+               addNewSubGame,
+               addNewSubGame,
                Keys.None,
                null,
                CommandVisibility.ContextMenu,
                this);
 
+            string addExistingEubGame = "Add existing SubGame".Localize();
             CommandService.RegisterCommand(
                 Command.AddSubGame,
                StandardMenu.File,
                StandardCommandGroup.FileNew,
-                "Add existing SubGame".Localize(),
-                "Add existing SubGame".Localize(),
+                addExistingEubGame,
+                addExistingEubGame,
                 Keys.None,
                 null,
                 CommandVisibility.ContextMenu,
@@ -88,24 +90,26 @@ namespace LevelEditor
                this);
 
 
+            string resolveSubGame = "Resolve SubGame".Localize();
             CommandService.RegisterCommand(
                Command.Resolve,
               StandardMenu.File,
               StandardCommandGroup.FileNew,
-               "Resolve SubGame".Localize(),
-               "Resolve SubGame".Localize(),
+               resolveSubGame,
+               resolveSubGame,
                Keys.None,
                null,
                CommandVisibility.ContextMenu,
                this);
 
 
+            string unresolveSubGame = "Unresolve SubGame".Localize();
             CommandService.RegisterCommand(
                Command.Unresolve,
               StandardMenu.File,
               StandardCommandGroup.FileNew,
-               "Unresolve SubGame".Localize(),
-               "Unresolve SubGame".Localize(),
+               unresolveSubGame,
+               unresolveSubGame,
                Keys.None,
                null,
                CommandVisibility.ContextMenu,

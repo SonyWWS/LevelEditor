@@ -1,5 +1,5 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
-
+#include "ResourceManager.h"
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -16,13 +16,9 @@
 #include "../Core/Utils.h"
 #include "../Core/FileUtils.h"
 #include "../Core/Logger.h"
-
 #include "../Renderer/RenderEnums.h"
 #include "../Renderer/RenderUtil.h"
 #include "../Renderer/Resource.h"
-
-
-#include "ResourceManager.h"
 
 
 namespace LvEdEngine
@@ -153,19 +149,22 @@ ResourceManager::~ResourceManager()
     DeleteCriticalSection(&m_criticalSection);
     CloseHandle(m_EventHandle);
 
-    // todo: report and delete outstanding resources.
+    // delete loaded resources.
     for(auto it = m_loaded.begin(); it != m_loaded.end(); ++it)
     {
-        SAFE_DELETE(it->second);
+        delete it->second;
     }
 
+    
     // delete factories only once (since they could be registered multiple times)
     std::vector<ResourceFactory*> deletedFactories;
     for(auto it = m_factories.begin(); it != m_factories.end(); ++it)
     {
-        if (std::find(deletedFactories.begin(), deletedFactories.end(), (*it).second) == deletedFactories.end()) {
-            deletedFactories.push_back((*it).second);
-            delete ((*it).second);
+        ResourceFactory* resFact = it->second;
+        if (std::find(deletedFactories.begin(), deletedFactories.end(), resFact) == deletedFactories.end()) 
+        {
+            deletedFactories.push_back(resFact);
+            delete resFact;
         }
     }
 }

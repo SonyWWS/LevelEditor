@@ -17,11 +17,4 @@ namespace LevelEditorCore
         IGameObject Convert(IResource resource);
 
     }
-
-
-    public static class ResourceTypes
-    {
-        public const string Geometry = "Geometry";
-        public const string Texture  = "Texture";
-    }
 }

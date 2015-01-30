@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-
+using LevelEditorCore.GameEngineProxy;
 using Sce.Atf;
 
 using LevelEditorCore;
@@ -14,7 +14,6 @@ namespace LevelEditor
     public class CustomFileSystemResourceFolder : IFileSystemResourceFolder, IEquatable<CustomFileSystemResourceFolder>
         , IComparable<CustomFileSystemResourceFolder>
     {
-
         /// <summary>
         /// Compares this to other.</summary>        
         public int CompareTo(CustomFileSystemResourceFolder other)
@@ -139,37 +138,20 @@ namespace LevelEditor
                 var uris = new List<Uri>();
                 try 
                 {
-                    var systemOrHidden = FileAttributes.System | FileAttributes.Hidden;
-                    IResourceMetadataService resService
-                    = Globals.MEFContainer.GetExportedValue<IResourceMetadataService>();
-                    IEnumerable<string> metaExts = resService != null ? resService.MetadataFileExtensions
-                        : EmptyEnumerable<string>.Instance;
+                    var systemOrHidden = FileAttributes.System | FileAttributes.Hidden;                    
+                    var gameEngine = Globals.MEFContainer.GetExportedValue<IGameEngineProxy>();
+                    var resInfos = gameEngine != null ? gameEngine.Info.ResourceInfos : null; 
 
                     var files = Directory.GetFiles(m_path);
                     foreach (string file in files)
-                    {
-                        FileInfo finfo = new FileInfo(file);
-                        if ((finfo.Attributes & systemOrHidden) != 0)
+                    {                        
+                        FileInfo finfo = new FileInfo(file);                        
+                        if ( (finfo.Attributes & systemOrHidden) != 0
+                            || finfo.Name.StartsWith("~"))
                             continue;
-
-                        // skip over metadata and thumbnais.
-                        string ext = System.IO.Path.GetExtension(file);
-                        string fileName = System.IO.Path.GetFileName(file);
-                        bool skip = fileName.StartsWith("~") || string.IsNullOrWhiteSpace(ext);
-                        if (!skip)
-                        {
-                            foreach (string metaExt in metaExts)
-                            {
-                                if (ext.Equals(metaExt, StringComparison.InvariantCultureIgnoreCase))
-                                {
-                                    skip = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (skip) continue;
-
-                        uris.Add(new Uri(file));
+                        string ext = finfo.Extension.ToLower();
+                        if (resInfos == null || resInfos.IsSupported(ext))
+                            uris.Add(new Uri(file));                        
                     }
                 }
                 catch { }                           
@@ -220,7 +202,6 @@ namespace LevelEditor
 
         private string m_name;
         private readonly string m_path;
-        private readonly IResourceFolder m_parent;
-        
+        private readonly IResourceFolder m_parent;        
     }
 }

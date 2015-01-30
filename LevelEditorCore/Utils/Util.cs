@@ -274,23 +274,33 @@ namespace LevelEditorCore
 
 
         /// <summary>
-        /// Find all objects of type T in all the open game documents</summary>        
-        public static IEnumerable<T> FindAll<T>()
-            where T : class
-        {                        
-            IGameDocumentRegistry gameDocumentRegistry = Globals.MEFContainer.GetExportedValue<IGameDocumentRegistry>();
-            foreach (IGameDocument subDoc in gameDocumentRegistry.Documents)
+        /// Find all the DomNodes of the type that is equal or derived 
+        /// from the given type.
+        /// if exact is true then only find DomNode that have exact type.        
+        /// </summary>
+        /// <param name="type">DomNodeType</param>
+        /// <param name="exact">if true then only consider exact match,
+        /// otherwise match any type that is equal or derived from the given type</param>
+        /// <returns></returns>
+        public static IEnumerable<DomNode> FindAll(DomNodeType type, bool exact = false)
+        {
+            if (type != null)
             {
-                DomNode folderNode = subDoc.RootGameObjectFolder.Cast<DomNode>();
-                foreach (DomNode childNode in folderNode.Subtree)
+                IGameDocumentRegistry gameDocumentRegistry = Globals.MEFContainer.GetExportedValue<IGameDocumentRegistry>();
+                if (gameDocumentRegistry != null)
                 {
-                    T t = childNode.As<T>();
-                    if (t != null)
-                        yield return t;                    
+                    foreach (IGameDocument doc in gameDocumentRegistry.Documents)
+                    {
+                        DomNode folderNode = doc.RootGameObjectFolder.Cast<DomNode>();
+                        foreach (DomNode childNode in folderNode.Subtree)
+                        {
+                            if ((exact && childNode.Type == type)
+                                || (!exact && type.IsAssignableFrom(childNode.Type)))
+                                yield return childNode;
+                        }
+                    }
                 }
             }
-
         }
-    
     }
 }

@@ -159,9 +159,9 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <typeparam name="TEdgeRoute">Pin</typeparam>
         /// <param name="hitPath">Path of groups to traverse</param>
         /// <param name="destNode">Destination group (last group to search) which contains the pin searched for</param>
-        /// <param name="startRoute">Pin in innermost group where search begins</param>
-        /// <returns>Group pin in destination group "destNode" corresponding to "startRoute" group pin in innermost group in path</returns>
-        static public TEdgeRoute EdgeRouteTraverser<TEdgeRoute>(AdaptablePath<object> hitPath, object destNode, TEdgeRoute startRoute)
+        /// <param name="hitRoute">Pin in innermost group where search begins</param>
+        /// <returns>Group pin in destination group "destNode" corresponding to "hitRoute" group pin in innermost group in path</returns>
+        static public TEdgeRoute EdgeRouteTraverser<TEdgeRoute>(AdaptablePath<object> hitPath, object destNode, TEdgeRoute hitRoute)
              where TEdgeRoute : class, ICircuitPin
         {
             if (!hitPath.Last.Is<Element>())
@@ -173,7 +173,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                 return null;
 
 
-            var circuitPin = startRoute;
+            var circuitPin = hitRoute;
             var currentElement = hitPath.Last;
             for (int i = fromIndex - 1; i >= toIndex; --i)
             {
@@ -185,7 +185,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                     foreach (var grpPin in group.InputGroupPins)
                     {
                         if (grpPin.InternalElement.Equals(currentElement) &&
-                            grpPin.InternalElement.Type.Inputs[grpPin.InternalPinIndex] == circuitPin)
+                            grpPin.InternalElement.InputPin(grpPin.InternalPinIndex) == circuitPin)
                         {
                             matchedPin = grpPin;
                             break;
@@ -196,7 +196,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                         foreach (var grpPin in group.OutputGroupPins)
                         {
                             if (grpPin.InternalElement.Equals(currentElement) &&
-                                grpPin.InternalElement.Type.Outputs[grpPin.InternalPinIndex] == circuitPin)
+                                grpPin.InternalElement.OutputPin(grpPin.InternalPinIndex) == circuitPin)
                             {
                                 matchedPin = grpPin;
                                 break;

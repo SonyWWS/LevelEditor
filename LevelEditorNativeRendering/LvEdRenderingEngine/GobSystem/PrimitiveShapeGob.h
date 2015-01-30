@@ -23,9 +23,8 @@ namespace LvEdEngine
         void SetSpecular(int color) { ConvertColor(color, &m_specular); }
         void SetSpecularPower(float specPower) { m_specPower = specPower; }
 
-        void SetDiffuse(wchar_t* filename){m_diffuse.SetTarget(filename);}
-        void SetDiffuse(Resource* res){m_diffuse.SetTarget(res);}
-        void SetNormal(wchar_t* filename){m_normal.SetTarget(filename);};
+        void SetDiffuse(wchar_t* filename);
+        void SetNormal(wchar_t* filename);
         void SetTextureTransform(const Matrix& xform){m_textureTransform = xform;}
 
         virtual void Update(float dt);

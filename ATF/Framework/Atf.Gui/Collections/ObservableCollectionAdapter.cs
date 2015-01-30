@@ -28,8 +28,8 @@ namespace Sce.Atf.Collections
             : base(collection)
         {
             m_collection = collection;
-            m_collection.PropertyChanged += new PropertyChangedEventHandler(collection_PropertyChanged);
-            m_collection.CollectionChanged += new NotifyCollectionChangedEventHandler(collection_CollectionChanged);
+            m_collection.PropertyChanged += collection_PropertyChanged;
+            m_collection.CollectionChanged += collection_CollectionChanged;
         }
 
         /// <summary>

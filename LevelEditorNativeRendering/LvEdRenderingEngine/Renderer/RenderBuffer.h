@@ -8,7 +8,7 @@
 #include "../Core/Logger.h"
 #include "../VectorMath/V3dMath.h"
 #include "RenderEnums.h"
-#include "RenderUtil.h"
+
 
 namespace LvEdEngine
 {
@@ -189,41 +189,43 @@ public:
 
 };
 
-// templated version of Constant buffer.
-template<typename T>
-class TConstantBuffer
+class TConstantBufferBase
 {
 public:
-	TConstantBuffer() : m_buffer(NULL) { }
-	~TConstantBuffer() { SAFE_RELEASE(m_buffer);	}
+    TConstantBufferBase() : m_buffer(NULL), m_bufSize(0) {}
+    ID3D11Buffer* GetBuffer() const {return m_buffer;}
+    ~TConstantBufferBase() { SAFE_RELEASE(m_buffer); }
+   	
+protected:
+    void Update(ID3D11DeviceContext* dc, void* data);
+    void Construct(ID3D11Device* device, uint32_t sizeInBytes);   
+private:
+    uint32_t m_bufSize; // size of the buffer in bytes.
+    ID3D11Buffer* m_buffer;
+    
+};
+// templated version of Constant buffer.
+template<typename T>
+class TConstantBuffer : public TConstantBufferBase
+{
+public:
 
+    TConstantBuffer() {}
 	T Data;
-
-	ID3D11Buffer* GetBuffer() const {return m_buffer;}
-
+    
     // creates constant buffer in gpu memory.
     void Construct(ID3D11Device* device)
+    {     
+        TConstantBufferBase::Construct(device,sizeof(T));
+    }
+    void Update(ID3D11DeviceContext* dc)
     {
-        if(m_buffer) return;        
-        m_buffer = CreateConstantBuffer(device,sizeof(T));
-    }
-	
-	/// Copies the Data in system memory GPU constant buffer.	
-	void Update(ID3D11DeviceContext* dc)
-	{ 
-        assert(m_buffer);
-        if(m_buffer)
-            UpdateConstantBuffer(dc,m_buffer,&Data,sizeof(Data));
-    }
-
+        TConstantBufferBase::Update(dc, &Data);
+    }	
 private:
 	TConstantBuffer(const TConstantBuffer&);
-	TConstantBuffer& operator=(const TConstantBuffer&);   
-private:
-	ID3D11Buffer* m_buffer;	
+	TConstantBuffer& operator=(const TConstantBuffer&);
 };
-
-
 
 }; // namespace LvEdEngine
 

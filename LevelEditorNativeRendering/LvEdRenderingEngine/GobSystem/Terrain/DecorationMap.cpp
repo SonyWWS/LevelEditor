@@ -4,8 +4,8 @@
 #include "TerrainGob.h"
 #include "../../Core/ImageData.h"
 #include "../../Core/StringUtils.h"
-#include "../../Renderer/RenderUtil.h"
 #include "../../Renderer/RenderBuffer.h"
+#include "../../Renderer/GpuResourceFactory.h"
 
 namespace LvEdEngine
 {
@@ -98,17 +98,14 @@ const VertexBuffer* DecorationMap::GetVB(RenderContext* rc, uint32_t& vertCount)
     
     auto d3dcontext = rc->Context();
     vertCount = 0;
-    // allocate vb on demand.
-    auto device = rc->Device();
+        
 
     if( m_decoDynVB == NULL || m_decoDynVB->GetCount() < m_vertexcount)
 
     {
         SAFE_DELETE(m_decoDynVB);
-        m_decoDynVB = CreateVertexBuffer(device, 
-                                         VertexFormat::VF_T, NULL, 
-                                         m_vertexcount,
-                                         D3D11_USAGE_DYNAMIC); 
+        m_decoDynVB = GpuResourceFactory::CreateVertexBuffer(NULL, VertexFormat::VF_T,
+            m_vertexcount,BufferUsage::DYNAMIC); 
         assert(m_decoDynVB);        
     }
 

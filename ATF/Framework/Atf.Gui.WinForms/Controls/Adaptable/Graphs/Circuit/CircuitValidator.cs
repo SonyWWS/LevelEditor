@@ -163,7 +163,6 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                 }
                 else if (e.DomNode.Is<GroupPin>() && e.AttributeInfo == PinNameAttributeAttribute)
                 {
-
                     if (e.DomNode.Parent != null)
                     {
                         var subGraph = e.DomNode.Parent.Cast<Group>();
@@ -183,15 +182,20 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                                 uniqueName.Name(grpPin.Name);
                         }
 
-
                         string unique = uniqueName.Name(childGrpPin.Name);
                         if (unique != childGrpPin.Name)
                             childGrpPin.Name = unique;
 
-                        // try to reset IsDefaultName
-                        childGrpPin.IsDefaultName = childGrpPin.Name == childGrpPin.DefaultName(childGrpPin.IsInputSide);
-                        UpdateParentGroupPinName(childGrpPin.IsInputSide, childGrpPin);
+                        // Reset IsDefaultName. Ignore the suffix because there are typically multiple
+                        //  circuit elements in a group and the child group pin doesn't know about
+                        //  our unique namer.
+                        string defaultName = childGrpPin.DefaultName(childGrpPin.IsInputSide);
+                        string ourRoot;
+                        int ourSuffix;
+                        uniqueName.Parse(unique, out ourRoot, out ourSuffix);
+                        childGrpPin.IsDefaultName = defaultName == ourRoot;
 
+                        UpdateParentGroupPinName(childGrpPin.IsInputSide, childGrpPin);
                     }
                 }
             }
@@ -226,15 +230,14 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             {
                 if (grpPin.InternalElement.DomNode != node) continue;
                 if (grpPin.IsDefaultName)
-                    grpPin.Name = grpPin.InternalElement.Name + ":" + grpPin.InternalElement.Type.Inputs[grpPin.InternalPinIndex].Name;
+                    grpPin.Name = grpPin.InternalElement.Name + ":" + grpPin.InternalElement.InputPin(grpPin.InternalPinIndex).Name;
             }
 
             foreach (GroupPin grpPin in group.Outputs)
             {
                 if (grpPin.InternalElement.DomNode != node) continue;
                 if (grpPin.IsDefaultName)
-                    grpPin.Name = grpPin.InternalElement.Name + ":" + grpPin.InternalElement.Type.Outputs[grpPin.InternalPinIndex].Name;
-
+                    grpPin.Name = grpPin.InternalElement.Name + ":" + grpPin.InternalElement.OutputPin(grpPin.InternalPinIndex).Name;
             }
         }
 
@@ -390,7 +393,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                         {
                             var grpPin = matchedInput.Second.Cast<GroupPin>();
                             wire.InputElement = grpPin.InternalElement;
-                            wire.InputPin = grpPin.InternalElement.Type.Inputs[grpPin.InternalPinIndex];
+                            wire.InputPin = grpPin.InternalElement.InputPin(grpPin.InternalPinIndex);
                         }
                         else
                         {
@@ -402,7 +405,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                         {
                             var grpPin = matchedOutput.Second.Cast<GroupPin>();
                             wire.OutputElement = grpPin.InternalElement;
-                            wire.OutputPin = grpPin.InternalElement.Type.Outputs[grpPin.InternalPinIndex];
+                            wire.OutputPin = grpPin.InternalElement.OutputPin(grpPin.InternalPinIndex);
                         }
                         else
                         {
@@ -462,7 +465,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                 //Debug.Assert(edge.InputElement.Level == edge.OutputElement.Level,
                 //    string.Format(CircuitUtil.GetDomNodeName(edge.DomNode)) + "does not connect two nodes at the same level");
 
-                // if the link connects to a group pin, varify they targets to the same leaf node and pin index
+                // if the link connects to a group pin, verify they targets to the same leaf node and pin index
                 if (edge.InputElement.Is<Group>())
                 {
                     Group nestedSubGraph;
@@ -491,14 +494,14 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                     {
                         if (edge.InputPinTarget.InstancingNode == null)
                             Debug.Assert(edge.InputElement.DomNode == edge.InputPinTarget.LeafDomNode,
-                                           "Top level anim graph edge should reference Dom node directly ");
+                                           "Top level graph edge should reference Dom node directly ");
                         else
                         {
                             //TODO
                         }
 
                         Debug.Assert(edge.InputPin.Index == edge.InputPinTarget.LeafPinIndex,
-                                           "Top level anim graph edge should reference node pin index directly ");
+                                           "Top level graph edge should reference node pin index directly ");
                     }
                 }
 
@@ -531,13 +534,13 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                     {
                         if (edge.OutputPinTarget.InstancingNode == null)
                             Debug.Assert(edge.OutputElement.DomNode == edge.OutputPinTarget.LeafDomNode,
-                                "Top level anim graph edge should reference Dom node directly ");
+                                "Top level graph edge should reference Dom node directly ");
                         else
                         {
                             //TODO
                         }
                         Debug.Assert(edge.OutputPin.Index == edge.OutputPinTarget.LeafPinIndex,
-                          "Top level anim graph edge should reference node pin index directly ");
+                          "Top level graph edge should reference node pin index directly ");
 
                     }
                 }
@@ -588,6 +591,9 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <remarks>Currently only update group pin connectivity for the group template</remarks>
         public void UpdateTemplateInfo(Group template)
         {
+            if (template == null)
+                return;
+
             // for template editing, the  group pin connectivity should be updated 
             // by scanning  all wires of all graph containers that share it by referencing
             var containersToCheck = new List<ICircuitContainer>();

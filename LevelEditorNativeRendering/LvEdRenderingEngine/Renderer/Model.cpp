@@ -10,6 +10,7 @@
 #include "TextureLib.h"
 #include "CustomDataAttribute.h"
 #include "../ResourceManager/ResourceManager.h"
+#include "GpuResourceFactory.h"
 
 namespace LvEdEngine
 {
@@ -115,7 +116,7 @@ void Mesh::Construct(ID3D11Device* d3dDevice)
     // create index buffer
     if(indices.size() > 0)
     {
-        indexBuffer = CreateIndexBuffer(d3dDevice, &indices[0], (uint32_t)(indices.size()) );
+        indexBuffer = GpuResourceFactory::CreateIndexBuffer(&indices[0], (uint32_t)indices.size() );
         indexBuffer->SetDebugName(name.c_str());
     }
 
@@ -132,7 +133,7 @@ void Mesh::Construct(ID3D11Device* d3dDevice)
             vert.Tex = tex[i];
             verts.push_back(vert);
         }
-        vertexBuffer = CreateVertexBuffer(d3dDevice, VertexFormat::VF_PNTT, &verts[0], (uint32_t)verts.size());
+        vertexBuffer = GpuResourceFactory::CreateVertexBuffer(&verts[0], VertexFormat::VF_PNTT, (uint32_t)verts.size());
     }
     else if (tex.size() > 0)
     {
@@ -146,7 +147,7 @@ void Mesh::Construct(ID3D11Device* d3dDevice)
             vert.Tex = tex[i];
             verts.push_back(vert);
         }
-        vertexBuffer = CreateVertexBuffer(d3dDevice, VertexFormat::VF_PNT, &verts[0], (uint32_t)verts.size());
+        vertexBuffer = GpuResourceFactory::CreateVertexBuffer(&verts[0],VertexFormat::VF_PNT, (uint32_t)verts.size());
     }
     else if (nor.size() > 0)
     {
@@ -159,15 +160,13 @@ void Mesh::Construct(ID3D11Device* d3dDevice)
             vert.Normal = nor[i];
             verts.push_back(vert);
         }
-        vertexBuffer = CreateVertexBuffer(d3dDevice, VertexFormat::VF_PN, &verts[0], (uint32_t)verts.size());
+        vertexBuffer = GpuResourceFactory::CreateVertexBuffer(&verts[0],VertexFormat::VF_PN, (uint32_t)verts.size());
     }
     else
     {
-        assert(0);
-        Logger::Log(OutputMessageType::Error, "Mesh::Construct: Unsupported vertex type\n");
+        vertexBuffer = GpuResourceFactory::CreateVertexBuffer(&pos[0],VertexFormat::VF_P, (uint32_t)pos.size());        
     }
 
-    //FreeVectorMemory(nor);
     FreeVectorMemory(tex);
     FreeVectorMemory(tan);    
 }
@@ -376,7 +375,7 @@ HRESULT Model::Construct(ID3D11Device* d3dDevice, ResourceManager* manager)
     }
     m_constructed = true;
 
-    // setup node indexes, to make it easier to debug, we make sure parents come before children.
+    // setup node indexes
     std::vector<Node*> nodeStack;
     if(m_root)
     {
@@ -415,7 +414,7 @@ HRESULT Model::Construct(ID3D11Device* d3dDevice, ResourceManager* manager)
                 // initialize wTexName to wchar_t version of texNames[i]
                 std::wstring wTexName(mat->texNames[i].begin(), mat->texNames[i].end());
                 swprintf_s(strPath, MAX_PATH, L"%ls%ls", m_path.c_str(), wTexName.c_str());
-                mat->textures[i] = (Texture*)manager->LoadAsync(strPath, TextureLib::Inst()->GetDefault((TextureTypeEnum)i) );
+                mat->textures[i] = (Texture*)manager->LoadAsync(strPath, TextureLib::Inst()->GetDefault((TextureTypeEnum)i) );                
                 //mat->textures[i] = (Texture*)manager->LoadImmediate(m_strPathW, TextureLibGetDefault((TextureTypeEnum)i) );
             }
         }

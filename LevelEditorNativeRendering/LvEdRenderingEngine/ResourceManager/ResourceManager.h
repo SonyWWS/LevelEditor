@@ -4,13 +4,15 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "../Core/WinHeaders.h"
 #include "../Core/NonCopyable.h"
+
 
 namespace LvEdEngine
 {
     class Resource;
     class ResourceManager;
-
+    class ResourceFactory;
 
 
     //--------------------------------------------------
@@ -18,7 +20,7 @@ namespace LvEdEngine
     {
     public:
         virtual Resource* CreateResource(Resource* def)=0;
-        virtual bool LoadResource(Resource* resource, const WCHAR * name)=0;
+        virtual bool LoadResource(Resource* resource, const WCHAR* name)=0;
     };
 
     // ----------------------------------------------------------------------------

@@ -3,7 +3,6 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-
 #include "LvEdRenderingEngine.h"
 #include <stdio.h>
 #include <hash_set>
@@ -18,7 +17,6 @@
 #include "Bridge/GobBridge.h"
 #include "Bridge/RegisterSchemaObjects.h"
 #include "Bridge/RegisterRuntimeObjects.h"
-
 #include "Renderer/RenderContext.h"
 #include "Renderer/RenderSurface.h"
 #include "Renderer/DeviceManager.h"
@@ -30,20 +28,15 @@
 #include "Renderer/RenderableNodeSorter.h"
 #include "Renderer/ShadowMapGen.h"
 #include "Renderer/LineRenderer.h"
-
-
-
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderLib.h"
 #include "Renderer/TextureLib.h"
 #include "Renderer/GpuResourceFactory.h"
-
 #include "ResourceManager/ResourceManager.h"
 #include "Model3d/XmlModelFactory.h"
 #include "Model3d/AtgiModelFactory.h"
 #include "Model3d/ColladaModelFactory.h"
 #include "ResourceManager/TextureFactory.h"
-
 #include "GobSystem/GameLevel.h"
 #include "GobSystem/SkyDome.h"
 #include "LvEdUtils.h"
@@ -53,14 +46,11 @@
 #include "Renderer/Font.h"
 #include "Model3d/rapidxmlhelpers.h"
 #include "Core/Hasher.h"
-
 #include "Core/FileUtils.h"
 #include "DirectX\DirectXTex\DirectXTex.h"
 #include "Renderer/Texture.h"
 #include "DirectX/DXUtil.h"
-
-
-// test and debug terrain gob.
+#include "Core\ImageData.h"
 #include "GobSystem\Terrain\TerrainGob.h"
 #include "Renderer\TerrainShader.h"
 
@@ -95,6 +85,43 @@ struct HitRecord
     char pad1;
     char pad2;
 };
+
+
+
+
+// Used for sending all the required engine information 
+// to managed side (C# side).
+class EngineInfo : public NonCopyable
+{
+public:
+    static void InitInstance()
+    {
+        if(!s_inst) s_inst = new EngineInfo();
+
+    }
+    static void DestroyInstance()
+    {
+        if(s_inst)
+        {
+            delete s_inst;
+            s_inst = NULL;
+        }
+    }
+
+    static      EngineInfo*  Inst() { return s_inst; }
+
+    // Returns pointer to null terminated string of
+    // a fully formatted xml document.
+    const wchar_t* GetInfo() { return m_data.c_str();};
+
+private:
+    EngineInfo();
+    static EngineInfo*   s_inst;
+    std::wstring m_data;
+};
+EngineInfo*  EngineInfo::s_inst = NULL;
+
+
 
 
 class MyResourceListener : public ResourceListener
@@ -173,12 +200,12 @@ void MyResourceListener::OnResourceLoaded(Resource* /*r*/)
     if(m_callback) m_callback();   
 }
 
-
 //=============================================================================================
 // Initialize and Shutdown
 //=============================================================================================
 
-LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallback, InvalidateViewsCallbackType invalidateCallback)
+LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallback, InvalidateViewsCallbackType invalidateCallback
+    , const wchar_t** outEngineInfo)
 {    
     // Enable run-time memory check for debug builds.
 #if defined(DEBUG) || defined(_DEBUG)
@@ -220,16 +247,22 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallba
     AtgiModelFactory * atgiFactory = new AtgiModelFactory(gD3D11->GetDevice());
     ColladaModelFactory * colladaFactory = new ColladaModelFactory(gD3D11->GetDevice());    
     TextureFactory * texFactory = new TextureFactory(gD3D11->GetDevice());
-    resMan->RegisterListener(&s_engineData->resourceListener);
-    resMan->RegisterFactory(L".atgi", atgiFactory);
-    resMan->RegisterFactory(L".dae", colladaFactory);
+    resMan->RegisterListener(&s_engineData->resourceListener);    
     resMan->RegisterFactory(L".tga", texFactory);
     resMan->RegisterFactory(L".png", texFactory);
     resMan->RegisterFactory(L".jpg", texFactory);
     resMan->RegisterFactory(L".bmp", texFactory);
     resMan->RegisterFactory(L".dds", texFactory);
     resMan->RegisterFactory(L".tif", texFactory);
+    resMan->RegisterFactory(L".atgi", atgiFactory);
+    resMan->RegisterFactory(L".dae", colladaFactory);
+
+    EngineInfo::InitInstance();
+    const wchar_t* info = EngineInfo::Inst()->GetInfo();
+    if(outEngineInfo)
+        *outEngineInfo = info;
 }
+
 
 LVEDRENDERINGENGINE_API void __stdcall LvEd_Shutdown(void)
 {
@@ -248,8 +281,11 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Shutdown(void)
     ResourceManager::DestroyInstance();
     ShadowMaps::DestroyInstance();
     RSCache::DestroyInstance();
+    EngineInfo::DestroyInstance();
     SAFE_DELETE(s_engineData);
     SAFE_DELETE(gD3D11);
+
+    
 
 }
 
@@ -540,7 +576,7 @@ LVEDRENDERINGENGINE_API bool __stdcall LvEd_RayPick(float viewxform[], float pro
 
                         // we need to adjust distance for screen space calculations
                         // because the ray doesn't start at the camera position
-                        float distCamCenter = distTo + length(RenderContext::Inst()->Cam().m_position - ray.pos);
+                        float distCamCenter = distTo + length(RenderContext::Inst()->Cam().CamPos() - ray.pos);
 
                         float viewportHeight = RenderContext::Inst()->ViewPort().y;
                         float nearRatio = RenderContext::Inst()->Cam().Proj().M22;
@@ -795,9 +831,9 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Begin(ObjectGUID renderSurface, floa
 
     // setup default lighting.
     DirLight& light = *LightingState::Inst()->DefaultDirLight();
-    light.ambient = float3(0.2f,0.2f,0.23f);    
-    light.diffuse = float3(245.0f/255.0f, 242.0f/255.0f, 231.0f/255.0f);       
-    light.specular = float3(0.4f,0.4f,0.4f);
+    light.ambient = float3(0.05f,0.06f,0.07f);    
+    light.diffuse = float3(250.0f/255.0f, 245.0f/255.0f, 240.0f/255.0f);       
+    light.specular = light.diffuse; // float3(0.4f,0.4f,0.4f);
     light.dir = float3(0.258819073f, -0.965925932f, 0.0f);
     
     d3dcontext->ClearDepthStencilView( s_engineData->pRenderSurface->GetDepthStencilView(), D3D11_CLEAR_DEPTH, 1.0f, 0 );
@@ -1043,7 +1079,6 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_End()
 LVEDRENDERINGENGINE_API bool __stdcall LvEd_SaveRenderSurfaceToFile(ObjectGUID renderSurfaceId, wchar_t *fileName)
 {
     ErrorHandler::ClearError();
-    DirectX::ScratchImage scratchImg; 
        
     if(fileName == NULL || wcslen(fileName) == 0 )
     {
@@ -1051,24 +1086,19 @@ LVEDRENDERINGENGINE_API bool __stdcall LvEd_SaveRenderSurfaceToFile(ObjectGUID r
         return false;
     }
 
+    DirectX::ScratchImage scratchImg; 
     RenderSurface* renderSurface = reinterpret_cast<RenderSurface*>(renderSurfaceId);
     
     HRESULT hr = CaptureTexture(gD3D11->GetDevice(),::gD3D11->GetImmediateContext(),
         (ID3D11Resource*)renderSurface->GetColorBuffer()->GetTex(),scratchImg);
     if(FAILED(hr)) return false;
         
-    const DirectX::Image* imageData = scratchImg.GetImage(0,0,0);
-    DirectX::ScratchImage tempImage;
-    hr = tempImage.InitializeFromImage(*imageData,false,true);
-    if(FAILED(hr)) return false;
-    imageData = tempImage.GetImage(0,0,0);
+    const DirectX::Image* img = scratchImg.GetImage(0,0,0);
 
-    std::wstring fileExt = FileUtils::GetExtensionLower(fileName);
-    REFGUID wicCodec = DXUtil::GetWICCodecFromFileExtension(fileExt.c_str());
-    
-    hr = DirectX::SaveToWICFile( *imageData, 0, wicCodec, fileName);
+    ImageData imgdata;
+    imgdata.InitFrom(img);
+    imgdata.SaveToFile(fileName);   
     return SUCCEEDED(hr);
-    
 }
 
 
@@ -1163,4 +1193,67 @@ LVEDRENDERINGENGINE_API int __stdcall LvEd_GetLastError(const wchar_t ** errorTe
     ErrorDescription * errorDescription = ErrorHandler::GetError();
     *errorText = errorDescription->errorText;
     return (int)errorDescription->errorType;
+}
+
+
+
+//==========================================
+// Create xml document to hold 
+// Engine information.
+// The data is passed to C# side.
+//=========================================
+
+
+#include "rapidxml-1.13\rapidxml.hpp"
+#include "rapidxml-1.13\rapidxml_print.hpp"
+typedef rapidxml::xml_document<wchar_t> XmlDocument;
+typedef rapidxml::xml_node<wchar_t> XmlNode;
+typedef rapidxml::xml_attribute<wchar_t> XmlAttribute;
+
+
+// create node for resource type
+void AddResNode(XmlDocument& doc,
+    XmlNode* parent,
+    const wchar_t* type,
+    const wchar_t* name,
+    const wchar_t* description,
+    const wchar_t* fileExt)
+{   
+    XmlNode* resnode = doc.allocate_node(rapidxml::node_element,L"ResourceDescriptor");
+    resnode->append_attribute(doc.allocate_attribute(L"Type", type));
+    resnode->append_attribute(doc.allocate_attribute(L"Name", name));
+    resnode->append_attribute(doc.allocate_attribute(L"Description", description));
+    resnode->append_attribute(doc.allocate_attribute(L"Ext", fileExt));
+    parent->append_node(resnode);
+}
+
+
+//using namespace rapidxml;
+EngineInfo::EngineInfo()
+{       
+    XmlDocument doc;
+    XmlNode* decl = doc.allocate_node(rapidxml::node_declaration);
+    decl->append_attribute(doc.allocate_attribute(L"version", L"1.0"));
+    decl->append_attribute(doc.allocate_attribute(L"encoding", L"utf-8"));
+    decl->append_attribute(doc.allocate_attribute(L"standalone", L"yes"));
+    doc.append_node(decl);
+    XmlNode* root = doc.allocate_node(rapidxml::node_element, L"EngineInfo");
+    root->append_attribute(doc.allocate_attribute(L"version", L"1.0"));
+    doc.append_node(root);
+
+    XmlNode* resNodes = doc.allocate_node(rapidxml::node_element,L"SupportedResources");
+    root->append_node(resNodes);
+        
+    // add supported 3d models.
+    const wchar_t* modeltype = ResourceType::ToWString(ResourceType::Model);
+    AddResNode(doc,resNodes,modeltype,L"Model",L"3d model",L".atgi,.dae");
+        
+    // add supported textures
+    const wchar_t* textureType = ResourceType::ToWString(ResourceType::Texture);
+    AddResNode(doc,resNodes,textureType,L"Texture",L"Texture file",L".dds,.bmp,.jpg,.png,.tga,.tif");
+
+    // Add any other engine information 
+
+    // print to string.
+    rapidxml::print(back_inserter(m_data), doc, 0);   
 }

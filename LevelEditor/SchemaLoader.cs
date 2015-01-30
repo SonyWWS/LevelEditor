@@ -7,7 +7,7 @@ using System.ComponentModel.Composition;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
-
+using LevelEditorCore.GameEngineProxy;
 using Sce.Atf;
 using Sce.Atf.Dom;
 
@@ -99,16 +99,31 @@ namespace LevelEditor
                     nodeType.SetTag<PropertyDescriptorCollection>(localDescriptor);
 
 
-                // annotations resourceReferenceTypes.
+                // process annotations resourceReferenceTypes.
                 XmlNode rfNode = FindElement(kv.Value, Annotations.ReferenceConstraint.Name);
                 if (rfNode != null)
                 {
+                    HashSet<string> extSet = null;
                     string exts = FindAttribute(rfNode, Annotations.ReferenceConstraint.ValidResourceFileExts);
-                    char[] sep = { ';' };
-                    HashSet<string> extSet = new HashSet<string>(exts.Split(sep,StringSplitOptions.RemoveEmptyEntries));
-                    nodeType.SetTag(Annotations.ReferenceConstraint.ValidResourceFileExts, extSet);
+                    if (!string.IsNullOrWhiteSpace(exts))
+                    {
+                        exts = exts.ToLower();
+                        char[] sep = { ',' };
+                        extSet = new HashSet<string>(exts.Split(sep, StringSplitOptions.RemoveEmptyEntries));
+                        
+                    }
+                    else if(m_gameEngine != null)
+                    {
+                        string restype = FindAttribute(rfNode, Annotations.ReferenceConstraint.ResourceType);
+                        ResourceInfo resInfo = m_gameEngine.Info.ResourceInfos.GetByType(restype);
+                        if (resInfo != null)
+                            extSet = new HashSet<string>(resInfo.FileExts);
+                    }
+
+                    if(extSet != null)
+                        nodeType.SetTag(Annotations.ReferenceConstraint.ValidResourceFileExts, extSet);
                 }
-                                             
+                             
                 // todo use schema annotation to mark  Palette types.                    
                 XmlNode xmlNode = FindElement(kv.Value, "scea.dom.editors");
                 if (xmlNode != null)
@@ -126,9 +141,10 @@ namespace LevelEditor
         }
 
         /// <summary>
-        /// Name of a DomNodeType tag that contains hashset of properties be hidden.
-        /// </summary>
+        /// Name of a DomNodeType tag that contains hashset of properties to be hidden.</summary>
         public const string HiddenProperties = "HiddenProperties";
+
+
         #region ISchemaLoader Members
 
         public string NameSpace
@@ -194,5 +210,9 @@ namespace LevelEditor
         }      
  
         #endregion        
+
+
+        [Import(AllowDefault = true)]
+        private IGameEngineProxy m_gameEngine;
     }
 }

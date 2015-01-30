@@ -3,11 +3,12 @@
 #include "CurveGob.h"
 #include <algorithm>
 
-#include "../Renderer/RenderUtil.h"
+
 #include "../Renderer/RenderBuffer.h"
 #include "../Renderer/Model.h"
 #include "../Renderer/DeviceManager.h"
 #include "../Core/Logger.h"
+#include "../Renderer/GpuResourceFactory.h"
 
 namespace LvEdEngine
 {
@@ -280,13 +281,13 @@ void CurveGob::Update(float dt)
     m_mesh.ComputeBound();
     if(m_needsRebuild)
     {                       
-        m_mesh.vertexBuffer = CreateVertexBuffer(gD3D11->GetDevice(), VertexFormat::VF_P, (void*)&verts[0], (uint32_t)verts.size(), D3D11_USAGE_DYNAMIC);        
+        m_mesh.vertexBuffer = GpuResourceFactory::CreateVertexBuffer(&verts[0], VertexFormat::VF_P, (uint32_t)verts.size(), BufferUsage::DYNAMIC);
     }
     else
     {
         ID3D11DeviceContext* context = gD3D11->GetImmediateContext();
         assert(m_mesh.vertexBuffer != NULL);        
-        UpdateVertexBuffer(context, m_mesh.vertexBuffer,(void*)&verts[0], (uint32_t)verts.size());        
+        m_mesh.vertexBuffer->Update(context,&verts[0],(uint32_t)verts.size());
     }    
     
     m_needsRebuild = false;    

@@ -37,8 +37,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             {
                 if (m_control != null)
                 {
-                    m_control.SizeChanged -= new EventHandler(control_SizeChanged);
-                    m_control.VisibleChanged -= new EventHandler(control_VisibleChanged);
+                    m_control.SizeChanged -= control_SizeChanged;
+                    m_control.VisibleChanged -= control_VisibleChanged;
                 }
 
                 m_control = value;
@@ -49,8 +49,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                 {
                     m_layoutConstraints = m_control.AsAll<ILayoutConstraint>();
                     m_moduleEditAdapter = m_control.As<D2dGraphNodeEditAdapter<Element, Wire, ICircuitPin>>();
-                    m_control.SizeChanged += new EventHandler(control_SizeChanged);
-                    m_control.VisibleChanged += new EventHandler(control_VisibleChanged);
+                    m_control.SizeChanged += control_SizeChanged;
+                    m_control.VisibleChanged += control_VisibleChanged;
 
                 }
 
@@ -235,7 +235,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                 return BoundsSpecified.All;
             }
 
-            var annotation = Adapters.As<Annotation>(item);
+            var annotation = item.As<Annotation>();
             if (annotation != null)
             {
                 bounds = annotation.Bounds;
@@ -252,11 +252,22 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <returns>Value indicating which parts of the item's bounds can be set</returns>
         BoundsSpecified ILayoutContext.CanSetBounds(object item)
         {
-            if (Adapters.Is<Element>(item))
+            //if (item.Is<DomNode>())// debug disallowing dragging 
+            //{
+            //    var parent = item.Cast<DomNode>().Parent;
+            //    if (parent.Is<Group>())
+            //        return BoundsSpecified.None;
+            //}
+
+            // by default a group can be moved and resized
+            if (item.Is<Group>()) 
+                return BoundsSpecified.All;
+
+            if (item.Is<Element>())
                 return BoundsSpecified.Location;
 
-            if (Adapters.Is<Annotation>(item))
-                return BoundsSpecified.Location;
+            if (item.Is<Annotation>())
+                return BoundsSpecified.All;
 
             return BoundsSpecified.None;
         }
@@ -352,15 +363,15 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                 var transformAdapter = m_control.As<ITransformAdapter>();
                 bounds = GdiUtil.InverseTransform(transformAdapter.Transform, bounds);
 
-                // make canvas twice as large as it needs to be to give the user some room,
-                //  or at least as large as the control's client area.
-                Rectangle clientRect = m_control.ClientRectangle;
+                // Make the canvas larger than it needs to be to give the user some room.
+                // Use the client rectangle in world coordinates.
+                Rectangle clientRect = GdiUtil.InverseTransform(transformAdapter.Transform, m_control.ClientRectangle);
                 bounds.Width = Math.Max(bounds.Width * 2, clientRect.Width * 2);
                 bounds.Height = Math.Max(bounds.Height * 2, clientRect.Height * 2);
 
                 var canvasAdapter = m_control.As<ICanvasAdapter>();
                 if (canvasAdapter != null)
-                    canvasAdapter.Bounds = new Rectangle(0, 0, bounds.Right, bounds.Bottom);
+                    canvasAdapter.Bounds = bounds;
             }
         }
 

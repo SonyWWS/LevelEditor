@@ -31,29 +31,31 @@
   <ImportGroup Label="ExtensionSettings"></ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Windows81SDK_vs2010_x64.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Windows81SDK_vs2010_x64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IntDir>..\..\tmp\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <OutDir>..\..\bin\$(Configuration)\NativePlugin\$(Platform)\</OutDir>
-    <IncludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(FrameworkSDKDir)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(ProgramFiles)\Windows Kits\8.1\lib\winv6.3\um\x64</LibraryPath>
-    <ExecutablePath>$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSdkDir)bin\NETFX 4.0 Tools;$(ProgramFiles)\Windows Kits\8.1\bin\x86;$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(FrameworkSDKDir)\bin;$(FrameworkSDKDir)\lib\win64;$(MSBuildToolsPath32);$(FxCopDir);$(PATH)</ExecutablePath>
-    <ExcludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(FrameworkSDKDir)\include;$(MSBuildToolsPath);$(MSBuildToolsPath32);$(VCInstallDir)atlmfc\lib\amd64;$(VCInstallDir)lib\amd64</ExcludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>..\..\tmp\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <OutDir>..\..\bin\$(Configuration)\NativePlugin\$(Platform)\</OutDir>
-    <IncludePath>$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(FrameworkSDKDir)\include</IncludePath>
-    <LibraryPath>$(VCInstallDir)lib\amd64;$(VCInstallDir)atlmfc\lib\amd64;$(ProgramFiles)\Windows Kits\8.1\lib\winv6.3\um\x64</LibraryPath>
-    <ExecutablePath>$(VCInstallDir)bin\x86_amd64;$(VCInstallDir)bin;$(WindowsSdkDir)bin\NETFX 4.0 Tools;$(ProgramFiles)\Windows Kits\8.1\bin\x86;$(VSInstallDir)Common7\Tools\bin;$(VSInstallDir)Common7\tools;$(VSInstallDir)Common7\ide;$(ProgramFiles)\HTML Help Workshop;$(FrameworkSDKDir)\bin;$(FrameworkSDKDir)\lib\win64;$(MSBuildToolsPath32);$(FxCopDir);$(PATH)</ExecutablePath>
-    <ExcludePath>$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(ProgramFiles)\Windows Kits\8.1\Include\um;$(ProgramFiles)\Windows Kits\8.1\Include\shared;$(FrameworkSDKDir)\include;$(MSBuildToolsPath);$(MSBuildToolsPath32);$(VCInstallDir)atlmfc\lib\amd64;$(VCInstallDir)lib\amd64</ExcludePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

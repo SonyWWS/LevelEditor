@@ -212,10 +212,19 @@ namespace LevelEditor.Terrain
 
         #region IEditableResourceOwner Members
 
+        private bool m_mapDirty;
         public bool Dirty
         {
-            get;
-            private set;
+            get { return m_mapDirty; }
+            private set
+            {
+                if (m_mapDirty != value)
+                {
+                    m_mapDirty = value;
+                    var doc = DomNode.GetRoot().As<IGameDocument>();
+                    doc.NotifyEditableResourceOwnerDirtyChanged(this);
+                }
+            }
         }
 
         public void Save()

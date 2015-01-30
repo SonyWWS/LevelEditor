@@ -70,9 +70,9 @@ namespace LevelEditor.DomNodeAdapters
                 else
                     descriptors.Add(
                         new AttributePropertyDescriptor(
-                            "Scale".Localize(), Schema.gameObjectType.scaleAttribute, 
-                            category, 
-                            "Scale of Game Object along X, Y, and Z axes".Localize(),
+                            "Uniform Scale".Localize(), Schema.gameObjectType.scaleAttribute, 
+                            category,
+                            "Scale of Game Object uniformly along X, Y, and Z axes".Localize(),
                             false, new UniformArrayEditor<Single>()));
             }
 

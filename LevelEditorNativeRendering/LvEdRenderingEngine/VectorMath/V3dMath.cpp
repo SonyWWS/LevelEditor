@@ -165,6 +165,25 @@ namespace LvEdEngine
         return (n * 0.5f);
     }
   
+
+    // ************************* color
+    //-------------------------------------------------------------------------------------------------
+void ConvertColor(int color, float4* out)
+{
+    *out = float4((float)((color>>16) & 0xFF)/255.0f, (float)((color>>8) & 0xFF)/255.0f, (float)((color>>0) & 0xFF)/255.0f, (float)((color>>24) & 0xFF)/255.0f );
+}
+
+//-------------------------------------------------------------------------------------------------
+void ConvertColor( int color , float3* out)
+{
+    float4 lcolor;
+    ConvertColor(color, &lcolor);
+    *out = float3(lcolor.x, lcolor.y, lcolor.z);
+}
+
+
+
+
     //********************************* Matrix class **********************************
 
     // binary operators

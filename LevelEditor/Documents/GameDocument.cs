@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-
+using System.Windows.Forms;
 using Sce.Atf;
 
 using Sce.Atf.Dom;
@@ -38,30 +38,6 @@ namespace LevelEditor
         public override string Type
         {
             get { return GameEditor.s_info.FileType; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating if any document dirty.
-        /// </summary>
-        public bool AnyDirty
-        {
-            get
-            {
-                bool dirty = false;
-                foreach (IGameDocument doc in m_gameDocumentRegistry.Documents)
-                {
-                    dirty = doc.Dirty;
-                    if (dirty) break;                    
-                }
-
-                foreach (var obj in Util.FindAll<IEditableResourceOwner>())
-                {
-                    dirty |= obj.Dirty;
-                    if (dirty) break;
-                }
-
-                return dirty;
-            }
         }
         
         public void Save(Uri uri, SchemaLoader schemaLoader)
@@ -99,7 +75,6 @@ namespace LevelEditor
             }
         }
 
-      
         public bool IsMasterGameDocument
         {
             get { return DomNode == m_gameDocumentRegistry.MasterDocument.As<GameDocument>().DomNode; }
@@ -109,9 +84,17 @@ namespace LevelEditor
         {
             get { return GetChildList<IReference<IGameDocument>>(Schema.gameType.gameReferenceChild); }
         }
+                        
+        public event EventHandler<ItemChangedEventArgs<IEditableResourceOwner>> EditableResourceOwnerDirtyChanged = delegate{};
+
+        public void NotifyEditableResourceOwnerDirtyChanged(IEditableResourceOwner resOwner)
+        {
+            EditableResourceOwnerDirtyChanged(this, new ItemChangedEventArgs<IEditableResourceOwner>(resOwner));
+        }
 
         #endregion
 
+        
         /// <summary>
         /// Should the sub-documents be resolved on load</summary>                
         public static bool ResolveOnLoad
@@ -231,6 +214,7 @@ namespace LevelEditor
             return document;
         }
 
+        
 
         private void DomNode_ChildInserted(object sender, ChildEventArgs e)
         {

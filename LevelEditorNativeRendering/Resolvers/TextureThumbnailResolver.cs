@@ -5,8 +5,7 @@ using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-
-
+using LevelEditorCore.GameEngineProxy;
 using Sce.Atf;
 using Sce.Atf.Applications;
 
@@ -18,8 +17,7 @@ namespace RenderingInterop
     [Export(typeof(IThumbnailResolver))]    
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class TextureThumbnailResolver : IThumbnailResolver
-    {
-        
+    {        
         #region IThumbnailResolver Members
         Image IThumbnailResolver.Resolve(Uri resourceUri)
         {
@@ -29,8 +27,9 @@ namespace RenderingInterop
                 return null;
 
             string extension = Path.GetExtension(path).ToLower();
-            if (extension.Equals(".dds", StringComparison.InvariantCulture)
-                || extension.Equals(".tga",StringComparison.InvariantCulture))
+            var res = m_gameEngine.Info.ResourceInfos.GetByType(ResourceTypes.Texture);
+
+            if(res.IsSupported(extension))
             {
                 ImageData imgdata = new ImageData();
                 imgdata.LoadFromFile(resourceUri);                
@@ -97,5 +96,8 @@ namespace RenderingInterop
       
         private const float ThumbnailSize = 96;
         #endregion
+
+        [Import(AllowDefault = false)]
+        private IGameEngineProxy m_gameEngine;
     }
 }

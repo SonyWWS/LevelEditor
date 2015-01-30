@@ -1,13 +1,15 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 #pragma once
+#include "rapidxmlhelpers.h"
 
-class xml_node;
-class Model3dBuilder;
+
 
 // Use XmlModelFactory for files using xml format
 namespace LvEdEngine
 {
+
+    class Model3dBuilder;
     //--------------------------------------------------
     class XmlModelFactory : public ResourceFactory
     {

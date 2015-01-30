@@ -156,8 +156,9 @@ namespace LevelEditor
         {            
             GameDocument gameDocument = document as GameDocument;
             gameDocument.Save(uri, m_schemaLoader);
+
             // save external resources.
-            foreach (var obj in Util.FindAll<IEditableResourceOwner>())
+            foreach (var obj in m_gameDocumentRegistry.FindAll<IEditableResourceOwner>())
             {
                 if (obj.Dirty)
                     obj.Save();                
@@ -382,8 +383,9 @@ namespace LevelEditor
                     null,
                     "Resolve sub-documents on load".Localize());
                     
-            m_settingsService.RegisterSettings("Documents".Localize(), resolveOnLoad);
-            m_settingsService.RegisterUserSettings("Documents".Localize(), resolveOnLoad);
+            string docs = "Documents".Localize();
+            m_settingsService.RegisterSettings(docs, resolveOnLoad);
+            m_settingsService.RegisterUserSettings(docs, resolveOnLoad);
 
         }
 

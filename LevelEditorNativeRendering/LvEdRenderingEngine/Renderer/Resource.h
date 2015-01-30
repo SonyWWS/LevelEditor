@@ -33,18 +33,12 @@ namespace LvEdEngine
     class ResourceReference  : public Object
     {
     public:
-        ResourceReference();
-        ResourceReference(Resource* r);
+        ResourceReference();       
         ~ResourceReference();
         virtual const char* ClassName() const {return StaticClassName();}
         static const char* StaticClassName(){return "ResourceReference";}
-        Resource * GetTarget();
-        void SetTarget(Resource* r);
-        void SetTarget(const WCHAR * URI);
-
-        // needed?
-        //ResourceReference(const ResourceReference& other);
-        //operator=(const ResourceReference& rhs);
+        Resource * GetTarget();       
+        void SetTarget(const wchar_t* fileName, Resource* def = NULL);
     protected:
         Resource* m_target;
     };

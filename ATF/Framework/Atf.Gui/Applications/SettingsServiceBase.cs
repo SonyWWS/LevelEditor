@@ -311,15 +311,10 @@ namespace Sce.Atf.Applications
         protected abstract void PresentLoadSaveSettings();
 
         /// <summary>
-        /// Saves application settings safely and creates a backup in the process.</summary>
+        /// Saves application settings safely and creates a backup in the process</summary>
         public void SaveSettings()
         {
-            var tempNew = string.Empty;
-            var directoryName = Path.GetDirectoryName(m_settingsPath);
-            var tempBackup = Path.Combine(directoryName, "~Settings.xml");
-
-            if (!Directory.Exists(directoryName))
-                Directory.CreateDirectory(directoryName);
+            string tempNew = string.Empty;
 
             string mutexName = GetMutexName(m_settingsPath);
             using (Mutex saveMutex = new Mutex(false, mutexName))
@@ -334,18 +329,20 @@ namespace Sce.Atf.Applications
                     using (Stream stream = File.Create(tempNew))
                         Serialize(stream);
 
+                    // Make sure the settings directory exists. Do nothing if it already exists.
+                    string settingsDir = Path.GetDirectoryName(m_settingsPath);
+                    Directory.CreateDirectory(settingsDir);
+
                     // Erase old backup (if any) and move current settings file (if any).
-                    // DAN: These Delete() calls can throw exceptions!
-                    if (File.Exists(tempBackup))
+                    string tempBackup = Path.Combine(settingsDir, "~Settings.xml");
+                    if (File.Exists(tempBackup)) // seems unnecessary, but Dan put this check in the WPF version --Ron
                         File.Delete(tempBackup);
                     if (File.Exists(m_settingsPath))
                         File.Move(m_settingsPath, tempBackup);
 
                     // Move temporary file to be the new settings file, then delete backup.
-                    if (File.Exists(tempNew))
-                        File.Move(tempNew, m_settingsPath);
-                    if (File.Exists(tempBackup))
-                        File.Delete(tempBackup);
+                    File.Move(tempNew, m_settingsPath);
+                    File.Delete(tempBackup);
                 }
                 catch (TargetInvocationException)
                 {
@@ -353,10 +350,13 @@ namespace Sce.Atf.Applications
                     // is shut down with the application still running.
                     // TO DO: Find a way to successfully save settings and exit on shutdown.
                 }
+                catch (Exception ex)
+                {
+                    Outputs.WriteLine(OutputMessageType.Error, ex.Message);
+                }
                 finally
                 {
                     // Attempt clean-up. No exception is thrown if file doesn't exist.
-                    // DAN: Why can't this throw an exception?
                     File.Delete(tempNew);
                     saveMutex.ReleaseMutex();
                 }

@@ -375,7 +375,7 @@ namespace RenderingInterop
         }
         
         private const float ConeHeight = 1.0f / 5.0f;
-        private const float ConeDiameter = 1.0f / 15.0f;        
+        private const float ConeDiameter = 1.0f / 12.0f;        
         private const float SquareLength = 0.3f; //the ratio of square length to arrow length
         private const float CenterCube = 1.0f / 12.0f; // the ration of the center cube to arrow length.
         private Matrix4F m_hitWorldView = new Matrix4F();

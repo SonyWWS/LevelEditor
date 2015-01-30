@@ -56,11 +56,12 @@ typedef void (__stdcall * InvalidateViewsCallbackType)(void);
  * @param logCallback call back for logging.
  * @param invalidateCallback call back used for notifying LevelEditor that
  *        the views need to be redrawn.
- *        
+ * @outEngineInfo: Engine information 
  *
  */
 extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallback,
-    InvalidateViewsCallbackType invalidateCallback);
+    InvalidateViewsCallbackType invalidateCallback, 
+    const wchar_t** outEngineInfo);
 
 
 /**

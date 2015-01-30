@@ -14,9 +14,9 @@ namespace LevelEditorCore
     {
 
 
-        // This annotation can be applied to any schema type derived from resourceReferenceType.
-        // To constrain type of resource that this can reference.
-        //<sce.atf.referenceConstraint validResourceFileExts =".stmproj"/>
+        /// <summary>
+        /// This annotation can be applied to any schema type derived from resourceReferenceType.
+        /// To constrain type of resource that this can reference.</summary>
         public static class ReferenceConstraint
         {
             // name of the annotation.
@@ -24,6 +24,8 @@ namespace LevelEditorCore
 
             // attributes
             public const string ValidResourceFileExts = "validResourceFileExts";
+            public const string ResourceType = "ResourceType";
+
         }
 
 

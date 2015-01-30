@@ -102,12 +102,10 @@ namespace Sce.Atf.Controls.Adaptable
                 if (transactionContext == null ||
                     !transactionContext.InTransaction)
                 {
-                    TransactionContexts.DoTransaction(transactionContext,
-                        delegate
-                        {
-                            m_namingContext.SetName(m_item, text);
-                        },
-                        "Edit Label".Localize());
+                    transactionContext.DoTransaction(delegate
+                    {
+                        m_namingContext.SetName(m_item, text);
+                    }, "Edit Label".Localize());
                 }
             }
 

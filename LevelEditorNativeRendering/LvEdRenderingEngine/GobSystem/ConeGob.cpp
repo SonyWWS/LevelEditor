@@ -2,7 +2,6 @@
 
 #include "ConeGob.h"
 
-#include "../Renderer/RenderUtil.h"
 #include "../Renderer/RenderBuffer.h"
 #include "../Renderer/Model.h"
 

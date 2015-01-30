@@ -1,10 +1,10 @@
 #include "GpuResourceFactory.h"
-#include "RenderUtil.h"
 
 using namespace LvEdEngine;
 
 static ID3D11Device* s_device = NULL;
 void GpuResourceFactory::SetDevice(ID3D11Device* device) { s_device = device; }
+static uint32_t GetSizeInBytes(VertexFormatEnum vf);
 
 VertexBuffer* GpuResourceFactory::CreateVertexBuffer(void* data, VertexFormatEnum vf, uint32_t count, uint32_t bufferUsage)
 {    
@@ -148,6 +148,10 @@ ID3D11InputLayout* GpuResourceFactory::CreateInputLayout(void* code, uint32_t co
         numelements = 4;
         break;   
 
+    case VertexFormat::VF_T:
+        SetLayout(&elements[0], "POSITION",  0, DXGI_FORMAT_R32G32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0);
+        numelements = 1;
+        break;
     default:
         assert(0);
         break;
@@ -164,7 +168,6 @@ ID3D11InputLayout* GpuResourceFactory::CreateInputLayout(void* code, uint32_t co
 }
 
 // ========================== shader creation functions =========================
-
 ID3D11VertexShader*   GpuResourceFactory::CreateVertexShader(void* code, uint32_t codeSize)
 {
     assert(code && codeSize > 0);
@@ -201,3 +204,187 @@ ID3D11GeometryShader* GpuResourceFactory::CreateGeometryShader(void* code, uint3
     return shader;
 
 }
+
+
+// ==================== texture creation functions. ===========
+
+ID3D11Texture2D* GpuResourceFactory::CreateDxTexture2D(void* buff, int w, int h, bool cubemap)
+{    
+    assert(buff);
+    ID3D11Texture2D *tex = NULL;       
+    D3D11_TEXTURE2D_DESC tdesc;
+    tdesc.Width = w;
+    tdesc.Height = h;
+    tdesc.MipLevels = 1;
+    tdesc.ArraySize = 1;
+    tdesc.SampleDesc.Count = 1;
+    tdesc.SampleDesc.Quality = 0;
+    tdesc.Usage = D3D11_USAGE_DEFAULT;
+    tdesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    //
+    tdesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    tdesc.CPUAccessFlags = 0;
+    tdesc.MiscFlags = 0;
+
+    if(cubemap)
+    {
+         tdesc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
+         tdesc.ArraySize = 6;
+    }
+
+    int numSubRC = tdesc.ArraySize * tdesc.MipLevels;
+    D3D11_SUBRESOURCE_DATA*  subData = new D3D11_SUBRESOURCE_DATA[numSubRC];
+    uint8_t* ptr = (uint8_t*)buff;
+    uint32_t rowPitch = w * 4;
+    uint32_t slicePitch = rowPitch * h;
+
+    for(int index = 0; index <numSubRC; index++)
+    {        
+        subData[index].pSysMem = ptr;
+        subData[index].SysMemPitch = rowPitch;
+        subData[index].SysMemSlicePitch = slicePitch;
+        ptr += slicePitch;
+    }
+    
+    HRESULT hr = s_device->CreateTexture2D(&tdesc,subData,&tex);
+    delete[] subData;    
+    Logger::IsFailureLog(hr, L"CreateTexture2D");
+    return tex;
+
+}
+
+
+
+static DXGI_FORMAT GetSRGBFormat(DXGI_FORMAT format)
+{
+
+    switch(format)
+    {
+    case DXGI_FORMAT_R8G8B8A8_TYPELESS:
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+        return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC1_TYPELESS:
+    case DXGI_FORMAT_BC1_UNORM:
+        return DXGI_FORMAT_BC1_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC2_TYPELESS:
+    case DXGI_FORMAT_BC2_UNORM:
+        return DXGI_FORMAT_BC2_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC7_TYPELESS:
+    case DXGI_FORMAT_BC7_UNORM:
+        return DXGI_FORMAT_BC7_UNORM_SRGB;
+
+    case DXGI_FORMAT_BC3_TYPELESS:
+    case DXGI_FORMAT_BC3_UNORM:
+        return DXGI_FORMAT_BC3_UNORM_SRGB;
+
+    case DXGI_FORMAT_B8G8R8A8_TYPELESS:
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+        return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+
+    case DXGI_FORMAT_B8G8R8X8_TYPELESS:
+    case DXGI_FORMAT_B8G8R8X8_UNORM:
+        return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
+
+    }
+    return format;
+}
+
+
+ID3D11ShaderResourceView* GpuResourceFactory::CreateTextureView(ID3D11Texture2D *tex)
+{
+    ID3D11ShaderResourceView* view = NULL;
+    assert(tex);
+
+    if(tex)
+    {
+        D3D11_TEXTURE2D_DESC desc;
+        D3D11_RESOURCE_DIMENSION type;
+        tex->GetType(&type);
+        tex->GetDesc(&desc);
+        bool isCubeMap =  (desc.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE) != 0;
+        
+        D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+        memset( &SRVDesc, 0, sizeof( SRVDesc ) );
+        SRVDesc.Format = desc.Format;
+        
+
+        if (isCubeMap)
+        {
+
+            if (desc.ArraySize > 6)
+            {
+                SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+                SRVDesc.TextureCubeArray.MipLevels = desc.MipLevels;                
+                SRVDesc.TextureCubeArray.NumCubes = ( desc.ArraySize / 6 );
+            }
+            else
+            {
+                SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+                SRVDesc.TextureCube.MipLevels = desc.MipLevels;
+            }
+         }
+         else if (desc.ArraySize > 1)
+         {
+             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+             SRVDesc.Texture2DArray.MipLevels = desc.MipLevels;
+             SRVDesc.Texture2DArray.ArraySize = desc.ArraySize;
+         }
+         else
+         {
+             SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+             SRVDesc.Texture2D.MipLevels = desc.MipLevels;
+         }
+         HRESULT hr = s_device->CreateShaderResourceView( tex, &SRVDesc, &view );
+         Logger::IsFailureLog(hr, L"CreateShaderResourceView");
+    }
+    return view;
+}
+
+
+
+//-------------------------------------------------------------------------------------------------
+static uint32_t GetSizeInBytes(VertexFormatEnum vf)
+{   
+    uint32_t size = 0;
+    switch(vf)
+    {    
+    case VertexFormat::VF_P:
+        size = sizeof(float3);
+        break;
+
+    case VertexFormat::VF_PC:
+        size = sizeof(float3) + sizeof(float4);
+        break;
+
+    case VertexFormat::VF_PN:
+        size = sizeof(float3) + sizeof(float3);
+        break;  
+
+    case VertexFormat::VF_PT:
+		size = sizeof(float3) + sizeof(float2);
+        break; 
+
+    case VertexFormat::VF_PTC:
+		size = sizeof(float3) + sizeof(float2) + sizeof(float4);
+        break; 
+
+    case VertexFormat::VF_PNT:
+        size = sizeof(float3) + sizeof(float3) + sizeof(float2);
+        break;    
+
+    case VertexFormat::VF_PNTT:  // pos, norm, tex0, tangent
+        size = sizeof(float3) + sizeof(float3) + sizeof(float2) + sizeof(float3);
+        break;  
+
+    case VertexFormat::VF_T:
+        size = sizeof(float2);
+        break;  
+
+     default: assert(0); break;
+    }
+    return size;
+}
+

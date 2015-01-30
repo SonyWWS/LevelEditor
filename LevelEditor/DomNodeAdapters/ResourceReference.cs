@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-
+using LevelEditorCore.GameEngineProxy;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
@@ -41,22 +41,19 @@ namespace LevelEditor.DomNodeAdapters
                 resRef.SetAttribute(Schema.resourceReferenceType.uriAttribute, resource.Uri);                
             }
             return resRef;
-
         }
-
 
         public static bool CanReference(DomNodeType domtype, IResource resource)
         {
             if (domtype == null || resource == null || !Schema.resourceReferenceType.Type.IsAssignableFrom(domtype))
-                return false;      
+                return false;
             // valid resource file extensions
-            HashSet<string> exts = (HashSet<string>)domtype.GetTag(Annotations.ReferenceConstraint.ValidResourceFileExts);
+            var exts = (HashSet<string>)domtype.GetTag(Annotations.ReferenceConstraint.ValidResourceFileExts);
             string reExt = Path.GetExtension(resource.Uri.LocalPath).ToLower();
             bool canReference = exts == null || exts.Contains(".*") || exts.Contains(reExt);
-            return canReference;
+            return canReference;            
         }
-       
-
+      
         protected override void OnNodeSet()
         {
             base.OnNodeSet();

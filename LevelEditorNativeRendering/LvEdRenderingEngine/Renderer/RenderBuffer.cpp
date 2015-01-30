@@ -1,7 +1,7 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 #include "RenderBuffer.h"
-#include "RenderUtil.h"
+
 
 namespace LvEdEngine
 {
@@ -11,6 +11,7 @@ GpuBuffer::GpuBuffer(ID3D11Buffer* buffer)
     : m_buffer(buffer)
     
 {
+    assert(m_buffer);
     D3D11_BUFFER_DESC bufDescr;
     m_buffer->GetDesc(&bufDescr);
     m_size = bufDescr.ByteWidth;
@@ -38,7 +39,7 @@ void GpuBuffer::Update(ID3D11DeviceContext* dc, void* data,uint32_t count)
 {
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT hr = dc->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if(Logger::IsFailureLog(hr,L"failed map cb")) return;
+    if(Logger::IsFailureLog(hr,L"Buffer updating failed.")) return;
     uint32_t size = m_stride * count;
     CopyMemory(mappedResource.pData, data, size);          
     dc->Unmap(m_buffer, 0);
@@ -71,6 +72,46 @@ uint32_t IndexBuffer::GetFormat() const
     assert(0);
     return   (uint32_t)DXGI_FORMAT_UNKNOWN;
 }
+
+
+
+
+// ========== TConstantBufferBase imple ====
+
+void TConstantBufferBase::Construct(ID3D11Device* device, uint32_t sizeInBytes)
+{
+    assert(m_buffer == NULL);
+    if(m_buffer) return;
+
+    HRESULT hr = S_OK;        
+    D3D11_BUFFER_DESC desc;
+    SecureZeroMemory( &desc, sizeof(desc));
+	desc.Usage = D3D11_USAGE_DYNAMIC;
+	desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	desc.MiscFlags = 0;  
+	desc.ByteWidth = sizeInBytes;
+	desc.StructureByteStride = 0;	
+
+    hr = device->CreateBuffer(&desc, 0, &m_buffer );
+    if(!Logger::IsFailureLog(hr,L"Failed to create constant buffer"))
+    {
+        m_bufSize = sizeInBytes;
+    }     
+}
+
+
+void TConstantBufferBase::Update(ID3D11DeviceContext* dc, void* data)
+{
+    assert(m_buffer);
+    if(!m_buffer) return;
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT hr = dc->Map(m_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if(Logger::IsFailureLog(hr,L"failed map cb")) return;    
+    CopyMemory(mappedResource.pData, data, m_bufSize);          
+    dc->Unmap(m_buffer, 0);
+}
+
 
 }; // namespace 
 

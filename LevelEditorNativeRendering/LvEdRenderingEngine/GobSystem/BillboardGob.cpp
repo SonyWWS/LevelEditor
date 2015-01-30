@@ -2,7 +2,7 @@
 
 #include "BillboardGob.h"
 
-#include "../Renderer/RenderUtil.h"
+
 #include "../Renderer/ShapeLib.h"
 #include "../Renderer/RenderBuffer.h"
 #include "../Renderer/Model.h"

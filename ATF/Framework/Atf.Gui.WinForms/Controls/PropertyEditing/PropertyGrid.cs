@@ -45,6 +45,13 @@ namespace Sce.Atf.Controls.PropertyEditing
             m_propertyGridView.DragDrop += propertyGrid_DragDrop;
             m_propertyGridView.MouseHover += propertyGrid_MouseHover;
             m_propertyGridView.MouseLeave += propertyGrid_MouseLeave;
+            m_propertyGridView.DescriptionSetter = p =>
+            {
+                if (p != null)
+                    m_descriptionTextBox.SetDescription(p.DisplayName, p.Description);
+                else
+                    m_descriptionTextBox.ClearDescription();
+            };
 
             m_toolStrip = new ToolStrip();
             m_toolStrip.GripStyle = ToolStripGripStyle.Hidden;

@@ -10,11 +10,10 @@
 #include "ShadowMaps.h"
 #include "RenderSurface.h"
 #include "Lights.h"
+#include "RenderBuffer.h"
 
 namespace LvEdEngine 
 {
-
-class GameLevel;
 class RenderContext;
 class TerrainGob;
 
@@ -54,13 +53,7 @@ public:
 
 private:
 
-    void                        Initialize(ID3D11Device* device);
-    void                        DrawRenderable(const RenderableNode& r);
-
-    void                        UpdateConstantBuffer_PerFrame();    
-    void                        UpdateConstantBuffer_Shadows();
-
-    TerrainGob*                 m_terrain;
+    void                        Initialize(ID3D11Device* device);    
     RenderContext*              m_rc;    
     
     ID3D11VertexShader*         m_vertexShader;
@@ -90,74 +83,55 @@ private:
     ID3D11GeometryShader* m_GSDecoBB;
     ID3D11InputLayout*    m_vertLayoutDecoBB;
     
-    ID3D11Buffer*       m_perDecomapCb;
-    
-    ID3D11SamplerState*         m_hnSampler; // height/normal sampler.
-    ID3D11SamplerState*         m_linearWrapSampler; // linear sampler with wrap address mode for u and v.
-    ID3D11SamplerState*         m_linearclampSampler; // linear sampler with clamp address mode for u and v.
 
-    ID3D11Buffer*               m_perFrameCb;
-    ID3D11Buffer*               m_perTerrainCb;
-    ID3D11Buffer*               m_renderStateCb;
-    ID3D11Buffer*               m_perPatchCb;
-    
-
-    
-
-     //---------------------------------------------------------------------------
-     //  ConstantBufferPerFrame
-     //
-     //---------------------------------------------------------------------------
-     __declspec(align(16))
      struct PerFrameCb
      {
-         Matrix cb_view;
-         Matrix cb_proj;
+         Matrix view;
+         Matrix proj;
          float4 viewport;
-         float3 cb_camPosW;
+         float3 camPosW;
          float  pad;
      };
+     TConstantBuffer<PerFrameCb> m_perFrameCb;
 
-     //---------------------------------------------------------------------------
-     //  ConstantBufferRenderState
-     //     
-     //---------------------------------------------------------------------------
-     __declspec(align(16))
+
      struct RenderStateCb
      {
-         int cb_textured;
-         int cb_lit;
-         int cb_shadowed;
+         int textured;
+         int lit;
+         int shadowed;
          int pad;
      };
+     TConstantBuffer<RenderStateCb> m_renderStateCb;
 
 
-     //---------------------------------------------------------------------------
-     //  ConstantBufferPerTerrain
-     //
-     //---------------------------------------------------------------------------
-     __declspec(align(16))
      struct PerTerrainCb
      {
-         float4   layerTexScale[MaxNumLayers];
-         float4   wirecolor;
+         float4  layerTexScale[MaxNumLayers];
+         float4  wirecolor;
          float3  terrainTrans;
          float   cellSize;
          float2  hmSize;                // size of hiehgt map in texels 
          float2  hmTexelsize;        // texel-size of the height texture.         
          ExpFog  fog;
-         float  numLayers;	
-         float  pad[3];
+         float   numLayers;	
+         float   pad[3];
          
-     };
+     }; 
+     TConstantBuffer<PerTerrainCb> m_perTerrainCb;
 
-     __declspec(align(16))
      struct PerPatchCb
      {
          float3              patchTrans; // patch translation.		
-         float               PerPatchCb_Pad;
-         LightEnvironment    cb_lightEnv;    
+         float               pad;
+         LightEnvironment    lightEnv;    
      };
+     TConstantBuffer<PerPatchCb> m_perPatchCb;    
+
+     TConstantBuffer<float4> m_perDecomapCb;
+      
+
+    //__declspec(align(16))
 };
 
 }; // namespace LvEdEngine

@@ -15,6 +15,7 @@
 #include "Texture.h"
 #include "TextureLib.h"
 #include "ShapeLib.h"
+#include "GpuResourceFactory.h"
 
 
 using namespace LvEdEngine;
@@ -22,8 +23,7 @@ using namespace LvEdEngine;
 //---------------------------------------------------------------------------
 TerrainShader::TerrainShader(ID3D11Device* device)
   : Shader(Shaders::TerrainShader),
-    m_rc(NULL),    
-    m_terrain(NULL),
+    m_rc(NULL),        
     m_vertexShader(NULL),
     m_pixelShader(NULL),
     m_vertexLayout(NULL),  
@@ -33,22 +33,14 @@ TerrainShader::TerrainShader(ID3D11Device* device)
     m_VSNormals(NULL),
     m_GSNormals(NULL),
     m_PSNormals(NULL),
-    m_layoutSolidWire(NULL),
-    m_hnSampler(NULL),
-    m_linearWrapSampler(NULL),
-    m_linearclampSampler(NULL),
-    m_dpLessEqual(NULL),
-    m_perFrameCb(NULL),
-    m_renderStateCb(NULL),
-    m_perPatchCb(NULL),
-    m_perTerrainCb(NULL),
+    m_layoutSolidWire(NULL),    
+    m_dpLessEqual(NULL),    
     m_VSDeco(NULL),
     m_PSDeco(NULL),
     m_VSDecoBB(NULL),
     m_GSDecoBB(NULL),
     m_vertLayoutDecoBB(NULL),
-    m_vertLayoutDeco(NULL),
-    m_perDecomapCb(NULL)        
+    m_vertLayoutDeco(NULL)    
 {
     Initialize(device);
 }
@@ -57,19 +49,8 @@ TerrainShader::TerrainShader(ID3D11Device* device)
 TerrainShader::~TerrainShader()
 {
     SAFE_RELEASE(m_vertexShader);
-    SAFE_RELEASE(m_pixelShader);
-        
-    SAFE_RELEASE(m_hnSampler);
-    SAFE_RELEASE(m_linearWrapSampler);
-    SAFE_RELEASE(m_linearclampSampler);
-    
-
+    SAFE_RELEASE(m_pixelShader);    
     SAFE_RELEASE(m_vertexLayout);
-
-    SAFE_RELEASE(m_perFrameCb);
-    SAFE_RELEASE(m_renderStateCb);
-    SAFE_RELEASE(m_perTerrainCb);
-    SAFE_RELEASE(m_perPatchCb);
 
     // solidware frame
     SAFE_RELEASE(m_VSSolidWire);
@@ -86,12 +67,10 @@ TerrainShader::~TerrainShader()
     //  decomap
     SAFE_RELEASE(m_VSDeco);
     SAFE_RELEASE(m_PSDeco);
-    SAFE_RELEASE(m_vertLayoutDeco);
-    SAFE_RELEASE(m_perDecomapCb);  
+    SAFE_RELEASE(m_vertLayoutDeco);    
     SAFE_RELEASE(m_VSDecoBB);  
     SAFE_RELEASE(m_GSDecoBB);  
     SAFE_RELEASE(m_vertLayoutDecoBB);  
-
 }
 
 //---------------------------------------------------------------------------
@@ -105,9 +84,9 @@ void TerrainShader::Initialize(ID3D11Device* device)
     assert(pPSBlob);
 
     // create shaders and state
-    m_vertexShader = CreateVertexShader(device, pVSBlob);
-    m_pixelShader = CreatePixelShader(device, pPSBlob);
-    m_vertexLayout = CreateInputLayout(device, pVSBlob, VertexFormat::VF_P);
+    m_vertexShader = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    m_pixelShader = GpuResourceFactory::CreatePixelShader(pPSBlob);
+    m_vertexLayout = GpuResourceFactory::CreateInputLayout(pVSBlob, VertexFormat::VF_P);
     SAFE_RELEASE(pVSBlob);
     SAFE_RELEASE(pPSBlob);    
     assert(m_vertexShader);
@@ -120,9 +99,9 @@ void TerrainShader::Initialize(ID3D11Device* device)
     pPSBlob = CompileShaderFromResource(L"TerrainShader.hlsl", "PSSolidWire","ps_4_0", NULL);
     assert(pVSBlob && pGSBlob && pPSBlob);
     
-    m_VSSolidWire     = CreateVertexShader(device,pVSBlob);
-    m_GSSolidWire     = CreateGeometryShader(device,pGSBlob);
-    m_PSSolidWire     = CreatePixelShader(device,pPSBlob);
+    m_VSSolidWire     = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    m_GSSolidWire     = GpuResourceFactory::CreateGeometryShader(pGSBlob);
+    m_PSSolidWire     = GpuResourceFactory::CreatePixelShader(pPSBlob);
     assert(m_VSSolidWire && m_GSSolidWire && m_PSSolidWire);
     SAFE_RELEASE(pVSBlob);
     SAFE_RELEASE(pGSBlob);
@@ -134,9 +113,9 @@ void TerrainShader::Initialize(ID3D11Device* device)
     pPSBlob = CompileShaderFromResource(L"TerrainShader.hlsl", "PSNormals","ps_4_0", NULL);
     assert(pVSBlob && pGSBlob && pPSBlob);
     
-    m_VSNormals = CreateVertexShader(device,pVSBlob);
-    m_GSNormals = CreateGeometryShader(device,pGSBlob);
-    m_PSNormals = CreatePixelShader(device,pPSBlob);
+    m_VSNormals = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    m_GSNormals = GpuResourceFactory::CreateGeometryShader(pGSBlob);
+    m_PSNormals = GpuResourceFactory::CreatePixelShader(pPSBlob);
     assert(m_VSNormals && m_GSNormals && m_PSNormals);
     SAFE_RELEASE(pVSBlob);
     SAFE_RELEASE(pGSBlob);
@@ -163,9 +142,8 @@ void TerrainShader::Initialize(ID3D11Device* device)
                                           pVSBlob->GetBufferSize(), &m_vertLayoutDeco );
     assert(m_vertLayoutDeco);
          
-
-    m_VSDeco = CreateVertexShader(device,pVSBlob);    
-    m_PSDeco = CreatePixelShader(device,pPSBlob);
+    m_VSDeco = GpuResourceFactory::CreateVertexShader(pVSBlob);    
+    m_PSDeco = GpuResourceFactory::CreatePixelShader(pPSBlob);
     assert(m_VSDeco && m_PSDeco);
     SAFE_RELEASE(pVSBlob);    
     SAFE_RELEASE(pPSBlob);
@@ -175,8 +153,8 @@ void TerrainShader::Initialize(ID3D11Device* device)
     pGSBlob = CompileShaderFromResource(L"TerrainShader.hlsl", "GSDecoBB","gs_4_0", NULL);    
     assert(pVSBlob && pGSBlob);
 
-    m_VSDecoBB = CreateVertexShader(device,pVSBlob);
-    m_GSDecoBB = CreateGeometryShader(device,pGSBlob);    
+    m_VSDecoBB = GpuResourceFactory::CreateVertexShader(pVSBlob);
+    m_GSDecoBB = GpuResourceFactory::CreateGeometryShader(pGSBlob);
     assert(m_VSDecoBB && m_GSDecoBB);
 
 
@@ -198,40 +176,16 @@ void TerrainShader::Initialize(ID3D11Device* device)
     
 
     // create constant buffers
-    m_perFrameCb    = CreateConstantBuffer(device, sizeof(PerFrameCb));    
-    m_perTerrainCb  = CreateConstantBuffer(device, sizeof(PerTerrainCb));
-    m_renderStateCb = CreateConstantBuffer(device, sizeof(RenderStateCb));
-    m_perPatchCb    = CreateConstantBuffer(device, sizeof(PerPatchCb));
-    m_perDecomapCb  = CreateConstantBuffer(device, sizeof(float4));
+    m_perFrameCb.Construct(device);
+    m_perTerrainCb.Construct(device);
+    m_renderStateCb.Construct(device);
+    m_perPatchCb.Construct(device);
+    m_perDecomapCb.Construct(device);
 
-    assert(m_perFrameCb);
-    assert(m_perTerrainCb);
-    assert(m_renderStateCb);
-    assert(m_perPatchCb);
-    assert(m_perDecomapCb);
 
-    RSCache* rscache = RSCache::Inst();
-    D3D11_SAMPLER_DESC smpDescr = rscache->GetDefaultSampler();
-    smpDescr.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-    smpDescr.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    smpDescr.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    device->CreateSamplerState(&smpDescr, &m_hnSampler);
-    assert(m_hnSampler);
+    //m_hnSampler  point clamp
 
-    //m_linearWrapSampler     
-    smpDescr.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     
-    smpDescr.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    smpDescr.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    device->CreateSamplerState(&smpDescr, &m_linearWrapSampler);
-    assert(m_linearWrapSampler);
-
-    smpDescr.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    smpDescr.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    device->CreateSamplerState(&smpDescr, &m_linearclampSampler);
-    assert(m_linearclampSampler);
-    
-
     // create depth state for rendering wireframe overlay.
     D3D11_DEPTH_STENCIL_DESC depthDescr = RSCache::Inst()->GetDefaultDpDcr();
     depthDescr.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
@@ -243,13 +197,11 @@ void TerrainShader::Initialize(ID3D11Device* device)
 void TerrainShader::SetRenderFlag(RenderFlagsEnum rf)
 {    
     ID3D11DeviceContext*  d3dcontext = m_rc->Context();
-    {
-        RenderStateCb constBuffer;
-        constBuffer.cb_textured   = (rf & RenderFlags::Textured) != 0;
-        constBuffer.cb_lit        = (rf & RenderFlags::Lit) != 0;
-        constBuffer.cb_shadowed   =  ShadowMaps::Inst()->IsEnabled();
-        UpdateConstantBuffer(d3dcontext, m_renderStateCb, &constBuffer, sizeof(constBuffer));
-    }
+    m_renderStateCb.Data.textured   = (rf & RenderFlags::Textured) != 0;
+    m_renderStateCb.Data.lit        = (rf & RenderFlags::Lit) != 0;
+    m_renderStateCb.Data.shadowed   =  ShadowMaps::Inst()->IsEnabled();
+    m_renderStateCb.Update(d3dcontext);
+    
 
     CullModeEnum cullmode = (rf & RenderFlags::RenderBackFace) ? CullMode::NONE : CullMode::BACK;
     auto rasterState = RSCache::Inst()->GetRasterState( FillMode::Solid, cullmode );
@@ -265,33 +217,27 @@ void TerrainShader::SetRenderFlag(RenderFlagsEnum rf)
     d3dcontext->OMSetDepthStencilState(depthState,0);
 }
 
-
-
 //---------------------------------------------------------------------------
 void TerrainShader::Begin(RenderContext* rc)
 {
     m_rc = rc;    
     
     ID3D11DeviceContext*  d3dcontext = m_rc->Context();
-    
-    // update per frame CB
-    PerFrameCb cbuffer;
-    Matrix::Transpose(rc->Cam().View(),cbuffer.cb_view);
-    Matrix::Transpose(rc->Cam().Proj(),cbuffer.cb_proj);                
-    cbuffer.cb_camPosW = rc->Cam().CamPos();
-    cbuffer.viewport = rc->ViewPort();
-    UpdateConstantBuffer(d3dcontext, m_perFrameCb, &cbuffer, sizeof(cbuffer));
-
-    // set input layout.
-    d3dcontext->IASetInputLayout(m_vertexLayout);
-   
-
+        
+    // update per frame CB    
+    Matrix::Transpose(rc->Cam().View(),m_perFrameCb.Data.view);
+    Matrix::Transpose(rc->Cam().Proj(),m_perFrameCb.Data.proj);                
+    m_perFrameCb.Data.camPosW = rc->Cam().CamPos();
+    m_perFrameCb.Data.viewport = rc->ViewPort();
+    m_perFrameCb.Update(d3dcontext);
+        
     ID3D11SamplerState* samplers[] = 
     {           
-        m_hnSampler,
+        RSCache::Inst()->PointClamp(),
         ShadowMaps::Inst()->GetSamplerState(),
-        m_linearWrapSampler,
-        m_linearclampSampler
+        RSCache::Inst()->LinearWrap(),
+        RSCache::Inst()->LinearClamp(),
+        RSCache::Inst()->AnisotropicWrap()
     };
 
     // set vertex shader samplers
@@ -311,12 +257,12 @@ void TerrainShader::Begin(RenderContext* rc)
     // set constant buffers
     ID3D11Buffer* constantBuffers[] = 
     {
-        m_perFrameCb,
-        m_renderStateCb,
-        m_perTerrainCb,
-        m_perPatchCb,
+        m_perFrameCb.GetBuffer(),
+        m_renderStateCb.GetBuffer(),
+        m_perTerrainCb.GetBuffer(),
+        m_perPatchCb.GetBuffer(),
         ShadowMaps::Inst()->GetShadowConstantBuffer(),
-        m_perDecomapCb
+        m_perDecomapCb.GetBuffer()
     };
 
     d3dcontext->VSSetConstantBuffers(0, ARRAY_SIZE(constantBuffers), constantBuffers);
@@ -343,18 +289,16 @@ void TerrainShader::RenderTerrain(TerrainGob* terrain)
     
     bool selected = ( m_rc->selection.find( terrain->GetInstanceId() ) != m_rc->selection.end() );    
     bool wireframe = selected || (gflags & GlobalRenderFlags::WireFrame);
-
-        
-    PerTerrainCb cbuf;
+              
     Matrix world = terrain->GetWorldTransform();
-    cbuf.terrainTrans = float3(&world.M41);
-    cbuf.cellSize = terrain->GetCellSize();
-    cbuf.wirecolor =  selected ? m_rc->State()->GetSelectionColor() : float4(0,1,1,1);    
-    cbuf.fog = m_rc->GlobalFog();    
-    cbuf.hmSize.x = (float) terrain->GetNumCols();
-    cbuf.hmSize.y = (float) terrain->GetNumRows();
-    cbuf.hmTexelsize.x = 1.0f / (float) terrain->GetNumCols();
-    cbuf.hmTexelsize.y = 1.0f / (float) terrain->GetNumRows();
+    m_perTerrainCb.Data.terrainTrans = float3(&world.M41);
+    m_perTerrainCb.Data.cellSize = terrain->GetCellSize();
+    m_perTerrainCb.Data.wirecolor =  selected ? m_rc->State()->GetSelectionColor() : float4(0,1,1,1);    
+    m_perTerrainCb.Data.fog = m_rc->GlobalFog();    
+    m_perTerrainCb.Data.hmSize.x = (float) terrain->GetNumCols();
+    m_perTerrainCb.Data.hmSize.y = (float) terrain->GetNumRows();
+    m_perTerrainCb.Data.hmTexelsize.x = 1.0f / (float) terrain->GetNumCols();
+    m_perTerrainCb.Data.hmTexelsize.y = 1.0f / (float) terrain->GetNumRows();
     
                
     // set hight map views
@@ -373,15 +317,16 @@ void TerrainShader::RenderTerrain(TerrainGob* terrain)
         LayerMap* layermap = layermaps[i];
         if(!layermap->IsVisible()) continue;
 
-        cbuf.layerTexScale[k] = float4(layermap->GetTextureScale(),0,0,0);
+        m_perTerrainCb.Data.layerTexScale[k] = float4(layermap->GetTextureScale(),0,0,0);
         layervews[k] = layermap->GetDiffuse()->GetView();
         maskvews[k] = layermap->GetMask()->GetView();
         bumpmapviews[k] = layermap->GetNormal()->GetView();
         k++;
     }
     int32_t numlayers = k;
-    cbuf.numLayers = (float) min(MaxNumLayers, numlayers);
-    UpdateConstantBuffer(d3dcontext, m_perTerrainCb, &cbuf, sizeof(cbuf));
+    m_perTerrainCb.Data.numLayers = (float) min(MaxNumLayers, numlayers);
+    m_perTerrainCb.Update(d3dcontext);
+    
     // replace mask of the first layer to full-mask.
     maskvews[0]  = TextureLib::Inst()->GetDefault(TextureType::FullMask)->GetView();
 
@@ -403,8 +348,10 @@ void TerrainShader::RenderTerrain(TerrainGob* terrain)
     uint32_t indexCount = ib->GetCount();
     ID3D11Buffer* d3dvb = vb->GetBuffer();
     ID3D11Buffer* d3dib = ib->GetBuffer();
+    
+    d3dcontext->IASetVertexBuffers(0, 1, &d3dvb, &stride, &offset);
+    d3dcontext->IASetIndexBuffer(d3dib, (DXGI_FORMAT)ib->GetFormat(), 0);
 
-    PerPatchCb patchCb;    
     for(int i = 0; i < 3; i++)
     {
         if(gflags & GlobalRenderFlags::Solid) 
@@ -443,29 +390,24 @@ void TerrainShader::RenderTerrain(TerrainGob* terrain)
         
         for(auto it = patches.begin(); it != patches.end(); it++)
         {
-             patchCb.cb_lightEnv = it->lighting;
-             patchCb.patchTrans = float3((float)it->x,0,(float)it->y);
-             UpdateConstantBuffer(m_rc->Context(), m_perPatchCb, &patchCb, sizeof(patchCb));
-                          
-             d3dcontext->IASetVertexBuffers(0, 1, &d3dvb, &stride, &offset);
-             d3dcontext->IASetIndexBuffer(d3dib, DXGI_FORMAT_R32_UINT, 0);
+             m_perPatchCb.Data.lightEnv = it->lighting;
+             m_perPatchCb.Data.patchTrans = float3((float)it->x,0,(float)it->y);
+             m_perPatchCb.Update(d3dcontext);             
              d3dcontext->DrawIndexed(indexCount, startIndex, startVertex);
         }
     }
-
-
+    
     
     d3dcontext->PSSetShader(m_PSDeco, NULL, 0);
     
     Mesh* decomesh = ShapeLibGetMesh(RenderShape::AsteriskQuads);
     const DecorationMapList& decolist = terrain->GetDecorationMaps();
-
-
+    
     UINT strides[2] = {decomesh->vertexBuffer->GetStride(), sizeof(float2)};
     UINT offsets[2] = {0,0};
     ID3D11Buffer* vbs[2] = {decomesh->vertexBuffer->GetBuffer(), NULL};
 
-    d3dcontext->IASetIndexBuffer(decomesh->indexBuffer->GetBuffer(), DXGI_FORMAT_R32_UINT, 0);
+    d3dcontext->IASetIndexBuffer(decomesh->indexBuffer->GetBuffer(), (DXGI_FORMAT)decomesh->indexBuffer->GetFormat(), 0);
     flags |= RenderFlags::RenderBackFace;
     SetRenderFlag((RenderFlagsEnum)flags);
      // set blend state 
@@ -489,9 +431,9 @@ void TerrainShader::RenderTerrain(TerrainGob* terrain)
         float h =(float) desc.Height;
         float w =(float) desc.Width;
         float3 scale =  (w >= h) ? float3(1,h/w,1) : float3(w/h,1,w/h);
-        scale = scale * map->GetScale();                       
-        UpdateConstantBuffer(d3dcontext, m_perDecomapCb, &scale, sizeof(scale));
-                
+        m_perDecomapCb.Data = scale * map->GetScale();                       
+        m_perDecomapCb.Update(d3dcontext);
+                        
         layervews[0] = diffuse->GetView();
         bumpmapviews[0] = map->GetNormal()->GetView();
         d3dcontext->PSSetShaderResources(2,1,layervews);        

@@ -34,16 +34,10 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             m_graphAdapter = graphAdapter;
             m_draggingContext = new EdgeDraggingContext(this);
 
-            OverRouteCursor = Cursors.UpArrow;
-            FromPlaceCursor = Cursors.UpArrow;
-            ToPlaceCursor = Cursors.UpArrow;
-            InadmissibleCursor = Cursors.No;
-
-            //// For Santa Monica:
-            //OverRouteCursor = Cursors.Cross;
-            //FromPlaceCursor = Cursors.PanWest;
-            //ToPlaceCursor = Cursors.PanEast;
-            //InadmissibleCursor = Cursors.Cross;
+            OverRouteCursor = Cursors.Cross;
+            FromPlaceCursor = Cursors.PanWest;
+            ToPlaceCursor = Cursors.PanEast;
+            InadmissibleCursor = Cursors.Cross;
         }
 
         /// <summary>
@@ -306,17 +300,6 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
             Debug.Assert(dragFromRoute != null || dragToRoute != null);
 
-            //// --> debug
-            //if (m_draggingContext.DragFromRoute != null && m_draggingContext.DragToNode != null)
-            //{
-            //    if (m_draggingContext.DragFromNode != m_draggingContext.DragToNode)
-            //    {
-            //        dragFromNode = m_draggingContext.ActualFromNode();
-            //        dragFromRoute = m_draggingContext.ActualFromRoute(dragFromNode);
-            //        //bool result = m_editableGraph.CanConnect(dragFromNode, dragFromRoute, dragToNode, dragToRoute);
-            //    }
-            //}// <-- debug
-
             PointF start = dragFromRoute == null ? m_edgeDragPoint : m_draggingContext.FromRoutePos;
             PointF end = dragToRoute == null ? m_edgeDragPoint : m_draggingContext.ToRoutePos;
 
@@ -516,11 +499,11 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                         {
                             if (m_mousePick.FromRoute != null && !m_mousePick.FromRoute.AllowFanOut)
                             {
-                                m_draggingContext.ExistingEdge = GetFirstEdgeFrom(m_mousePick.Node, m_mousePick.FromRoute);
+                                m_draggingContext.ExistingEdge = GetFirstEdgeFrom(m_draggingContext.ActualFromNode(), m_mousePick.FromRoute);
                             }
                             else if (m_mousePick.ToRoute != null && !m_mousePick.ToRoute.AllowFanIn)
                             {
-                                m_draggingContext.ExistingEdge = GetFirstEdgeTo(m_mousePick.Node, m_mousePick.ToRoute);
+                                m_draggingContext.ExistingEdge = GetFirstEdgeTo(m_draggingContext.ActualToNode(), m_mousePick.ToRoute);
                             }
                         }
 
@@ -657,8 +640,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             //    if (m_draggingContext.DragFromNode != m_draggingContext.DragToNode)
             //    {
             //        dragToNode = m_draggingContext.ActualToNode();
-            //        dragToRoute = m_draggingContext.ActualToRoute(dragToNode);                 
-            //        bool result = m_mainEditableGraph.CanConnect(dragFromNode, dragFromRoute, dragToNode, dragToRoute);
+            //        dragToRoute = m_draggingContext.ActualToRoute(dragToNode);
+            //        bool result = DraggingContext.EditableGraph.CanConnect(dragFromNode, dragFromRoute, dragToNode, dragToRoute);
             //    }
             //}// <-- debug
 
@@ -696,7 +679,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             TEdge result = null;
             if (!m_mousePick.ToRoute.AllowFanIn)
             {
-                result = GetFirstEdgeTo(m_mousePick.SubNode ?? m_mousePick.Node, m_mousePick.ToRoute);
+                TNode dragToNode = m_draggingContext.ActualToNode();
+                result = GetFirstEdgeTo(dragToNode, m_mousePick.ToRoute);
                 if (!CanDisconnect(result))
                     result = null;
             }
@@ -708,7 +692,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
             TEdge result = null;
             if (!m_mousePick.FromRoute.AllowFanOut)
             {
-                result = GetFirstEdgeFrom(m_mousePick.SubNode ?? m_mousePick.Node, m_mousePick.FromRoute);
+                result = GetFirstEdgeFrom(m_draggingContext.ActualFromNode(), m_mousePick.FromRoute);
                 if (!CanDisconnect(result))
                     result = null;
             }
@@ -735,38 +719,40 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         protected TEdge GetFirstEdgeTo(TNode node, object toRoute)
         {
             if (m_mousePick.SubNode == null) // top level
+                return FindFirstEdgeInGraph(m_mainGraph, node, toRoute as TEdgeRoute, false);
+
+
+            IGraph<TNode, TEdge, TEdgeRoute> parenGraph = null;
+            object parent = null;
+            for (int i = m_mousePick.HitPath.Count - 1; i >= 0; --i)
             {
-                foreach (TEdge edge in m_mainGraph.Edges)
-                    if (edge.ToNode == node && edge.ToRoute.Equals(toRoute))
-                        return edge;
+                var current  = m_mousePick.HitPath[i];
+                if (current == node)
+                {
+                    if (i > 0)
+                        parent = m_mousePick.HitPath[i - 1];
+                    break;
+                }
             }
-            else if (EdgeRouteTraverser != null)
+       
+
+            parenGraph = parent.As<IGraph<TNode, TEdge, TEdgeRoute>>();
+            if (parenGraph == null)
+                return null;
+
+
+            if (EdgeRouteTraverser != null) // ask for external helper, because client know more about the graph hierarchy
             {
-                IGraph<TNode, TEdge, TEdgeRoute> parenGraph = null;
-                var parent = m_mousePick.HitPath[m_mousePick.HitPath.Count - 2];
-                TEdgeRoute edgeRoute = EdgeRouteTraverser(m_mousePick.HitPath, parent, toRoute.Cast<TEdgeRoute>());
-
-                if (parent == m_mousePick.Node) // parent node is at top level
-                {
-                    parenGraph = m_mainGraph;
-                }
-                else
-                {
-                    parenGraph = m_mousePick.HitPath[m_mousePick.HitPath.Count - 2].As<IGraph<TNode, TEdge, TEdgeRoute>>();
-
-                }
-
+                TEdgeRoute edgeRoute = EdgeRouteTraverser(m_mousePick.HitPath, node, toRoute.Cast<TEdgeRoute>());
                 if (parenGraph != null)
-                {
-                    foreach (TEdge edge in parenGraph.Edges)
-                        if (edge.ToNode == parent && edge.ToRoute.Equals(edgeRoute))
-                            return edge;
-                }
-
+                    return FindFirstEdgeInGraph(parenGraph, node, edgeRoute, false);
 
             }
+
             return null;
         }
+
+
 
         /// <summary>
         /// Gets the IGraphEdge from a given IGraphNode with given "from" IEdgeRoute</summary>
@@ -776,35 +762,51 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         protected TEdge GetFirstEdgeFrom(TNode node, object fromRoute)
         {
             if (m_mousePick.SubNode == null) // top level
+                return FindFirstEdgeInGraph(m_mainGraph, node, fromRoute as TEdgeRoute, true);
+
+            IGraph<TNode, TEdge, TEdgeRoute> parenGraph = null;
+            object parent = null;
+            for (int i = m_mousePick.HitPath.Count - 1; i >= 0; --i)
             {
-                foreach (TEdge edge in m_mainGraph.Edges)
-                    if (edge.FromNode == node && edge.FromRoute.Equals(fromRoute))
-                        return edge;
+                var current = m_mousePick.HitPath[i];
+                if (current == node)
+                {
+                    if (i > 0)
+                        parent = m_mousePick.HitPath[i - 1];
+                    break;
+                }
             }
-            else if (EdgeRouteTraverser != null)
+
+
+            parenGraph = parent.As<IGraph<TNode, TEdge, TEdgeRoute>>();
+            if (parenGraph == null)
+                return null;
+            if (EdgeRouteTraverser != null)
             {
-                IGraph<TNode, TEdge, TEdgeRoute> parenGraph = null;
-                var parent = m_mousePick.HitPath[m_mousePick.HitPath.Count - 2];
                 TEdgeRoute edgeRoute = EdgeRouteTraverser(m_mousePick.HitPath, parent, fromRoute.Cast<TEdgeRoute>());
 
-                if (parent == m_mousePick.Node) // parent node is at top level
-                {
-                    parenGraph = m_mainGraph;
-                }
-                else
-                {
-                    parenGraph = m_mousePick.HitPath[m_mousePick.HitPath.Count - 2].As<IGraph<TNode, TEdge, TEdgeRoute>>();
-
-                }
-
                 if (parenGraph != null)
-                {
-                    foreach (TEdge edge in parenGraph.Edges)
-                        if (edge.FromNode == parent && edge.FromRoute.Equals(edgeRoute))
-                            return edge;
-                }
+                    return FindFirstEdgeInGraph(parenGraph, node, edgeRoute, true);
+
             }
 
+            return null;
+        }
+
+        private TEdge FindFirstEdgeInGraph(IGraph<TNode, TEdge, TEdgeRoute> graph, TNode node, TEdgeRoute route, bool fromEdge)
+        {
+            if (fromEdge)
+            {
+                foreach (TEdge edge in graph.Edges)
+                    if (edge.FromNode == node && edge.FromRoute.Equals(route))
+                        return edge;
+            }
+            else
+            {
+                foreach (TEdge edge in graph.Edges)
+                    if (edge.ToNode == node && edge.ToRoute.Equals(route))
+                        return edge;
+            }
             return null;
         }
 

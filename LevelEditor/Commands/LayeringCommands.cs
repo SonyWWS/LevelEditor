@@ -29,6 +29,7 @@ namespace LevelEditor.Commands
             m_contextMenuStrip.AutoClose = true;
             
             m_addLayer = new ToolStripMenuItem("New Layer".Localize());
+            m_addLayer.ToolTipText = "Creates a new layer folder".Localize();
             m_addLayer.Click += (sender, e) => AddNewLayer();
             
             m_deleteLayer = new ToolStripMenuItem("Delete".Localize());

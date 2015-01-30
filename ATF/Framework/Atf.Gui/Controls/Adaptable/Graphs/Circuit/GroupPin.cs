@@ -30,11 +30,11 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         protected abstract AttributeInfo PinYAttribute { get; }
 
         /// <summary>
-        /// Gets module (associated internal subelement) attribute for group pin</summary>
+        /// Gets module (associated internal sub-element) attribute for group pin</summary>
         protected abstract AttributeInfo ElementAttribute { get; }
 
         /// <summary>
-        /// Gets pin (associated internal subpin) attribute for group pin</summary>
+        /// Gets pin (associated internal sub-pin) attribute for group pin</summary>
         protected abstract AttributeInfo PinAttribute { get; }
 
         /// <summary>
@@ -98,22 +98,13 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// Gets the default group pin name</summary>
         /// <param name="inputSide">True iff pin is on input side</param>
         /// <returns>Default group pin name</returns>
-        /// <remarks>The group pin default naming convention: internal-element-name: internal-pin-name</remarks>
+        /// <remarks>The group pin default naming convention: "{internal-element-name}:{internal-pin-name}"</remarks>
         public virtual string DefaultName(bool inputSide)
         {
-            string pinName;
-            if (InternalElement.Type.Is<Group>())
-            {
-                var group = InternalElement.Type.Cast<Group>();
-                var groupPin = inputSide
-                                   ? group.InputGroupPins.First(n => n.Index == InternalPinIndex)
-                                   : group.OutputGroupPins.First(n => n.Index == InternalPinIndex);
-                pinName = groupPin.Name;
-            }
-            else
-                pinName = inputSide
-                            ? InternalElement.Type.Inputs[InternalPinIndex].Name
-                            : InternalElement.Type.Outputs[InternalPinIndex].Name;
+            string pinName =
+                inputSide
+                ? InternalElement.InputPin(InternalPinIndex).Name
+                : InternalElement.OutputPin(InternalPinIndex).Name;
                    
             return InternalElement.Name + ":" + pinName;
         }
@@ -154,7 +145,8 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         }
 
         /// <summary>
-        /// Gets the index of the pin on InternalElement that this group pin connects to</summary>
+        /// Gets the "index" (really an ID) of the pin on InternalElement that this group pin
+        /// connects to. Use this with InternalElement.GetInputPin(index) or Group.InputPin(index).</summary>
         public int InternalPinIndex
         {
             get { return GetAttribute<int>(PinAttribute); }
@@ -269,7 +261,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
                         var parentPins = inputSide ? parentSubGraph.InputGroupPins : parentSubGraph.OutputGroupPins;
                         foreach (var parentPin in parentPins)
                         {
-                            if (parentPin.InternalElement == subGraph && parentPin.InternalPinIndex == grpPin.Index)
+                            if (parentPin.InternalElement.DomNode == subGraph.DomNode && parentPin.InternalPinIndex == grpPin.Index)
                             {
                                 nextGrpPin = parentPin;
                                 domNode = nextGrpPin.DomNode;
@@ -306,7 +298,7 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         /// <summary>
         /// Performs initialization when the adapter's node is set.
         /// This method is called each time the adapter is connected to its underlying node.
-        /// Subscribes to attibute changed event. Sets up CircuitGroupPinInfo and group.</summary>
+        /// Subscribes to attribute changed event. Sets up CircuitGroupPinInfo and group.</summary>
         protected override void OnNodeSet()
         {
             DomNode.AttributeChanged += DomNode_AttributeChanged;

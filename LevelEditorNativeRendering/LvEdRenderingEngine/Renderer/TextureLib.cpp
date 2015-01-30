@@ -7,10 +7,11 @@
 #include "../Core/ResUtil.h"
 #include "../Core/FileUtils.h"
 #include "../Core/Logger.h"
-#include "../DirectX/DDSTextureLoader/DDSTextureLoader.h"
+#include "GpuResourceFactory.h"
 #include "../DirectX/WICTextureLoader/WICTextureLoader.h"
 #include <map>
 
+using namespace DirectX;
 namespace LvEdEngine
 {
 
@@ -53,7 +54,9 @@ Texture* TextureLib::GetByName(const wchar_t* name)
 TextureLib::TextureLib()
 {
     m_pImple = new Imple();
-
+    for(int i = TextureType::MIN; i < TextureType::MAX; ++i)
+        m_pImple->m_defaultTextures[i] = NULL;
+    
 }
 TextureLib::~TextureLib()
 {
@@ -74,7 +77,7 @@ TextureLib::~TextureLib()
 }
 
 
-static Texture* CreateCheckerboardTexture2D(ID3D11Device* device, int w, int h, uint32_t color1,  uint32_t color2, bool cubemap = false);
+static Texture* CreateCheckerboardTexture2D(ID3D11Device* device, int w, int h, uint32_t color1,  uint32_t color2, bool cubemap = false, bool useSRGBView = false);
 
 
 void TextureLib::InitInstance(ID3D11Device* device)
@@ -82,15 +85,27 @@ void TextureLib::InitInstance(ID3D11Device* device)
     s_Inst = new TextureLib();
     Imple* pImple = s_Inst->m_pImple;
     
-    // color format ABGR
-    pImple->m_defaultTextures[TextureType::DIFFUSE] = CreateCheckerboardTexture2D(device, 128, 128, 0xFF404040, 0xFF808080);
+    
+    pImple->m_defaultTextures[TextureType::DIFFUSE] = CreateCheckerboardTexture2D(device, 128, 128, 0xFF404040, 0xFF808080, false,true);
+    pImple->m_defaultTextures[TextureType::DIFFUSE]->SetTextureType(TextureType::DIFFUSE);
+
     pImple->m_defaultTextures[TextureType::Cubemap] = CreateCheckerboardTexture2D(device, 128, 128, 0xff000040, 0xff000080, true);
+    pImple->m_defaultTextures[TextureType::Cubemap]->SetTextureType(TextureType::Cubemap);
 
     pImple->m_defaultTextures[TextureType::NORMAL] = CreateSolidTexture2D(device, 8, 8, 0xFFFF8080);
+    pImple->m_defaultTextures[TextureType::NORMAL]->SetTextureType(TextureType::NORMAL);
+
     pImple->m_defaultTextures[TextureType::LIGHT] = CreateSolidTexture2D(device, 8, 8, 0xFFFFFFFF);
+    pImple->m_defaultTextures[TextureType::LIGHT]->SetTextureType(TextureType::LIGHT);
+
     pImple->m_defaultTextures[TextureType::SPEC] = CreateSolidTexture2D(device, 8, 8, 0xFF000000);    
+    pImple->m_defaultTextures[TextureType::SPEC]->SetTextureType(TextureType::SPEC);
+
     pImple->m_defaultTextures[TextureType::BlankMask] = CreateSolidTexture2D(device, 4, 4, 0x00);
+    pImple->m_defaultTextures[TextureType::BlankMask]->SetTextureType(TextureType::BlankMask);
+
     pImple->m_defaultTextures[TextureType::FullMask] = CreateSolidTexture2D(device, 4, 4, 0xFFFFFFFF);
+    pImple->m_defaultTextures[TextureType::FullMask]->SetTextureType(TextureType::FullMask);
     
     pImple->m_whiteTexture = CreateSolidTexture2D(device, 8, 8, 0xFFFFFFFF);
 
@@ -134,7 +149,7 @@ void TextureLib::InitInstance(ID3D11Device* device)
  
 
 // ----------------------------------------------------------------------------------------------
-static Texture* CreateCheckerboardTexture2D(ID3D11Device* device, int w, int h, uint32_t color1,  uint32_t color2,bool cubemap)
+static Texture* CreateCheckerboardTexture2D(ID3D11Device* device, int w, int h, uint32_t color1,  uint32_t color2,bool cubemap, bool useSRGBView)
 {
     int slicePitch = w * h;
     int numslices = cubemap? 6 : 1;
@@ -152,12 +167,13 @@ static Texture* CreateCheckerboardTexture2D(ID3D11Device* device, int w, int h, 
     }
     }
 
-    ID3D11Texture2D * tex = CreateDxTexture2D(device, buf, w, h, cubemap);
-    ID3D11ShaderResourceView * view = CreateTextureView(device, tex);
+    ID3D11Texture2D* tex = GpuResourceFactory::CreateDxTexture2D(buf, w, h, cubemap);
+    ID3D11ShaderResourceView* view = GpuResourceFactory::CreateTextureView(tex);
     assert(tex);
     assert(view);
     delete[] buf;
-    return new Texture(tex, view);
+    Texture* texture =  new Texture(tex, view);    
+    return texture;
 }
 
 

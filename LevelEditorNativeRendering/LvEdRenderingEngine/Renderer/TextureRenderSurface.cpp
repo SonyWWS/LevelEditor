@@ -2,7 +2,7 @@
 
 #include "TextureRenderSurface.h"
 #include "Texture.h"
-#include "RenderUtil.h"
+#include "../DirectX/DXUtil.h"
 #include "../Core/Logger.h"
 
 
@@ -92,7 +92,7 @@ TextureRenderSurface::TextureRenderSurface(ID3D11Device* pd3dDevice,
             return;
         }        
 
-        Render_SetDebugName(pDepthStencil,  "depth buffer");
+        DXUtil::SetDebugName(pDepthStencil,  "depth buffer");
         
         
         
@@ -119,7 +119,7 @@ TextureRenderSurface::TextureRenderSurface(ID3D11Device* pd3dDevice,
         {
             return;
         }        
-        Render_SetDebugName(colorBuffer,  "color buffer");
+        DXUtil::SetDebugName(colorBuffer,  "color buffer");
 
         hr = pd3dDevice->CreateRenderTargetView( colorBuffer, NULL, &m_pRenderTargetView );
         if (Logger::IsFailureLog(hr, L"CreateRenderTargetView"))
@@ -127,7 +127,7 @@ TextureRenderSurface::TextureRenderSurface(ID3D11Device* pd3dDevice,
             return;
         } 
 
-        Render_SetDebugName(m_pRenderTargetView,  "render target view");
+        DXUtil::SetDebugName(m_pRenderTargetView,  "render target view");
 
         ID3D11ShaderResourceView* colorBufferView;
         hr = pd3dDevice->CreateShaderResourceView(colorBuffer, NULL, &colorBufferView);
@@ -136,7 +136,7 @@ TextureRenderSurface::TextureRenderSurface(ID3D11Device* pd3dDevice,
             return;
         }
 
-        Render_SetDebugName(colorBufferView,  "color buffer shader-view");
+        DXUtil::SetDebugName(colorBufferView,  "color buffer shader-view");
 
         m_pColorBuffer = new Texture(colorBuffer,colorBufferView);
     }

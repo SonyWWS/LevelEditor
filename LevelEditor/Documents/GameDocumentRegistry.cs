@@ -7,6 +7,8 @@ using System.ComponentModel.Composition;
 using Sce.Atf;
 
 using LevelEditorCore;
+using Sce.Atf.Adaptation;
+using Sce.Atf.Dom;
 
 namespace LevelEditor
 {
@@ -49,27 +51,41 @@ namespace LevelEditor
             return m_documents.Contains(doc);
         }
 
-        /// <summary>
-        /// Event that is raised after a document is added</summary>
-        public event EventHandler<ItemInsertedEventArgs<IGameDocument>> DocumentAdded = delegate { };
+        public bool AnyDocumentDirty
+        {
+            get;
+            private set;
+        }
 
-        /// <summary>
-        /// Event that is raised after a document is removed</summary>
-        public event EventHandler<ItemRemovedEventArgs<IGameDocument>> DocumentRemoved = delegate { }; 
-      
+        public bool AnyEditableResourceOwnerDirty
+        {
+            get;
+            private set;
+        }
+
+        public event EventHandler<ItemInsertedEventArgs<IGameDocument>> DocumentAdded = delegate { };   
+        public event EventHandler<ItemRemovedEventArgs<IGameDocument>> DocumentRemoved = delegate { };
+        public event EventHandler<ItemChangedEventArgs<IGameDocument>> DocumentDirtyChanged = delegate { };
+        public event EventHandler<ItemChangedEventArgs<IGameDocument>> DocumentUriChanged = delegate { };        
+        public event EventHandler<ItemChangedEventArgs<IEditableResourceOwner>> EditableResourceOwnerDirtyChanged = delegate { };
+        
         public void Add(IGameDocument doc)
         {
             if (doc == null)
                 throw new ArgumentNullException("doc");
-
+            
             if(!m_documents.Contains(doc))
             {
                 m_documents.Add(doc);
+                doc.DirtyChanged += OnDocumentDirtyChanged;
+                doc.UriChanged += OnDocumentUriChanged;                
+                doc.EditableResourceOwnerDirtyChanged += OnResourceDirtyChanged;
+                UpdateAnyDocDirty();
+                UpdateAnyResourceDirty();
                 DocumentAdded(this, new ItemInsertedEventArgs<IGameDocument>(m_documents.Count - 1, doc));
             }
-            
         }
-      
+
         public void Remove(IGameDocument doc)
         {
             if (doc == null)
@@ -83,6 +99,12 @@ namespace LevelEditor
                 Remove(gameDocRef.Target);
             }
             m_documents.Remove(doc);
+            doc.DirtyChanged -= OnDocumentDirtyChanged;
+            doc.UriChanged -= OnDocumentUriChanged;
+            doc.EditableResourceOwnerDirtyChanged -= OnResourceDirtyChanged;
+
+            UpdateAnyDocDirty();
+            UpdateAnyResourceDirty();
             DocumentRemoved(this, new ItemRemovedEventArgs<IGameDocument>(0, doc));
         }
 
@@ -96,6 +118,62 @@ namespace LevelEditor
             }
         }
 
-        private List<IGameDocument> m_documents = new List<IGameDocument>();        
+        private void OnResourceDirtyChanged(object sender, ItemChangedEventArgs<IEditableResourceOwner> e)
+        {
+            UpdateAnyResourceDirty();
+            EditableResourceOwnerDirtyChanged(this, e);
+        }
+
+        private void OnDocumentDirtyChanged(object sender, EventArgs e)
+        {
+            UpdateAnyDocDirty();
+            IGameDocument doc = (IGameDocument)sender;
+            DocumentDirtyChanged(this, new ItemChangedEventArgs<IGameDocument>(doc));
+        }
+
+        private void OnDocumentUriChanged(object sender, UriChangedEventArgs e)
+        {
+            UpdateAnyResourceDirty();
+            IGameDocument doc = (IGameDocument)sender;            
+            DocumentUriChanged(this, new ItemChangedEventArgs<IGameDocument>(doc));
+        }
+        private void UpdateAnyDocDirty()
+        {
+            AnyDocumentDirty = false;
+            foreach (var doc in Documents)
+            {
+                AnyDocumentDirty = doc.Dirty;
+                if (AnyDocumentDirty) break;
+            }
+        }
+
+        /// <summary>
+        /// Find all objects of type T in all the open game documents</summary>        
+        public IEnumerable<T> FindAll<T>()
+            where T : class
+        {            
+            foreach (IGameDocument doc in Documents)
+            {
+                DomNode folderNode = doc.RootGameObjectFolder.Cast<DomNode>();
+                foreach (DomNode childNode in folderNode.Subtree)
+                {
+                    T t = childNode.As<T>();
+                    if (t != null)
+                        yield return t;
+                }
+            }
+        }
+
+        private void UpdateAnyResourceDirty()
+        {
+            AnyEditableResourceOwnerDirty = false;
+            foreach (var resOwner in FindAll<IEditableResourceOwner>())
+            {
+                AnyEditableResourceOwnerDirty = resOwner.Dirty;
+                if (AnyEditableResourceOwnerDirty) break;
+            }
+        }
+
+        private readonly List<IGameDocument> m_documents = new List<IGameDocument>();        
     }
 }

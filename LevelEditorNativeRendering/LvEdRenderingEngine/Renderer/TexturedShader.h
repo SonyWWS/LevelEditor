@@ -10,6 +10,7 @@
 #include "ShadowMaps.h"
 #include "RenderSurface.h"
 #include "Lights.h"
+#include "RenderBuffer.h"
 
 namespace LvEdEngine 
 {
@@ -43,79 +44,48 @@ public:
     //  Called after drawing.
     //  Perform any needed post-drawing cleanup.
     virtual void End();
-
-    //-------------------------------------------------------------------
-
-    ShadowMaps*             ShadowMapState()    { return m_ShadowMapState; }
-
 private:
     
-    void                        DrawRenderable(const RenderableNode& r);                   
-
+    void                        DrawRenderable(const RenderableNode& r);
     RenderContext*              m_rc;        
-
-    ShadowMaps*                 m_ShadowMapState;
 
     ID3D11VertexShader*         m_shaderSceneRenderVS;
     ID3D11PixelShader*          m_shaderSceneRenderPS;
-
     ID3D11InputLayout*          m_pVertexLayoutMesh;
-    ID3D11RasterizerState*      m_rasterStateSolid;
-
-    ID3D11SamplerState*         m_pSceneSamplerState;
-
-    ID3D11Buffer*               m_pConstantBufferPerFrame;
-    ID3D11Buffer*               m_pConstantBufferPerDraw;
-    ID3D11Buffer*               m_pConstantBufferRenderState;
-
-    //---------------------------------------------------------------------------
-    //  ConstantBufferPerFrame
-    //
-    //---------------------------------------------------------------------------
     
-    struct ConstantBufferPerFrame
+    struct PerFrameCb
     {    
         Matrix cb_view;
         Matrix cb_proj;
-        ExpFog  fog;
+        ExpFog cb_fog;
         float3 cb_camPosW;
-        float  pad;
-    };
-
-
-    //---------------------------------------------------------------------------
-    //  ConstantBufferPerDraw
-    //
-    //---------------------------------------------------------------------------
-    
-    struct ConstantBufferPerDraw
+        float  cb_pad;
+    };    
+    struct PerDrawCb
     {
-        Matrix              cb_world;
-        Matrix              cb_worldInvTrans;
-        Matrix              cb_textureTrans;
-        float4              cb_matEmissive;
-        float4              cb_matDiffuse;
-        float4              cb_matSpecular;
-        LightEnvironment    cb_lighting;
-        int                 cb_hasDiffuseMap;
-        int                 cb_hasNormalMap;
-        int                 cb_hasSpecularMap;
-        int                 cb_pad1;
-    };
-
-    //---------------------------------------------------------------------------
-    //  ConstantBufferRenderState
-    //
-    //  Duplicated in TexturedShader.hlsl
-    //---------------------------------------------------------------------------
-    
-    struct ConstantBufferRenderState
+        Matrix           cb_world;
+        Matrix           cb_worldInvTrans;
+        Matrix           cb_textureTrans;
+        float4           cb_matEmissive;
+        float4           cb_matDiffuse;
+        float4           cb_matSpecular;
+        LightEnvironment cb_lighting;
+        int              cb_hasDiffuseMap;
+        int              cb_hasNormalMap;
+        int              cb_hasSpecularMap;
+        int              cb_pad;
+    };    
+    struct RenderStateCb
     {
         int   cb_textured;
         int   cb_lit;
         int   cb_shadowed;
-        int   pad;
+        int   cb_pad;
     };
+
+    TConstantBuffer<PerFrameCb>    m_perFrameCb;
+    TConstantBuffer<PerDrawCb>     m_perDrawCb;
+    TConstantBuffer<RenderStateCb> m_renderStateCb;
 };
 
 }; // namespace LvEdEngine

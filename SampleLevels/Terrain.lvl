@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <game xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="Game" fogEnabled="true" fogColor="-6901028" fogRange="4000" fogDensity="0.33" xmlns="gap">
 	<gameObjectFolder name="GameObjects" visible="true" locked="false">
-		<gameObject xsi:type="terrainGobType" transform="1 0 0 0 0 1 0 0 0 0 1 0 -1024 0 -1024 1" translate="-1024 0 -1024" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Terrain" visible="true" locked="false" transformationType="1" cellSize="1" heightMap="HieghtMaps/Terrain.dds" />
+		<gameObject xsi:type="terrainGobType" transform="1 0 0 0 0 1 0 0 0 0 1 0 -1024 0 -1024 1" translate="-1024 0 -1024" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="Terrain" visible="true" locked="false" transformationType="1" cellSize="1" heightMap="HeightMaps/Terrain.dds" />
 		<gameObject xsi:type="cubeTestType" transform="1 0 0 0 0 1 0 0 0 0 1 0 255.958984 0.5767082 66.8818359 1" translate="255.958984 0.5767082 66.8818359" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="CubeTest" visible="true" locked="false" transformationType="15" color="-1" diffuse="" normal="" textureTransform="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1" />
 		<gameObject xsi:type="skyDomeType" transform="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1" translate="0 0 0" rotate="0 0 0" scale="1 1 1" pivot="0 0 0" name="SkyDome" visible="true" locked="false" transformationType="15" cubeMap="" />
 	</gameObjectFolder>

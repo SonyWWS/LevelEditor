@@ -4,6 +4,7 @@
 #include "RenderBuffer.h"
 #include "Model.h"
 #include "RenderUtil.h"
+#include "GpuResourceFactory.h"
 
 
 namespace LvEdEngine
@@ -252,9 +253,9 @@ static Mesh* CreateUnitQuadLine(ID3D11Device* device)
 {
     Mesh* mesh = new Mesh();
     mesh->primitiveType = PrimitiveType::LineStrip;
-
     CreateQuadLine(0.5f, 0.5f, &mesh->pos);
-    mesh->vertexBuffer = CreateVertexBuffer(device, VertexFormat::VF_P, (void*)&mesh->pos[0], (uint32_t)mesh->pos.size());    
+    //mesh->vertexBuffer = CreateVertexBuffer(device, VertexFormat::VF_P, (void*)&mesh->pos[0], (uint32_t)mesh->pos.size());    
+    mesh->Construct(device);
     
 #if defined(DEBUG) || defined(_DEBUG)
     mesh->vertexBuffer->SetDebugName("UnitQuadLine");    

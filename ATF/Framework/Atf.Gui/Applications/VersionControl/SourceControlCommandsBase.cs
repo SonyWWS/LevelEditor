@@ -653,7 +653,7 @@ namespace Sce.Atf.Applications
             foreach (IResource resource in SourceControlContext.Resources)
             {
                 SourceControlStatus status = GetStatus(resource);
-                if (status != SourceControlStatus.CheckedOut && status != SourceControlStatus.Added)
+                if (status != SourceControlStatus.CheckedOut && status != SourceControlStatus.Added && status != SourceControlStatus.Deleted)
                     return false;
             }
 
@@ -668,7 +668,7 @@ namespace Sce.Atf.Applications
                     foreach (IResource resource in SourceControlContext.Resources.ToArray())
                     {
                         SourceControlStatus status = GetStatus(resource);
-                        if (status == SourceControlStatus.CheckedOut || status == SourceControlStatus.Added)
+                        if (status == SourceControlStatus.CheckedOut || status == SourceControlStatus.Added || status == SourceControlStatus.Deleted)
                         {
                             SourceControlService.Revert(resource.Uri);
                             Reload(resource);

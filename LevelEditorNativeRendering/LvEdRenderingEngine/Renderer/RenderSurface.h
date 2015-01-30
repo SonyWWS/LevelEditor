@@ -63,8 +63,6 @@ protected:
     ID3D11DepthStencilView* m_pDepthStencilView;
     ID3D11DepthStencilView* m_pDepthStencilViewFg;
 
-    
-
     Texture* m_pDepthStencilBuffer;
     Texture* m_pColorBuffer;
 
@@ -75,7 +73,6 @@ protected:
 
 private:    
     float4 m_bkgColor;
-
 };
 
 }//namespace LvEdEngine

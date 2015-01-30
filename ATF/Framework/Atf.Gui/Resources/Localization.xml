@@ -4,7 +4,6 @@
   <StringItem id="Command Icon Size" context="" translation="Command Icon Size" />
   <StringItem id="Size of icons on Toolbar buttons" context="" translation="Size of icons on Toolbar buttons" />
   <StringItem id="Application" context="" translation="Application" />
-  <StringItem id="Keyboard Shortcuts" context="" translation="Keyboard Shortcuts" />
   <StringItem id="Customize keyboard shortcuts" context="" translation="Customize keyboard shortcuts" />
   <StringItem id="Error" context="" translation="Error" />
   <StringItem id="The format for an IP end point is like &quot;192.168.0.120:9000&quot;" context="" translation="The format for an IP end point is like &quot;192.168.0.120:9000&quot;" />
@@ -17,15 +16,10 @@
   <StringItem id="OSC Input" context="The name of a command" translation="OSC Input" />
   <StringItem id="Vita Target" context="" translation="Vita Target" />
   <StringItem id="Edit Vita Target in Neighborhood" context="" translation="Edit Vita Target in Neighborhood" />
-  <StringItem id="Edit Vita Target in Neighborhood" context="" translation="Edit Vita Target in Neighborhood" />
   <StringItem id="Add New " context="" translation="Add New " />
   <StringItem id="Creates a new target" context="" translation="Creates a new target" />
   <StringItem id="Remove " context="" translation="Remove " />
   <StringItem id="Remove selected target" context="" translation="Remove selected target" />
-  <StringItem id="Add New " context="" translation="Add New " />
-  <StringItem id="Remove " context="" translation="Remove " />
-  <StringItem id="Add New " context="" translation="Add New " />
-  <StringItem id="Remove " context="" translation="Remove " />
   <StringItem id="The IP address format should be like &quot;192.168.0.1:12345&quot; or &quot;2001:740:8deb:0::1:12345&quot;" context="" translation="The IP address format should be like &quot;192.168.0.1:12345&quot; or &quot;2001:740:8deb:0::1:12345&quot;" />
   <StringItem id="The scope type is unknown" context="" translation="The scope type is unknown" />
   <StringItem id="The name must not be empty or all whitespace" context="" translation="The name must not be empty or all whitespace" />
@@ -84,8 +78,6 @@
   <StringItem id="Undo {0}" context="{0} is the name of the command" translation="Undo {0}" />
   <StringItem id="Redo {0}" context="{0} is the name of the command " translation="Redo {0}" />
   <StringItem id="Untitled" context="" translation="Untitled" />
-  <StringItem id="Untitled" context="" translation="Untitled" />
-  <StringItem id="Untitled" context="" translation="Untitled" />
   <StringItem id="Recent Files Count" context="Number of recent files to display in File Menu" translation="Recent Files Count" />
   <StringItem id="Number of recent files to display in File Menu" context="" translation="Number of recent files to display in File Menu" />
   <StringItem id="Documents" context="" translation="Documents" />
@@ -98,7 +90,6 @@
   <StringItem id="Pin active document" context="" translation="Pin active document" />
   <StringItem id="Pin {0}" context="{0} will be replaced with a file name" translation="Pin {0}" />
   <StringItem id="Unpin {0}" context="{0} will be replaced with a file name " translation="Unpin {0}" />
-  <StringItem id="Recent Files" context="" translation="Recent Files" />
   <StringItem id="Open a recently used file" context="" translation="Open a recently used file" />
   <StringItem id="Layouts" context="" translation="Layouts" />
   <StringItem id="Save Layout As..." context="" translation="Save Layout As..." />
@@ -122,10 +113,8 @@
   <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Save As ..." context="Save the active file under a new name" translation="Save As ..." />
   <StringItem id="Save the active file under a new name" context="" translation="Save the active file under a new name" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Save All" context="Saves all open files" translation="Save All" />
   <StringItem id="Save all open files" context="" translation="Save all open files" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Close" context="Close the active file" translation="Close" />
   <StringItem id="Close the active file" context="" translation="Close the active file" />
   <StringItem id="Print..." context="Print the active document" translation="Print..." />
@@ -159,8 +148,6 @@
   <StringItem id="Unlock" context="Unlock the selection to enable editing" translation="Unlock" />
   <StringItem id="Unlock the selection to enable editing" context="" translation="Unlock the selection to enable editing" />
   <StringItem id="Lock UI Layout" context="" translation="Lock UI Layout" />
-  <StringItem id="Lock UI Layout" context="" translation="Lock UI Layout" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Group" context="Group the selection into a single item" translation="Group" />
   <StringItem id="Group the selection into a single item" context="" translation="Group the selection into a single item" />
   <StringItem id="Ungroup" context="Ungroup any selected groups" translation="Ungroup" />
@@ -189,22 +176,16 @@
   <StringItem id="Pan and Zoom to center selection" context="" translation="Pan and Zoom to center selection" />
   <StringItem id="Align/Lefts" context="Align left sides of selected items" translation="Align/Lefts" />
   <StringItem id="Align left sides of selected items" context="" translation="Align left sides of selected items" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Align/Rights" context="Align right sides of selected items" translation="Align/Rights" />
   <StringItem id="Align right sides of selected items" context="" translation="Align right sides of selected items" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Align/Centers" context="Align centers of selected items" translation="Align/Centers" />
   <StringItem id="Align centers of selected items" context="" translation="Align centers of selected items" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Align/Tops" context="Align tops of selected items" translation="Align/Tops" />
   <StringItem id="Align tops of selected items" context="" translation="Align tops of selected items" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Align/Bottoms" context="Align bottoms of selected items" translation="Align/Bottoms" />
   <StringItem id="Align bottoms of selected items" context="" translation="Align bottoms of selected items" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Align/Middles" context="" translation="Align/Middles" />
   <StringItem id="Align middles of selected items" context="" translation="Align middles of selected items" />
-  <StringItem id="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" context="" translation="https://github.com/SonyWWS/ATF/wiki/Using-Standard-Command-Components" />
   <StringItem id="Align/To Grid" context="Align selected items to x/y grid" translation="Align/To Grid" />
   <StringItem id="Align selected items to x/y grid" context="" translation="Align selected items to x/y grid" />
   <StringItem id="Size/Make Equal" context="Make selected items have the same size" translation="Size/Make Equal" />

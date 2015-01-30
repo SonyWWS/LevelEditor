@@ -7,6 +7,7 @@ using System.IO;
 using Sce.Atf;
 
 using LevelEditorCore;
+using LevelEditorCore.GameEngineProxy;
 
 namespace RenderingInterop
 {    
@@ -20,20 +21,12 @@ namespace RenderingInterop
         public IResource Resolve(Uri uri)
         {
             IResource resource = null;
-            try
-            {
-                string fileName = uri.LocalPath;
-                string ext = Path.GetExtension(fileName).ToLower();
-                if (ext ==".atgi" || ext == ".dae")
-                {                   
-                    resource = new ModelResource(uri,ResourceTypes.Geometry);
-                }                   
-            }
-            catch (System.IO.IOException e)
-            {
-                Outputs.WriteLine(OutputMessageType.Warning, "Could not load resource: " + e.Message);
-            }
-            
+            string fileName = uri.LocalPath;
+            string ext = Path.GetExtension(fileName).ToLower();
+            var res = m_gameEngine.Info.ResourceInfos.GetByType(ResourceTypes.Model);
+            if(res.IsSupported(ext))
+                resource = new ModelResource(uri,ResourceTypes.Model);                       
+
             return resource;
         }
 
@@ -75,5 +68,8 @@ namespace RenderingInterop
             private string m_type;
             private Uri m_uri;            
         }
+
+        [Import(AllowDefault=false)]
+        private IGameEngineProxy m_gameEngine;
     }
 }

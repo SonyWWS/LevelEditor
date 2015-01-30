@@ -47,9 +47,9 @@ namespace LvEdEngine
     {
     public:
         float3 min;
-        float pad4;
-        float3 max;
         float pad5;
+        float3 max;
+        float pad6;
         float4 attenuation;
     };
 
@@ -62,8 +62,8 @@ namespace LvEdEngine
     };
 
 
-    // this defines the entire lighting available for rendering an object.
-    // See related struct, LightingInfo, which is passed to the HLSL shader.
+    // this defines the entire lighting available for per object rendering.
+    // See the related struct, LightEnvironment defined in Lighting.shh shader.
     struct LightEnvironment
     {
         DirLight   dir[ MAX_DIR_LIGHTS ];

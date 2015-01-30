@@ -27,6 +27,7 @@ namespace Sce.Atf
         [StructLayout(LayoutKind.Sequential)]
         private class MEMORYSTATUSEX
         {
+            #pragma warning disable 169 //disable unused field warning
             public uint dwLength = 64;
             public uint dwMemoryLoad;
             public ulong ullTotalPhys; //The amount of actual physical memory, in bytes.
@@ -36,6 +37,7 @@ namespace Sce.Atf
             public ulong ullTotalVirtual;
             public ulong ullAvailVirtual;
             public ulong ullAvailExtendedVirtual;
+            #pragma warning restore 169
         }
 
         [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]

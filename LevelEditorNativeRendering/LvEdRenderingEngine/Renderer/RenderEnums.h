@@ -115,6 +115,7 @@ namespace TextureType
         BlankMask,
         FullMask,
         Cubemap,
+        Unknown,
         MAX,     // always last
         MIN = DIFFUSE,
     };
@@ -153,8 +154,22 @@ namespace ResourceType
     {
         Unknown,
         Model,
-        Texture
+        Texture,
+        Material
     };
+
+    inline const wchar_t* ToWString(ResourceType restype)
+    {
+        switch(restype)
+        {
+        case Unknown : return L"Unknown";
+        case Model : return L"Model";
+        case Texture : return L"Texture";
+        case Material : return L"Material";
+        default: return L"";
+        }
+    }
+
 }
 typedef enum ResourceType::ResourceType ResourceTypeEnum;
 

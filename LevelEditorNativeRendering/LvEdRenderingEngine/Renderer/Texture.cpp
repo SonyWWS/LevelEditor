@@ -7,11 +7,11 @@
 namespace LvEdEngine
 {
 
-
 Texture::Texture(ID3D11Texture2D* tex, bool createView)
-{
+{    
     m_tex = NULL;
     m_view = NULL;
+    m_texType = TextureType::Unknown;
 
     ID3D11ShaderResourceView* texView = NULL;
     if(tex && createView)
@@ -24,13 +24,12 @@ Texture::Texture(ID3D11Texture2D* tex, bool createView)
     Set(tex,texView);
 }
 
-
-
 // ----------------------------------------------------------------------------------------------
 Texture::Texture(ID3D11Texture2D* tex, ID3D11ShaderResourceView* view)
-{
+{    
     m_tex = NULL;
     m_view = NULL;
+    m_texType = TextureType::Unknown;
     Set(tex,view);
 }
 
@@ -41,20 +40,26 @@ Texture::Texture()
 {
     m_tex = NULL;
     m_view = NULL;
+    m_texType = TextureType::Unknown;
 }
 
 // ----------------------------------------------------------------------------------------------
 Texture::Texture(Texture* tex)
-{
-    m_tex = NULL;
-    m_view = NULL;
+{           
     if(tex)
     {
         m_tex = tex->m_tex;
         m_view = tex->m_view;
+        m_texType = tex->GetTextureType();
+        SAFE_ADDREF(m_tex);
+        SAFE_ADDREF(m_view);
     }
-    SAFE_ADDREF(m_tex);
-    SAFE_ADDREF(m_view);
+    else
+    {
+        m_tex = NULL;
+        m_view = NULL;
+        m_texType = TextureType::Unknown;
+    }
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -64,8 +69,6 @@ Texture::~Texture()
 {
     SAFE_RELEASE(m_tex);
     SAFE_RELEASE(m_view);
-    m_tex = NULL;
-    m_view = NULL;
 }
 
 // ----------------------------------------------------------------------------------------------

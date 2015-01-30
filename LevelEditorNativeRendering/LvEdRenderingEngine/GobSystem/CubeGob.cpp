@@ -3,7 +3,6 @@
 #include "CubeGob.h"
 
 #include "../Renderer/RenderBuffer.h"
-#include "../Renderer/RenderUtil.h"
 #include "../Renderer/Model.h"
 
 using namespace LvEdEngine;

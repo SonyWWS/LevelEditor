@@ -18,7 +18,7 @@ bool FileUtils::Exists(const WCHAR* filename)
 }
 
 // ----------------------------------------------------------------------------------------------
-BYTE* FileUtils::LoadFile(const WCHAR* filename, UINT * sizeOut)
+BYTE* FileUtils::LoadFile(const WCHAR* filename, UINT* sizeOut)
 {
     BYTE * data = NULL;
     UINT cBytes = 0;
@@ -33,11 +33,11 @@ BYTE* FileUtils::LoadFile(const WCHAR* filename, UINT * sizeOut)
         cBytes = FileSize.LowPart;
 
         // Allocate memory and NULL terminate
-        data = new BYTE[ cBytes + 1 ];
-        data[cBytes] = NULL;
+        data = new BYTE[ cBytes + 1 ];        
         if (data)
         {
             // Read in the file
+            data[cBytes] = NULL;
             DWORD dwBytesRead=0;
             ReadFile(fileHandle, data, cBytes, &dwBytesRead, NULL);
             if (dwBytesRead != cBytes)
@@ -60,9 +60,9 @@ std::wstring FileUtils::GetExtensionLower(const WCHAR* filename)
     const wchar_t* str = wcsrchr(filename, L'.');
     if (str != NULL)
     {
-        ::wcscpy_s(ext,(sizeof(ext)/sizeof(ext[0])),str);
-        size_t len = wcslen(ext);
-        for(unsigned int c =0; c < len; c++) { ext[c] = towlower(ext[c]); }
+        ::wcscpy_s(ext,(sizeof(ext)/sizeof(ext[0])),str);        
+        int c = 0;
+        while(ext[c]) {ext[c] = towlower(ext[c]); c++; }        
         return std::wstring(ext);
     }
     return std::wstring();

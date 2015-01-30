@@ -34,11 +34,6 @@ namespace LvEdEngine
         // vh:  view port height in pixels.
         float ComputeUnitPerPixel(const float3& posW, float vh) const;
         
-        float3 m_position;
-        float3 m_direction;
-        float3 m_up;
-        float3 m_right;        
-
     private:
         void UpdateInternals();
 
@@ -49,10 +44,11 @@ namespace LvEdEngine
         Matrix m_invView;
         float m_nearZ;
         float m_farZ;
+        float3 m_position;
+        float3 m_direction;
+        float3 m_up;
+        float3 m_right;        
         Frustum m_frustum;
-        
-
-
     };
 
 }

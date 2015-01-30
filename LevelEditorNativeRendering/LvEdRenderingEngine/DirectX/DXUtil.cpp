@@ -66,5 +66,3 @@ REFGUID DXUtil::GetWICCodecFromFileExtension(const wchar_t* extension)
 }
 
 
-//===================== constant buffer =======================================
-

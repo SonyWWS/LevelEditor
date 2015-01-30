@@ -23,14 +23,10 @@ namespace RenderingInterop
     [Export(typeof(IControlHostClient))]    
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class NativeGameEditor : IInitializable, IControlHostClient
-    {
-        
+    {        
         #region IInitializable Members
-
         void IInitializable.Initialize()
-        {
-            
-
+        {           
             m_controlInfo = new ControlInfo("DesignView", "DesignView", StandardControlGroup.CenterPermanent);
             m_controlHostService.RegisterControl(m_designView.HostControl, m_controlInfo, this);
           
@@ -41,10 +37,10 @@ namespace RenderingInterop
             };
 
             GameEngine.RefreshView += (sender,e)=> m_designView.InvalidateViews();
-                                                            
-            m_gameDocumentRegistry.DocumentAdded += new EventHandler<ItemInsertedEventArgs<IGameDocument>>(m_gameDocumentRegistry_DocumentAdded);
-            m_gameDocumentRegistry.DocumentRemoved += new EventHandler<ItemRemovedEventArgs<IGameDocument>>(m_gameDocumentRegistry_DocumentRemoved);
 
+            m_gameDocumentRegistry.DocumentAdded += m_gameDocumentRegistry_DocumentAdded;
+            m_gameDocumentRegistry.DocumentRemoved += m_gameDocumentRegistry_DocumentRemoved;
+                
             string ns = m_schemaLoader.NameSpace;
 
             // register GridRenderer on grid child.
@@ -196,9 +192,7 @@ namespace RenderingInterop
         }
 
         #endregion
-
-      
-
+    
         private void m_gameDocumentRegistry_DocumentAdded(object sender, ItemInsertedEventArgs<IGameDocument> e)
         {
             IGameDocument document = e.Item;
@@ -215,25 +209,18 @@ namespace RenderingInterop
                 GridRenderer gridRender = grid.Cast<GridRenderer>();
                 gridRender.CreateVertices();
 
-                m_designView.Context = document.Cast<IGameContext>();
-                UpdateControlInfo(document);                
+                m_designView.Context = document.Cast<IGameContext>();                
             }
             DomNode masterNode = m_gameDocumentRegistry.MasterDocument.As<DomNode>();
             DomNode rooFolderNode = game.RootGameObjectFolder.Cast<DomNode>();
 
             NativeGameWorldAdapter gworld = masterNode.Cast<NativeGameWorldAdapter>();
-            gworld.Insert(masterNode, rooFolderNode, masterNode.Type.GetChildInfo("gameObjectFolder"), -1);
-
-            document.DirtyChanged += m_document_DirtyChanged;
-            document.UriChanged += m_document_UriChanged;            
+            gworld.Insert(masterNode, rooFolderNode, masterNode.Type.GetChildInfo("gameObjectFolder"), -1);            
         }
 
         private void m_gameDocumentRegistry_DocumentRemoved(object sender, ItemRemovedEventArgs<IGameDocument> e)
         {
-            IGameDocument document = e.Item;
-            document.DirtyChanged -= m_document_DirtyChanged;
-            document.UriChanged -= m_document_UriChanged;
-
+            IGameDocument document = e.Item;            
             IGame game = document.Cast<IGame>();
             if (document == m_designView.Context.Cast<IGameDocument>())
             {// master document.
@@ -252,54 +239,7 @@ namespace RenderingInterop
                 gworld.Remove(masterNode, rooFolderNode, masterNode.Type.GetChildInfo("gameObjectFolder"));
             }
         }
-
-        private void m_document_UriChanged(object sender, UriChangedEventArgs e)
-        {
-
-            UpdateControlInfo(m_gameDocumentRegistry.MasterDocument);
-        }
-
-        private void m_document_DirtyChanged(object sender, EventArgs e)
-        {
-            UpdateControlInfo(m_gameDocumentRegistry.MasterDocument);
-        }
-
-
-        private bool AnyDocDirty
-        {
-            get
-            {
-                bool dirty = m_gameDocumentRegistry.MasterDocument.Dirty;
-                foreach (IGameDocument subdoc in m_gameDocumentRegistry.SubDocuments)
-                {
-                    dirty |= subdoc.Dirty;
-                }
-                return dirty;
-            }
-        }
-        private void UpdateControlInfo(IGameDocument document)
-        {
-            string name;
-            string description;
-            if (document != null)
-            {
-                string filePath = document.Uri.LocalPath;
-                string fileName = Path.GetFileNameWithoutExtension(filePath);                
-                if (AnyDocDirty)
-                    fileName += "*";
-
-                name = fileName;
-                description = filePath;
-            }
-            else
-            {
-                name = "DesignView";
-                description = "Design View";
-            }
-
-            m_controlInfo.Name = name;
-            m_controlInfo.Description = description;
-        }
+       
 
         [Import(AllowDefault = false)]
         private IDocumentRegistry m_documentRegistry;

@@ -1,70 +1,59 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<StringLocalizationTable>
-  <StringItem id="Add Layer" context="" translation="レイヤーを追加" />
+<StringLocalizationTable>  
   <StringItem id="Creates a new layer folder" context="" translation="新しいレイヤーフォルダーを作成します。" />
-  <StringItem id="New Layer" context="" translation="新規レイヤー" />
-  <StringItem id="Add Layer" context="" translation="レイヤーを追加" />
+  <StringItem id="New Layer" context="" translation="新規レイヤー" />  
   <StringItem id="Select all instances" context="" translation="すべてのインスタンスを選択" />
   <StringItem id="Selects all instances of the selected type" context="" translation="選択したタイプのインスタンスをすべて選択します。" />
   <StringItem id="Show all instances" context="" translation="すべてのインスタンスを表示" />
   <StringItem id="Show all instances of the selected type" context="" translation="選択したタイプのインスタンスをすべて表示します。" />
   <StringItem id="Hide all instances" context="" translation="すべてのインスタンスを隠す" />
   <StringItem id="Hide all instances of the selected type" context="" translation="選択したタイプのインスタンスをすべて非表示にします。" />
-  <StringItem id="Move Pivot" context="" translation="ピボットを移動" />
-  <StringItem id="New Layer" context="" translation="新規レイヤー" />
+  <StringItem id="Move Pivot" context="" translation="ピボットを移動" />  
   <StringItem id="Game" context="" translation="Game" />
-  <StringItem id="GameObjects" context="" translation="GameObjects" />
-  <StringItem id="Invalid GameObject name" context="" translation="GameObject 名が無効です。" />
-  <StringItem id="GameObjects" context="" translation="GameObjects" />
+  <StringItem id="GameObjects" context="" translation="GameObjects" />  
   <StringItem id="GameObjectGroup" context="" translation="GameObjectGroup" />
   <StringItem id="GameObjectFolder" context="" translation="GameObjectFolder" />
   <StringItem id="Transform" context="" translation="トランスフォーム" />
-  <StringItem id="Translation of Game Object along X, Y, and Z axes" context="" translation="X 軸、Y 軸、Z 軸に沿って、ゲームオブジェクトを変換します。" />
+  <StringItem id="Translation of Game Object along X, Y, and Z axes" context="" translation="X 軸、Y 軸、Z 軸に沿って、ゲームオブジェクトを移動します。"/>
   <StringItem id="Rotation" context="" translation="回転" />
-  <StringItem id="Origin of Rotation transform relative to Game Object Translation" context="" translation="ゲームオブジェクトの回転変換の原点です。" />
+  <StringItem id="Origin of Rotation transform relative to Game Object Translation" context="" translation="ゲームオブジェクトの回転変換の相対原点です。" />
   <StringItem id="Scale" context="" translation="スケール" />
   <StringItem id="Scale of Game Object along X, Y, and Z axes" context="" translation="X 軸、Y 軸、Z 軸に沿って、ゲームオブジェクトをスケールします。" />
-  <StringItem id="Scale" context="" translation="スケール" />
-  <StringItem id="Scale of Game Object along X, Y, and Z axes" context="" translation="X 軸、Y 軸、Z 軸に沿って、ゲームオブジェクトをスケールします。" />
+  <StringItem id="Uniform Scale" context="" translation="Uniform Scale" />
+  <StringItem id="Scale of Game Object uniformly along X, Y, and Z axes" context="" translation="Scale of Game Object uniformly along X, Y, and Z axes"/>
   <StringItem id="Pivot" context="" translation="ピボット" />
-  <StringItem id="Origin of Rotation and scale transform relative to Game Object Translation" context="" translation="ゲームオブジェクトの回転変換およびスケール変換の原点です。" />
+  <StringItem id="Origin of Rotation and scale transform relative to Game Object Translation" context="" translation="ゲームオブジェクトの回転およびスケール変換の相対原点です。" />
   <StringItem id="Locator" context="" translation="ロケーター" />
   <StringItem id="Grid" context="" translation="グリッド" />
-  <StringItem id="Height" context="" translation="高度" />
-  <StringItem id="Grid's height (along the world's up vector)" context="" translation="グリッドの、ワールドの上方向ベクター沿いの高度。" />
+  <StringItem id="Height" context="" translation="高さ" />
+  <StringItem id="Grid's height (along the world's up vector)" context="" translation="グリッドの、ワールドの上方向ベクター沿いの高さ。" />
   <StringItem id="Size" context="" translation="サイズ" />
-  <StringItem id="the size of grid step" context="" translation="グリッドの間隔" />
-  <StringItem id="Subdivisions" context="" translation="サブディビジョン数" />
-  <StringItem id="Number of sub-divisions" context="" translation="サブディビジョンの数。" />
+  <StringItem id="the size of grid step" context="" translation="グリッドの間隔。" />
+  <StringItem id="Subdivisions" context="" translation="目盛り数" />
+  <StringItem id="Number of sub-divisions" context="" translation="目盛りの数。" />
   <StringItem id="snap" context="" translation="スナップ" />
   <StringItem id="Snap to grid vertex" context="" translation="グリッド頂点にスナップします。" />
-  <StringItem id="Visible" context="" translation="可視" />
-  <StringItem id="Grid visibility" context="" translation="グリッドの可視性。" />
+  <StringItem id="Visible" context="" translation="表示" />
+  <StringItem id="Grid visibility" context="" translation="グリッドの表示/非表示。" />
   <StringItem id="ResourceRoot" context="" translation="リソースのルート" />
   <StringItem id="Root path for all resources" context="" translation="すべてのリソースのルートパス。" />
   <StringItem id="Resources" context="" translation="リソース" />
   <StringItem id="Resolve on load" context="" translation="読み込み時に解決" />
-  <StringItem id="Resolve sub-documents on load" context="" translation="読み込み時にサブドキュメントを検出します。" />
-  <StringItem id="Documents" context="" translation="ドキュメント" />
-  <StringItem id="Documents" context="" translation="ドキュメント" />
+  <StringItem id="Resolve sub-documents on load" context="" translation="マスタードキュメントの読み込み時にサブドキュメントを検出します。" />
+  <StringItem id="Documents" context="" translation="ドキュメント" />  
   <StringItem id="LevelEditor" context="" translation="LevelEditor" />
   <StringItem id="Bookmarks" context="" translation="ブックマーク" />
   <StringItem id="Edits document bookmarks" context="" translation="ドキュメントブックマークを編集します。" />
   <StringItem id="Add Bookmark" context="" translation="ブックマークを追加" />
   <StringItem id="Adds a new bookmark" context="" translation="新しいブックマークを追加します。" />
-  <StringItem id="New bookmark" context="" translation="新規ブックマーク" />
-  <StringItem id="Add bookmark" context="" translation="ブックマークを追加" />
-  <StringItem id=" Click on a camera bookmark to set the camera to the stored settings." context="" translation=" カメラブックマークをクリックすると、ブックマークに格納された設定に切り替わります。" />
-  <StringItem id="Add new SubGame" context="" translation="新規サブゲームを追加" />
-  <StringItem id="Add new SubGame" context="" translation="新規サブゲームを追加" />
-  <StringItem id="Add existing SubGame" context="" translation="既存のサブゲームを追加" />
-  <StringItem id="Add existing SubGame" context="" translation="既存のサブゲームを追加" />
+  <StringItem id="New bookmark" context="" translation="新規ブックマーク" />  
+  <StringItem id="Right click to create a new camera bookmark that stores the current camera settings. Click on a camera bookmark to set the camera to the stored settings." context="" translation="Right click to create a new camera bookmark that stores the current camera settings. Click on a camera bookmark to set the camera to the stored settings." />
+  <StringItem id="Add new SubGame" context="" translation="新規サブゲームを追加" />  
+  <StringItem id="Add existing SubGame" context="" translation="既存のサブゲームを追加" />  
   <StringItem id="Exclude SubGame" context="" translation="サブゲームを除外" />
   <StringItem id="Exlude from master level" context="" translation="マスターレベルから除外します。" />
-  <StringItem id="Resolve SubGame" context="" translation="サブゲームをメモリに読み込み" />
-  <StringItem id="Resolve SubGame" context="" translation="サブゲームをメモリに読み込み" />
-  <StringItem id="Unresolve SubGame" context="" translation="新規ブックマーク" />
-  <StringItem id="Unresolve SubGame" context="" translation="新規ブックマーク" />
+  <StringItem id="Resolve SubGame" context="" translation="サブゲームをメモリに読み込み" />  
+  <StringItem id="Unresolve SubGame" context="" translation="新規ブックマーク" />  
   <StringItem id="Project Lister" context="" translation="プロジェクトリスト" />
   <StringItem id="Lists objects in the current document" context="" translation="現在のドキュメント内のオブジェクトをリストします。" />
   <StringItem id="OSC Input" context="The name of a command" translation="OSC 入力" />
@@ -77,7 +66,7 @@
   <StringItem id="Create Prototype ..." context="" translation="プロトタイプを作成..." />
   <StringItem id="Create prototype from selected GameObjects" context="" translation="選択した GameObjects からプロトタイプを作成します。" />
   <StringItem id="Flatten" context="" translation="平らにする" />
-  <StringItem id="Raise/Lower" context="" translation="盛り上げ/盛り下げ" />
+  <StringItem id="Raise/Lower" context="" translation="盛上/盛下" />
   <StringItem id="Smooth" context="" translation="スムーズ" />
   <StringItem id="Noise" context="" translation="ノイズ" />
   <StringItem id="Paint/Erase" context="" translation="ペイント/消去" />

@@ -10,7 +10,7 @@
 #include "../../ResourceManager/ResourceManager.h"
 #include "../../Renderer/TextureLib.h"
 #include "../../Renderer/RenderContext.h"
-#include "../../Renderer/RenderUtil.h"
+
 
 namespace LvEdEngine
 {
@@ -53,7 +53,11 @@ namespace LvEdEngine
 
      void TerrainMap::SetDiffuse(wchar_t* diffuse)
      {
-         LoadTexture(diffuse,&m_diffuse);         
+         SAFE_RELEASE(m_diffuse);
+         if(diffuse == NULL || wcslen(diffuse) == 0) 
+             return;
+         m_diffuse = (Texture*) ResourceManager::Inst()->LoadImmediate(diffuse,
+             TextureLib::Inst()->GetDefault(TextureType::DIFFUSE));
      }
 
      void TerrainMap::SetNormal(wchar_t* normal)

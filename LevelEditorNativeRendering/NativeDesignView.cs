@@ -10,6 +10,7 @@ using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
 
 using LevelEditorCore;
+using LevelEditorCore.GameEngineProxy;
 
 using ViewTypes = Sce.Atf.Rendering.ViewTypes;
 
@@ -20,12 +21,9 @@ namespace RenderingInterop
     [Export(typeof(DesignView))]
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class NativeDesignView : DesignView
-    {
+    {        
         public NativeDesignView()
-        {
-            GameEngine.Initialize();
-            Util3D.Init();
-
+        {                       
             QuadView.TopLeft = new NativeDesignControl(this) { ViewType = ViewTypes.Perspective };
             QuadView.TopRight = new NativeDesignControl(this) { ViewType = ViewTypes.Right };
             QuadView.BottomLeft = new NativeDesignControl(this) { ViewType = ViewTypes.Top };

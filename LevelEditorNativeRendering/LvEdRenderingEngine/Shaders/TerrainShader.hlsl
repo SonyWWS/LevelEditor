@@ -64,10 +64,6 @@ cbuffer perDecomapCb : register( b5 )
 	//float decoPad; auto padded
 };
 
-
-
-
-
 //--------------------------------------------------------------------------------------
 // Textures
 //--------------------------------------------------------------------------------------
@@ -86,6 +82,8 @@ SamplerState            hnSampler        : register(s0); // height
 SamplerComparisonState  shadowSamplerCmp : register(s1);
 SamplerState            linwrapSampler   : register(s2); // linear and wrapuv sampler.
 SamplerState            linclampSampler  : register(s3); // linear and clampuv sampler.
+SamplerState            anisoWrap        : register(s4); // anisotropic and clampuv sampler.
+
 
 struct PS_INPUT
 {
@@ -149,10 +147,10 @@ float4 PSMain( PS_INPUT input ) : SV_TARGET
 		   float2 tiledTex  = input.stretchedTex * layerTexScale[i].x;			    		   
 		   float mask = layermasks[i].Sample(linclampSampler,input.stretchedTex);
 
-		   float3 di = layers[i].Sample(linwrapSampler,tiledTex).xyz;		   		  
+		   float3 di = layers[i].Sample(anisoWrap,tiledTex).xyz;		   		  
 		   fc = lerp(fc,di,mask);	
 
-		   float3 n  = layernormalmaps[i].Sample(linwrapSampler,tiledTex).xyz;		   	   
+		   float3 n  = layernormalmaps[i].Sample(anisoWrap,tiledTex).xyz;		   	   
 		   normL = lerp(normL,n,mask);		   
 		}	
 

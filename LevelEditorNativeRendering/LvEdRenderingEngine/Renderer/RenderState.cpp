@@ -235,7 +235,7 @@ RSCache::RSCache(ID3D11Device* device)
 
     m_defBsDcr = blendDcr;  // save default
 
-    // crate alphaToCoverage
+    // create alphaToCoverage
     blendDcr.AlphaToCoverageEnable = TRUE;
     hr = device->CreateBlendState(&blendDcr,&m_alphaToCoverage);
     if (Logger::IsFailureLog(hr))

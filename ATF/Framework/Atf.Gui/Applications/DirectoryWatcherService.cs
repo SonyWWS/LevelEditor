@@ -79,9 +79,9 @@ namespace Sce.Atf.Applications
                 watcher.IncludeSubdirectories = includeSubdirectories;
                 watcher.InternalBufferSize = InternalBufferSize;
 
-                watcher.Changed += new FileSystemEventHandler(watcher_Changed);
-                watcher.Renamed += new RenamedEventHandler(watcher_Changed);
-                watcher.Deleted += new FileSystemEventHandler(watcher_Changed);
+                watcher.Changed += watcher_Changed;
+                watcher.Renamed += watcher_Changed;
+                watcher.Deleted += watcher_Changed;
                 
                 //Note: Disabled created since this will be fired before a file has finished copying which can create
                 //bad side effects. The changed event should fire when the file has closed.

@@ -21,7 +21,7 @@ namespace RenderingInterop
 {
 
     /// <summary>
-    /// Thumbnail resolver for image resources</summary>    
+    /// Thumbnail resolver for 3d models resources</summary>    
     [Export(typeof(IThumbnailResolver))]
     [Export(typeof(IInitializable))]
     [PartCreationPolicy(CreationPolicy.Shared)]

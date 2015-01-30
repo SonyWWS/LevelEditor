@@ -55,7 +55,7 @@ namespace LvEdEngine
             for(auto geoIt = node->geometries.begin(); geoIt != node->geometries.end(); ++geoIt)
             {
                 Geometry* geo = (*geoIt);
-                Material * mat = geo->material;
+                Material* mat = geo->material;
                 RenderableNode renderNode;
                 renderNode.mesh = geo->mesh;
                 renderNode.WorldXform = world;

@@ -36,8 +36,9 @@ namespace LevelEditor
             m_contextMenuStrip = new ContextMenuStrip();
             m_contextMenuStrip.AutoClose = true;
 
-            m_addBookmark = new ToolStripMenuItem("Add Bookmark".Localize());
+            m_addBookmark = new ToolStripMenuItem(m_addBookMark);
             m_addBookmark.Click += (sender, e) => AddBookmark();
+            m_addBookmark.ToolTipText = "Adds a new bookmark".Localize();
 
             m_deleteBookmark = new ToolStripMenuItem("Delete".Localize());
             m_deleteBookmark.Click += (sender, e) => Delete();
@@ -96,8 +97,7 @@ namespace LevelEditor
         {
             m_contextRegistry.ActiveContextChanged += contextRegistry_ActiveContextChanged;
             m_controlHostService.RegisterControl(TreeControl, m_controlInfo, null);
-            TreeControl.Text = "Right click to create a new camera bookmark that stores the current camera settings." +
-               " Click on a camera bookmark to set the camera to the stored settings.".Localize();
+            TreeControl.Text = "Right click to create a new camera bookmark that stores the current camera settings. Click on a camera bookmark to set the camera to the stored settings.".Localize();
 
             m_commandService.ProcessingKey += (sender, e) =>
             {
@@ -163,7 +163,7 @@ namespace LevelEditor
                     {
                         bookmarkList.Add(newBookmark);
                     },
-                    "Add bookmark".Localize());
+                    m_addBookMark);
             }
         }
 
@@ -204,7 +204,7 @@ namespace LevelEditor
 
         private ICommandService m_commandService;
         private readonly ControlInfo m_controlInfo;
-
+        private readonly string m_addBookMark = "Add Bookmark".Localize();
         private ContextMenuStrip m_contextMenuStrip;
         private ToolStripMenuItem m_addBookmark;
         private ToolStripMenuItem m_deleteBookmark;

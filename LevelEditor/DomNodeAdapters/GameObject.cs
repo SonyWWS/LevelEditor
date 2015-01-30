@@ -23,13 +23,7 @@ namespace LevelEditor.DomNodeAdapters
         public virtual string Name
         {
             get { return GetAttribute<string>(Schema.gameObjectType.nameAttribute); }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new InvalidTransactionException("Invalid GameObject name".Localize());
-
-                SetAttribute(Schema.gameObjectType.nameAttribute, value);
-            }
+            set { SetAttribute(Schema.gameObjectType.nameAttribute, value); }
         }
 
         #endregion

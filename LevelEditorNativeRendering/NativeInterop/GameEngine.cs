@@ -2,13 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
+using System.Xml;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Linq;
 using System.Threading;
+using LevelEditorCore.GameEngineProxy;
 using Sce.Atf;
 using Sce.Atf.VectorMath;
 using Sce.Atf.Dom;
@@ -19,17 +22,64 @@ namespace RenderingInterop
 {
     /// <summary>
     /// Exposes a minimum set of game-engine functionalities 
-    /// for LevelEditor purpose.</summary>
+    /// for LevelEditor purpose.</summary>    
+    [Export(typeof(IGameEngineProxy))]
+    [Export(typeof(IInitializable))]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     [SuppressUnmanagedCodeSecurity()]
-    public static unsafe class GameEngine
+    public unsafe class GameEngine : DisposableObject, IGameEngineProxy, IInitializable
     {
+        public GameEngine()
+        {
+            s_inist = this;
+            GameEngine.Init();
+        }
+        #region IGameEngineProxy Members
 
+        public EngineInfo Info
+        {
+            get { return m_engineInfo; }
+        }
+
+        #endregion
+
+        #region IInitializable Members
+
+        void IInitializable.Initialize()
+        {
+           
+            
+        }
+
+        #endregion
+
+        private EngineInfo m_engineInfo;        
+        private void PopulateEngineInfo(string engineInfoStr)
+        {
+            if (m_engineInfo != null) return;
+            if (!string.IsNullOrWhiteSpace(engineInfoStr))
+                m_engineInfo = new EngineInfo(engineInfoStr);
+
+            //if (m_engineInfo != null)
+            //{
+            //    Console.WriteLine("Print EngineInfo:");
+            //    foreach (var res in m_engineInfo.SupportedResources)
+            //    {
+            //        Console.Write("\t {0}  {1} ", res.Type, res.Description);
+            //        foreach (string ext in res.FileExts)
+            //            Console.Write(ext + "  ");
+            //        Console.WriteLine();
+            //    }
+            //}
+        }
         #region initialize and shutdown
 
+
+        private static GameEngine s_inist;
         /// <summary>
         /// init game engine 
         /// call it one time during startup on the UI thread.</summary>        
-        public static void Initialize()
+        public static void Init()
         {
             // the full dll name can be loaded in a config when needed.
             if (s_libHandle != IntPtr.Zero)
@@ -88,15 +138,25 @@ namespace RenderingInterop
                 }
                  */
 
-                s_invalidateCallback = new InvalidateViewsDlg(InvalidateViews);
-                s_logInstance = new LogCallbackType(LogCallback);
-                NativeInitialize(s_logInstance, s_invalidateCallback);
+
                 CriticalError = string.Empty;
 
+                IntPtr data;
+                s_invalidateCallback = new InvalidateViewsDlg(InvalidateViews);
+                s_logInstance = new LogCallbackType(LogCallback);
+                NativeInitialize(s_logInstance, s_invalidateCallback, out data);                
+                if (data != IntPtr.Zero)
+                {
+                    string engineInfo = Marshal.PtrToStringUni(data);
+                    s_inist.PopulateEngineInfo(engineInfo);
+                }
+                
                 // get SynchronizationContext for current thread.
                 // Note: 
                 s_syncContext = SynchronizationContext.Current;
                 //Application.AddMessageFilter(new MessageFilter());
+                
+                Util3D.Init();
             }
             catch (Exception e)
             {
@@ -665,7 +725,8 @@ namespace RenderingInterop
         #region private members
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Initialize", CallingConvention = CallingConvention.StdCall)]
-        private static extern void NativeInitialize(LogCallbackType logCallback, InvalidateViewsDlg invalidateCallback);
+        private static extern void NativeInitialize(LogCallbackType logCallback, InvalidateViewsDlg invalidateCallback,
+            out IntPtr engineInfo);
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Shutdown", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeShutdown();

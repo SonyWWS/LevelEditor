@@ -10,7 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
-
+using LevelEditorCore.GameEngineProxy;
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
@@ -94,8 +94,7 @@ namespace LevelEditor
                 typeof(ResourceService)
                 );
 
-            TypeCatalog LECoreCatalog = new TypeCatalog(                
-                typeof(LevelEditorCore.ImageThumbnailResolver),
+            TypeCatalog LECoreCatalog = new TypeCatalog(                                
                 typeof(LevelEditorCore.DesignViewSettings),
                 typeof(LevelEditorCore.ResourceLister),
                 typeof(LevelEditorCore.ThumbnailService),
@@ -146,6 +145,7 @@ namespace LevelEditor
                 );
 
             TypeCatalog renderingInteropCatalog = new TypeCatalog(
+                typeof(RenderingInterop.GameEngine),
                 typeof(RenderingInterop.NativeGameEditor),
                 typeof(RenderingInterop.ThumbnailResolver),
                 typeof(RenderingInterop.RenderCommands),
@@ -160,9 +160,9 @@ namespace LevelEditor
                 typeof(RenderingInterop.TextureThumbnailResolver)
                 );
 
-
+            
             List<ComposablePartCatalog> catalogs = new List<ComposablePartCatalog>();
-            catalogs.Add(AtfCatalog);
+            catalogs.Add(AtfCatalog);            
             catalogs.Add(LECoreCatalog);
             catalogs.Add(renderingInteropCatalog);
             catalogs.Add(thisAssemCatalog);
@@ -194,9 +194,13 @@ namespace LevelEditor
 
             LevelEditorCore.Globals.InitializeComponents(container);
             // Initialize components 
-            
+
+            var gameEngine = container.GetExportedValue<IGameEngineProxy>();
             foreach (IInitializable initializable in container.GetExportedValues<IInitializable>())
-                initializable.Initialize();           
+            {                
+                initializable.Initialize();
+            }
+            GC.KeepAlive(gameEngine);
 
             AutoDocumentService autoDocument = container.GetExportedValue<AutoDocumentService>();
             autoDocument.AutoLoadDocuments = false;

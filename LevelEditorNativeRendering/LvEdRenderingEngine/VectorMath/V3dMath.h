@@ -731,59 +731,8 @@ inline float4 absolute(const float4& a)
 {
     return float4(fabs(a.x), fabs(a.y), fabs(a.z), fabs(a.w));
 }
-//float4x4 absolute(float4x4);
-//
-//float2 acos(float2);
-//float3 acos(float3);
-//float3 acos(float4)
-//float4x4 acos(float4x4);
-//
-//bool all(float2)
-//bool all(float3);
-//bool all(float4);
-//bool all(float4x4);
-//
-//bool any(float2)
-//bool any(float3);
-//bool any(float4);
-//bool any(float4x4);
-//
-//float2 asin(float2);
-//float3 asin(float3);
-//float4 asin(float4);
-//float4x4 asin(float4x4);
-//
-//float2 atan(float2);
-//float3 atan(float3);
-//float4 atan(float4);
-//float4x4 atan(float4x4);
-//
-//float2 atan2(float2);
-//float3 atan2(float3);
-//float4 atan2(float4);
-//float4x4 atan2(float4x4);
-//
-//float ceil(float2);
-//float ceil(float3);
-//float ceil(float4);
-//float ceil(float4x4);
-//
-//float2 clamp(float2,float2,float2);
-//float3 clamp(float3,float3,float3);
-//float4 clamp(float4,float4,float4);
-//float4x4 clamp(float4x4,float4x4,float4x4);
-//
-//float2 cos(float2);
-//float3 cos(float3);
-//float4 cos(float4);
-//float4x4 cos(float4x4);
-//
-//
-//float2 cosh(float2);
-//float3 cosh(float3);
-//float4 cosh(float4);
-//float4x4 cosh(float4x4);
-//
+
+
 inline float3 cross(const float3& a, const float3& b)
 {
     float3 t;
@@ -792,49 +741,7 @@ inline float3 cross(const float3& a, const float3& b)
     t.z = a.x * b.y - a.y * b.x;
     return t;  
 }
-//
-//
-//float2 ddx(float2);
-//float3 ddx(float3);
-//float4 ddx(float4);
-//float4x4 ddx(float4x4);
-//float2 ddx_course(float2);
-//float3 ddx_course(float3);
-//float4 ddx_course(float4);
-//float4x4 ddx_course(float4x4);
-//float2 ddx_fine(float2);
-//float3 ddx_fine(float3);
-//float4 ddx_fine(float4);
-//float4x4 ddx_fine(float4x4);
-//
-//float2 ddy(float2);
-//float3 ddy(float3);
-//float4 ddy(float4);
-//float4x4 ddy(float4x4);
-//float2 ddy_course(float2);
-//float3 ddy_course(float3);
-//float4 ddy_course(float4);
-//float4x4 ddy_course(float4x4);
-//float2 ddy_fine(float2);
-//float3 ddy_fine(float3);
-//float4 ddy_fine(float4);
-//float4x4 ddy_fine(float4x4);
-//
-//
-//float2 degrees(float2);
-//float3 degrees(float3);
-//float4 degrees(float4);
-//float4x4 degrees(float4x4);
-//
-//
-//float determinant(float4x4);
-//
-//
-//float distance(float2,float2);
-//float distance(float3,float3);
-//float distance(float4,float4);
-//
-//
+
 inline float dot(const float2& a, const float2& b)
 {
     return (a.x * b.x  +  a.y * b.y);
@@ -849,67 +756,7 @@ inline float dot(const float4& a, const float4& b)
     return (a.x * b.x  +  a.y * b.y  +  a.z * b.z + a.w * b.w);
 }
 
-//
-//float2 exp(float2);
-//float3 exp(float3);
-//float4 exp(float4);
-//float4x4 exp(float4x4);
-//
-//float2 exp2(float2);
-//float3 exp2(float3);
-//float4 exp2(float4);
-//float4x4 exp2(float4x4);
-//
-//float2 faceforward(float2);
-//float3 faceforward(float3);
-//float4 faceforward(float4);
-//
-//float2 floor(float2);
-//float3 floor(float3);
-//float4 floor(float4);
-//float4x4 floor(float4x4);
-//
-//float2 fma(float2,float2,float2);
-//float3 fma(float3,float3,float3);
-//float4 fma(float4,float4,float4);
-//float4x4 fma(float4x4,float4x4,float4x4);
-//
-//
-//float2 fmod(float2,float2);
-//float3 fmod(float3,float3);
-//float4 fmod(float4,float4);
-//float4x4 fmod(float4x4,float4x4);
-//
-//float2 frac(float2);
-//float3 frac(float3);
-//float4 frac(float4);
-//float4x4 frac(float4x4);
-//
-//float2 frexp(float2,float2*);
-//float3 frac(float3,float3*);
-//float4 frac(float4,float4*);
-//float4x4 frac(float4x4,float4x4*);
-//
-//float2 fwidth(float2);
-//float3 fwidth(float3);
-//float4 fwidth(float4);
-//float4x4 fwidth(float4x4);
-//
-//bool isfinite(float2);
-//bool isfinite(float3);
-//bool isfinite(float4);
-//bool isfinite(float4x4);
-//
-//bool isinf(float2);
-//bool isinf(float3);
-//bool isinf(float4);
-//bool isinf(float4x4);
-//
-//bool isnan(float2);
-//bool isnan(float3);
-//bool isnan(float4);
-//bool isnan(float4x4);
-//
+
 inline float length(const float2& v)
 {
     return sqrt(v.x*v.x + v.y*v.y);
@@ -923,8 +770,6 @@ inline float length(const float4& v)
     return sqrt(v.x*v.x + v.y*v.y + v.z*v.z + v.w * v.w);
 }
 
-
-// 'lengthsquared' is not part of the HLSL instrinsics
 inline float lengthsquared(const float2& v)
 {
     return v.x*v.x + v.y*v.y;
@@ -938,8 +783,6 @@ inline float lengthsquared(const float4& v)
     return v.x*v.x + v.y*v.y + v.z*v.z + v.w * v.w;
 }
 
-
-//
 inline float2 lerp(const float2& a, const float2& b, const float2& c)
 {
     float2 t;
@@ -964,31 +807,7 @@ inline float4 lerp(const float4& a, const float4& b, const float4& c)
     t.w = a.w + (b.w - a.w) * c.w;
     return t;
 }
-//float4 lerp(float4,float4,float4);
-//float4x4 lerp(float4x4,float4x4,float4x4);
-//
-//float4 lit(float n_dot_l, float n_dot_h, float m);
-//
-//float2 log(float2);
-//float3 log(float3);
-//float4 log(float4);
-//float4x4 log(float4x4);
-//
-//float2 log10(float2);
-//float3 log10(float3);
-//float4 log10(float4);
-//float4x4 log10(float4x4);
-//
-//float2 log2(float2);
-//float3 log2(float3);
-//float4 log2(float4);
-//float4x4 log2(float4x4);
-//
-//float2 mad(float2);
-//float3 mad(float3);
-//float4 mad(float4);
-//float4x4 mad(float4x4);
-//
+
 // 'max' is a #define in WinDef.h, so we use 'maximize' instead.
 inline float maximize(const float a, const float b)
 {
@@ -1018,8 +837,7 @@ inline float4 maximize(const float4& a, const float4& b)
     r.w = a.w > b.w ? a.w : b.w;
     return r;
 }
-//float4x4 maximize(float4x4,float4x4);
-//
+
 // 'min' is a #define in WinDef.h, so we use 'minimize' instead.
 inline float minimize(const float a, const float b)
 {
@@ -1051,35 +869,7 @@ inline float4 minimize(const float4& a, const float4& b)
     return r;
 }
 
-//float4x4 minimize(float4x4,float4x4);
-//
-//float2 modf(float2,float2*);
-//float3 modf(float3,float3*);
-//float4 modf(float4,float4*);
-//float4x4 modf(float4x4,float4x4*);
-//
-//float2 mul(float, float2);
-//float2 mul(float2, float);
-//float2 mul(float2, float2);
-//
-//float3 mul(float, float3);
-//float3 mul(float3, float);
-//float3 mul(float3, float3);
-//
-//float4 mul(float, float4);
-//float4 mul(float4, float);
-//float4 mul(float4, float4);
-//float4 mul(float4, float4x4);
-//float4 mul(float4x4, float4);
-//
-//float4x4 mul(float, float4x4);
-//float4x4 mul(float4x4, float);
-//float4x4 mul(float4x4, float4x4);
-//
-//float noise(float2);
-//float noise(float3);
-//float noise(float4);
-//
+
 inline float2 normalize(const float2& v)
 {
     float2 temp(0,0);
@@ -1121,19 +911,6 @@ inline float4 normalize(const float4& v)
     }
     return temp;
 }
-//
-//
-//float2 pow(float2,float2);
-//float3 pow(float3,float3);
-//float4 pow(float4,float4);
-//float4x4 pow(float4x4,float4x4);
-//
-//
-//float2 radians(float2);
-//float3 radians(float3);
-//float4 radians(float4);
-//float4x4 radians(float4x4);
-//
 inline float2 rcp(const float2& a)
 {
     float2 t;
@@ -1164,25 +941,6 @@ inline float round(float v)
     return floor(v + 0.5f);
 }
 
-//float4x4 rcp(float4x4);
-//
-//float2 reflect(float2,float2);
-//float3 reflect(float3,float3);
-//float4 reflect(float4,float4);
-//
-//float2 refract(float2,float2,float);
-//float3 refract(float3,float3,float);
-//float4 refract(float4,float4,float);
-//
-//float2 round(float2);
-//float3 round(float3);
-//float4 round(float4);
-//float4x4 round(float4x4);
-//
-//float2 rsqrt(float2);
-//float3 rsqrt(float3);
-//float4 rsqrt(float4);
-//float4x4 rsqrt(float4x4);
 
 inline float2 saturate(const float2& a)
 {
@@ -1224,60 +982,6 @@ inline float4 select( const float4& a, const float4& b, const float4& c)
     t.w = (c.w == 0) ? a.w : b.w;
     return t;
 }
-//float2 sign(float2);
-//float3 sign(float3);
-//float4 sign(float4);
-//float4x4 sign(float4x4);
-//
-//float2 sin(float2);
-//float3 sin(float3);
-//float4 sin(float4);
-//float4x4 sin(float4x4);
-//
-//void sincos(float2,float2*,float2*);
-//void sincos(float3,float3*,float3*);
-//void sincos(float4,float4*,float4*);
-//void sincos(float4x4,float4x4*,float4x4*);
-//
-//float2 sinh(float2);
-//float3 sinh(float3);
-//float4 sinh(float4);
-//float4x4 sinh(float4x4);
-//
-//float2 smoothstep(float2,float2,float2);
-//float3 smoothstep(float3,float3,float3);
-//float4 smoothstep(float4,float4,float4);
-//float4x4 smoothstep(float4x4,float4x4,float4x4);
-//
-//float2 sqrt(float2);
-//float3 sqrt(float3);
-//float4 sqrt(float4);
-//float4x4 sqrt(float4x4);
-//
-//float2 step(float2,float2);
-//float3 step(float3,float3);
-//float4 step(float4,float4);
-//float4x4 step(float4x4,float4x4);
-//
-//float2 tan(float2);
-//float3 tan(float3);
-//float4 tan(float4);
-//float4x4 tan(float4x4);
-//
-//float2 tanh(float2);
-//float3 tanh(float3);
-//float4 tanh(float4);
-//float4x4 tanh(float4x4);
-//
-//float4x4 transpose(float4x4);
-//
-//float2 trunc(float2);
-//float3 trunc(float3);
-//float4 trunc(float4);
-//float4x4 trunc(float4x4);
-//
-//
-//
 
 inline void OrthoNormalize( float3* a, float3* b )
 {
@@ -1288,6 +992,11 @@ inline void OrthoNormalize( float3* a, float3* b )
     *b = normalize(*b);
 }
 
+
+
+// COLOR
+void ConvertColor( int color, float4* out );
+void ConvertColor( int color, float3* out );
 
 
 }

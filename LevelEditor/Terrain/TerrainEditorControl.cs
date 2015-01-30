@@ -118,8 +118,14 @@ namespace LevelEditor.Terrain
 
         public void PopulatedTerrainCmbox()
         {
+            IGameDocumentRegistry gameDocumentRegistry = Globals.MEFContainer.GetExportedValue<IGameDocumentRegistry>();
+
+            IEnumerable<TerrainGob> terrainGobs = EmptyEnumerable<TerrainGob>.Instance;
+            if (gameDocumentRegistry != null)
+                terrainGobs = gameDocumentRegistry.FindAll<TerrainGob>();
+            
             TerrainGob curTerrain = m_cmboxTerrain.Items.Count > 0 ? (TerrainGob)m_cmboxTerrain.SelectedItem : null;
-            var terrainGobs = Util.FindAll<TerrainGob>();
+            
             m_cmboxTerrain.Enabled = false;
 
             m_cmboxTerrain.BeginUpdate();

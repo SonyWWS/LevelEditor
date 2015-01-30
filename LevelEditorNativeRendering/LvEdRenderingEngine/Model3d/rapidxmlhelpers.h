@@ -14,6 +14,7 @@
 #define RAPIDXML_ALIGNMENT sizeof(void *)
 
 #include "../rapidxml-1.13/rapidxml.hpp"
+#include "../rapidxml-1.13/rapidxml_print.hpp"
 
 
 namespace LvEdEngine

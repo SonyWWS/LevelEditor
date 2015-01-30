@@ -12,7 +12,7 @@
   <xs:complexType name="modelReferenceType">
     <xs:annotation>
       <xs:appinfo>
-        <sce.atf.referenceConstraint validResourceFileExts =".atgi;.dae"/>
+        <sce.atf.referenceConstraint resourceType ="Model"/>
       </xs:appinfo>
     </xs:annotation>
     <xs:complexContent>

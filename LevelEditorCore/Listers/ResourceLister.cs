@@ -21,7 +21,7 @@ namespace LevelEditorCore
     /// The contents view can be switched between details and thumbnails view. Replaces ATF 2's AssetLister.</remarks>
     [Export(typeof(ResourceLister))]
     [Export(typeof(IInitializable))]
-    [PartCreationPolicy(CreationPolicy.Any)]
+    [PartCreationPolicy(CreationPolicy.Shared)]
     public class ResourceLister : ICommandClient, IControlHostClient, IInitializable
     {
         /// <summary>
@@ -216,16 +216,13 @@ namespace LevelEditorCore
             m_splitContainer.SplitterDistance = 10;            
             m_listView.Hide();
 
-            Image resourceImage = ResourceUtil.GetImage16(Sce.Atf.Resources.ResourceImage);
-
             // on initialization, register our tree control with the hosting service
             m_controlHostService.RegisterControl(
                 m_splitContainer,
                 new ControlInfo(
                    "Resources".Localize(),
                    "Lists available resources".Localize(),
-                   StandardControlGroup.Left,
-                   resourceImage),
+                   StandardControlGroup.Left),
                this);
 
 

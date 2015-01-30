@@ -8,13 +8,13 @@ using namespace LvEdEngine;
 namespace MeshUtil
 {
 
-void ComputeNormals(
+/*void ComputeNormals(
     int dimX,
     int dimZ, 
     const float3* inPos, 
     float3*  outNormals);
 
-void ApplyGaussianBlur(float* data, int w, int h);
+void ApplyGaussianBlur(float* data, int w, int h);*/
 
 }
 

@@ -18,7 +18,7 @@ cbuffer ConstantBufferPerFrame : register( b0 )
 {
     float4x4            cb_view;
     float4x4            cb_proj;
-	ExpFog              fog;
+	ExpFog              cb_fog;
     float3              cb_camPosW;    
 };
 
@@ -175,11 +175,11 @@ float4 PSMain( PS_INPUT input ) : SV_TARGET
 		fc.xyz = cb_matEmissive.xyz + matdiffuse.xyz * (A + D) + matspecular.xyz * S;
     }
 
-	if(fog.enabled)
+	if(cb_fog.enabled)
 	{
 	   float dist = distance( cb_camPosW, input.posW  );	   
-	   float foglerp = ComputeFogFactor(fog,dist);
-	   fc.xyz = lerp(fog.color.xyz,fc.xyz , foglerp);	   	   
+	   float foglerp = ComputeFogFactor(cb_fog,dist);
+	   fc.xyz = lerp(cb_fog.color.xyz,fc.xyz , foglerp);	   	   
 	}	
 
     return fc;

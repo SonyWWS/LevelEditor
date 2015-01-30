@@ -17,9 +17,7 @@ using Sce.Atf.Adaptation;
 using Sce.Atf.VectorMath;
 
 using LevelEditorCore;
-using LevelEditorCore.VectorMath;
 
-using Camera = Sce.Atf.Rendering.Camera;
 using ResourceLister = LevelEditorCore.ResourceLister;
 using ViewTypes = Sce.Atf.Rendering.ViewTypes;
 

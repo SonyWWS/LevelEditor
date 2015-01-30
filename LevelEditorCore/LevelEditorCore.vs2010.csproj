@@ -55,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DesignViews\CameraController.cs" />
+    <Compile Include="GameEngineProxy\EngineInfo.cs" />
+    <Compile Include="GameEngineProxy\GameEngineProxy.cs" />
+    <Compile Include="GameEngineProxy\ResourceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Annotations\Annotations.cs" />
     <Compile Include="Commands\DesignViewCommands.cs" />
@@ -77,7 +80,6 @@
     <Compile Include="DesignViews\WalkCameraController.cs" />
     <Compile Include="DisposableObject.cs" />
     <Compile Include="Globals.cs" />
-    <Compile Include="ImageThumbnailResolver.cs" />
     <Compile Include="Interfaces\IBoundable.cs" />
     <Compile Include="Interfaces\IEditableResourceOwner.cs" />
     <Compile Include="Interfaces\IFileSystemResourceFolder.cs" />
@@ -284,6 +286,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\TerrainManip.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent></PreBuildEvent>

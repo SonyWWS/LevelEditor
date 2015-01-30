@@ -1,9 +1,7 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
-#include "../Core/NonCopyable.h"
 #include "Resource.h"
 #include "../Core/Utils.h"
-
 #include "../ResourceManager/ResourceManager.h"
 
 namespace LvEdEngine
@@ -58,49 +56,25 @@ ResourceReference::ResourceReference()
 }
 
 // -----------------------------------------------------------------------------------------------
-ResourceReference::ResourceReference(Resource* r)
-{
-    m_target = NULL;
-    if(r)
-    {
-        m_target = r;
-        m_target->AddRef();
-    }
-}
-
-// -----------------------------------------------------------------------------------------------
 ResourceReference::~ResourceReference()
 {
     SAFE_RELEASE(m_target);
 }
 
 // -----------------------------------------------------------------------------------------------
-Resource * ResourceReference::GetTarget()
+Resource* ResourceReference::GetTarget()
 {
     return m_target;
 }
 
 // -----------------------------------------------------------------------------------------------
-void ResourceReference::SetTarget(Resource* r)
+void ResourceReference::SetTarget(const wchar_t* fileName, Resource* def)
 {
     SAFE_RELEASE(m_target);
-    m_target = r;
-    if(r)
+    if(fileName && wcslen(fileName)>0)
     {
-        m_target->AddRef();
+        m_target = ResourceManager::Inst()->LoadAsync(fileName, def);
     }
 }
-
-// -----------------------------------------------------------------------------------------------
-void ResourceReference::SetTarget(const WCHAR * URI)
-{
-    SAFE_RELEASE(m_target);
-    if(URI && wcslen(URI)>0)
-    {
-        m_target = ResourceManager::Inst()->LoadAsync(URI, NULL);
-    }
-
-}
-
 
 };
