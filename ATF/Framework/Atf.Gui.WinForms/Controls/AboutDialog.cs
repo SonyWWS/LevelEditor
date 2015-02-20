@@ -77,9 +77,6 @@ namespace Sce.Atf.Controls
             if (addAtfInfo)
             {
                 Version v = AtfVersion.GetVersion();
-                // Note, that my attempts to use Localize() fail because the generated MSIL breaks the
-                //  LocalizableStringExtractor program, due to the use of a 'bytearray'. So, until we
-                //  fix our extractor program, this credit string can't easily be localized.--Ron
                 credits.Add(string.Format("Authoring Tools Framework (ATF {0}), by Ron Little, Jianhua Shen," +
                     " Julianne Harrington, Alan Beckus, Matt Mahony, Pat O'Leary, Paul Skibitzke, and Max Elliott." +
                     " Copyright © 2014 Sony Computer Entertainment America LLC".Localize("{0} is the version number"), v));

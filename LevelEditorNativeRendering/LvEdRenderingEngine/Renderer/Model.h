@@ -118,7 +118,7 @@ class Node : public NonCopyable
 {
 public:
     std::string name;
-    Node * parent;
+    Node* parent;
     NodeArray children;
     GeoArray geometries;                  // geometries may be shared among multiple nodes.
     Matrix transform;                     // local to parent transform

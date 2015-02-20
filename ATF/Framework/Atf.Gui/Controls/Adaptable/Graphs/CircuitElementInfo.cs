@@ -1,7 +1,6 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System.ComponentModel;
-using Sce.Atf.Controls.PropertyEditing;
 
 namespace Sce.Atf.Controls.Adaptable.Graphs
 {
@@ -15,8 +14,33 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
         public bool ShowUnconnectedPins
         {
             get { return m_showUnconnectedPins; }
-            set { PropertyChanged.NotifyIfChanged(ref m_showUnconnectedPins, value, () => ShowUnconnectedPins); }
+            set
+            {
+                if (m_showUnconnectedPins != value)
+                {
+                    m_showUnconnectedPins = value;
+                    OnPropertyChanged("ShowUnconnectedPins");
+                }
+            }
         }
+
+        /// <summary>
+        /// Gets/sets a value that indicates whether the element should be drawn as valid.
+        /// If 'false', the D2dCircuitRenderer will use D2dDiagramTheme's ErrorBrush to
+        /// draw this circuit element.</summary>
+        public bool IsValid 
+        {
+            get { return m_valid; }
+            set
+            {
+                if (m_valid != value)
+                {
+                    m_valid = value;
+                    OnPropertyChanged("IsValid");
+                }
+            }       
+        }
+
 
         #region INotifyPropertyChanged members
 
@@ -26,6 +50,16 @@ namespace Sce.Atf.Controls.Adaptable.Graphs
 
         #endregion
 
+        /// <summary>
+        /// Raises the PropertyChanged event</summary>
+        /// <param name="propertyName">Name of the property whose value has changed</param>
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         private bool m_showUnconnectedPins = true;
+        private bool m_valid = true;
     }
 }

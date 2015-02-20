@@ -17,9 +17,7 @@ using LevelEditorCore.VectorMath;
 using LevelEditor.DomNodeAdapters;
 
 namespace LevelEditor
-{
-    //todo this class need to be broken down into few simpler classes.
-
+{   
     /// <summary>
     /// Mangages views, selection and editing operations on a loaded game document</summary>    
     public class GameContext : 
@@ -89,17 +87,18 @@ namespace LevelEditor
                 listable.GetInfo(info);
                 return;
             }
-                       
+
             IResource resource = item.As<IResource>();
             if (resource != null && !item.Is<Game>())
             {
                 info.Label = Path.GetFileName(resource.Uri.LocalPath);
                 info.ImageIndex = info.GetImageList().Images.IndexOfKey(Sce.Atf.Resources.ResourceImage);
+                return;
             }
                 
             // If the object has a name use it as the label (overriding whatever may have been set previously)
             INameable nameable = Adapters.As<INameable>(item);
-            if (nameable != null && !string.IsNullOrEmpty(nameable.Name))
+            if (nameable != null)
                 info.Label = nameable.Name;
         }
 

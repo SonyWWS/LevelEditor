@@ -103,7 +103,7 @@ xml_node* FindNextByName(xml_node* node, const char * name)
 }
 
 // ------------------------------------------------------------------------------------------------
-const char * GetAttributeText(xml_node* node, const char * name, bool required)
+const char * GetAttributeText(xml_node* node, const char* name, bool required)
 {
     if (node)
     {
@@ -113,8 +113,7 @@ const char * GetAttributeText(xml_node* node, const char * name, bool required)
 
     if (required)
     {
-        const char * nodeName = node ? node->name() : "unknown";
-        nodeName = nodeName ? nodeName : "unknown";
+        const char* nodeName = node ? node->name() : "unknown";        
         name = name ? name : "unknown";
         Logger::Log(OutputMessageType::Error, "<%s> is missing required attribute, '%s'\n", nodeName, name);
     }
@@ -134,6 +133,8 @@ unsigned int  GetAttributeUINT(xml_node* node, const char * name)
   }
   return 0;
 }
+
+
 
 // ------------------------------------------------------------------------------------------------
 int ParseFloatArray(xml_node* node, std::vector<float> * out )
@@ -167,6 +168,8 @@ int ParseFloatArray(xml_node* node, std::vector<float> * out )
   }
   return (int)out->size();
 }
+
+
 
 // ------------------------------------------------------------------------------------------------
 int ParseUINTArray(xml_node* node, std::vector<unsigned int> * out )

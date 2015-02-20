@@ -43,8 +43,8 @@ void ColladaModelFactory::ProcessInput(Model3dBuilder * builder, xml_node* input
 {
     const char * semantic = GetAttributeText(input, "semantic", true);
     const char * sourceName = GetAttributeText(input, "source", true);
-    if (!semantic)          { return; }
-    if (!sourceName)        { return; }
+    if (!semantic)  return; 
+    if (!sourceName) return;
     if (*sourceName!='#')
     {
         ParseError("source, '%s', expected to start with '#'\n", sourceName);
@@ -141,6 +141,7 @@ void ColladaModelFactory::ProcessSources(std::vector<Source> * sources, Model3dB
 
         source.id = id;
         source.stride = atoi(stride);
+       
 
         // get values
         xml_node * float_array = FindChildByName(xmlSource, "float_array");
@@ -275,8 +276,8 @@ void ColladaModelFactory::ParseEffectTexture( xml_node* node, const char * name,
     if(node)
     {
         // get 'texture' descendant
-        xml_node* parentNode = FindFirstByName(node, name);
-        xml_node* textureNode = FindFirstByName(parentNode, "texture");
+		xml_node* childNode = FindFirstByName(node, name);
+		xml_node* textureNode = FindFirstByName(childNode, "texture");
         const char * val = GetAttributeText(textureNode, "texture", false);
         if(val)
         {
@@ -339,17 +340,8 @@ void ColladaModelFactory::ProcessEffect(Model3dBuilder * builder, xml_node* node
             {
                 ParseError("<surface> missing child <init_from>\n");
                 continue;
-            }
-
-            // get and validate 'first_node'
-            xml_node * firstNode = init_from->first_node();
-            if (!firstNode)
-            {
-                ParseError("<surface><init_from> missing child\n");
-                continue;
-            }
-
-            const char * imageName = firstNode->value(); 
+            }   
+			const char * imageName = init_from->value();
             builder->m_material.surface2image[surfaceName] = imageName;
         }
     }
@@ -364,7 +356,7 @@ void ColladaModelFactory::ProcessEffect(Model3dBuilder * builder, xml_node* node
             const char * samplerName = GetAttributeText(sampler->parent(), "sid", true);
             if (!samplerName) { continue; }
 
-            //ie: <sampler2D><source>filename</source></sampler2D>
+            //ie: <sampler2D><source>surfacename</source></sampler2D>
             // get and validate 'source'
             xml_node * source = FindChildByName(sampler, "source");
             if (!source)
@@ -373,24 +365,21 @@ void ColladaModelFactory::ProcessEffect(Model3dBuilder * builder, xml_node* node
                 continue;
             }
 
-            // get and validate 'first_node'
-            xml_node * firstNode = source->first_node();
-            if (!firstNode)
-            {
-                ParseError("<sampler2D><source> missing child\n");
-                continue;
-            }
-
-            const char * surfaceName = firstNode->value();
+			const char* surfaceName = source->value();
+			if (!surfaceName)
+			{
+				ParseError("<sampler2D><source>  missing value   </source></sampler2D>\n");
+				continue;
+			}			
             builder->m_material.sampler2surface[samplerName] = surfaceName;
         }
     }
 
     // get the 1st technique
     std::string samplerName;
-    xml_node* technique = FindFirstByName(node, "technique");
+	xml_node* technique = FindChildByName(node->first_node(), "technique");	
     if(technique)
-    {   // process 'standard' technique
+    {   // process 'standard' technique		
         ParseEffectColor(technique, "diffuse", &mat->diffuse);
         ParseEffectColor(technique, "ambient", &mat->ambient);
         ParseEffectColor(technique, "specular", &mat->specular);
@@ -398,13 +387,22 @@ void ColladaModelFactory::ProcessEffect(Model3dBuilder * builder, xml_node* node
         ParseEffectFloat(technique, "shininess", &mat->power);
         ParseEffectTexture(technique, "diffuse", &samplerName);
     }
-    mat->texNames[TextureType::DIFFUSE] = GetTextureFileFromSampler(builder, samplerName);
+	mat->texNames[TextureType::DIFFUSE] = GetTextureFileFromSampler(builder, samplerName);
+
+	// find normal map
+	xml_node* extra = FindChildByName(technique, "extra");
+	xml_node* bump = FindFirstByName(extra, "bump");
+	xml_node* texture = FindChildByName(bump, "texture");
+	const char* sampName = GetAttributeText(texture, "texture", false);
+    if(sampName)
+        mat->texNames[TextureType::NORMAL] = GetTextureFileFromSampler(builder, sampName);
+	
 
     // process any 'bind' params
     std::vector<xml_node*> bindNodes;
     FindAllByName(technique, "bind", true, &bindNodes);
     for(auto it = bindNodes.begin(); it != bindNodes.end(); ++it)
-    {
+    {		
         xml_node* bind = (*it);
 
         const char* symbolName = GetAttributeText(bind, "symbol", true);
@@ -418,10 +416,11 @@ void ColladaModelFactory::ProcessEffect(Model3dBuilder * builder, xml_node* node
         }
         if(strcmp(symbolName, "NormalSampler")==0)
         {
-
             mat->texNames[TextureType::NORMAL] = GetTextureFileFromSampler(builder, std::string(symbolValue));
         }
     }
+
+
         
 }
 
@@ -555,7 +554,7 @@ void ColladaModelFactory::ProcessController(xml_node * xmlController, ColladaMod
 
 
 // ------------------------------------------------------------------------------------------------
-Node* ColladaModelFactory::ProcessSceneNode(Model3dBuilder * builder, xml_node* node, Node* /*parent*/, ColladaModelFactory::ControllerToGeo * controllerToGeo)
+Node* ColladaModelFactory::ProcessSceneNode(Model3dBuilder * builder, xml_node* node, Node*, ColladaModelFactory::ControllerToGeo * controllerToGeo)
 {
     xml_node* instanceGeo = FindChildByName(node, "instance_geometry");
     xml_node* instanceController = FindChildByName(node, "instance_controller");
@@ -648,6 +647,7 @@ void ColladaModelFactory::ProcessChildNodes(Model3dBuilder * builder, xml_node* 
 
         // register with parent and model
         parent->children.push_back(modelNode);
+        modelNode->parent = parent;
 
         // process child nodes
         ProcessChildNodes(builder, node, modelNode, controllerToGeo);
@@ -704,6 +704,14 @@ void ColladaModelFactory::ProcessXml(xml_node * rootXml, Model3dBuilder * builde
             nodeName = "!missing-id!";
         }
         Node * rootNode = builder->m_model->CreateNode(nodeName);
+
+        xml_node* asset = rootXml->first_node("asset");
+        xml_node* upaxisNode =  asset->first_node("up_axis");        
+        
+        if(upaxisNode && strcmpi(upaxisNode->value(),"Z_UP") == 0)
+        {
+            rootNode->transform = Matrix::CreateRotationX(-PiOver2);
+        }
 
         builder->m_model->SetRoot(rootNode);
         ProcessChildNodes(builder, scene, rootNode, &controllerToGeo);

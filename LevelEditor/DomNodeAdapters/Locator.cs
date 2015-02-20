@@ -56,13 +56,15 @@ namespace LevelEditor.DomNodeAdapters
         /// Provides info for the ProjectLister tree view and other controls</summary>
         /// <param name="info">Item info passed in and modified by the method</param>
         public override void GetInfo(ItemInfo info)
-        {
-            base.GetInfo(info);
+        {            
             info.ImageIndex = Util.GetTypeImageIndex(DomNode.Type, info.GetImageList());
             if (Reference != null && Reference.Target != null && Reference.Target.Uri != null)
                 info.Label = string.Format("{0}: {1}", Name, Path.GetFileName(Reference.Target.Uri.LocalPath));
             else
                 info.Label = Name;
+            if (IsLocked)
+                info.StateImageIndex = info.GetImageList().Images.IndexOfKey(Sce.Atf.Resources.LockImage);
+
             info.IsLeaf = false;
         }
 
