@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace LevelEditorCore.GameEngineProxy
+namespace LevelEditorCore
 {
     /// <summary>
     /// Provide access to game engine information.</summary>

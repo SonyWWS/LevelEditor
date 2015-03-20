@@ -10,15 +10,15 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using LevelEditorCore.GameEngineProxy;
+
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
 using Sce.Atf.Dom;
 
+using LevelEditorCore;
 
 using Resources = Sce.Atf.Resources;
-
 
 namespace LevelEditor
 {
@@ -32,6 +32,7 @@ namespace LevelEditor
 		static void  Main()
         {
 
+            double start = LevelEditorCore.Timing.GetHiResCurrentTime();
 #if DEBUG
             AllocConsole();
 #endif
@@ -101,7 +102,7 @@ namespace LevelEditor
                 typeof(LevelEditorCore.ResourceMetadataEditor),
                 typeof(LevelEditorCore.LayerLister),
                 typeof(LevelEditorCore.ResourceConverterService),
-                typeof(LevelEditorCore.RenderLoopService),                
+                
                 typeof(LevelEditorCore.Commands.PickFilterCommands),
                 typeof(LevelEditorCore.Commands.DesignViewCommands),
                 typeof(LevelEditorCore.Commands.ManipulatorCommands),
@@ -114,7 +115,8 @@ namespace LevelEditor
                 typeof(LevelEditorCore.FlyCameraController)
                 );
 
-            TypeCatalog thisAssemCatalog = new TypeCatalog(                
+            TypeCatalog thisAssemCatalog = new TypeCatalog(
+                typeof(LevelEditor.GameLoopService),                
                 typeof(LevelEditor.GameEditor),
                 typeof(LevelEditor.BookmarkLister),                                
                 typeof(LevelEditor.GameDocumentRegistry),                
@@ -222,6 +224,7 @@ namespace LevelEditor
             Application.Run(mainForm); // MAIN LOOP
 
             container.Dispose();
+            GC.KeepAlive(start);
            
         }
 

@@ -22,10 +22,12 @@ namespace LvEdEngine
     }
 
     //virtual 
-    bool GameObjectGroup::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+    void GameObjectGroup::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
     {
-         if (!IsVisible(context->Cam().GetFrustum()))
-             return false;
+		if (!IsVisible(context->Cam().GetFrustum()))
+			return;
+
+		super::GetRenderables(collector, context);
 
           for(auto it = m_children.begin(); it != m_children.end(); ++it)
           {
@@ -40,7 +42,7 @@ namespace LvEdEngine
        //      float3 to =  (*it)->GetBounds().GetCenter();
         //     LineRenderer::Inst()->DrawLine(from,to,color);
         // }   
-         return true;
+         
     }
 
     void GameObjectGroup::AddChild(GameObject* child, int index)
@@ -81,13 +83,14 @@ namespace LvEdEngine
     }
 
 
-    void GameObjectGroup::Update(float dt)
+    void GameObjectGroup::Update(const FrameTime& fr, UpdateTypeEnum updateType)
     {
-        UpdateWorldTransform();
-
+        bool boundDirty = m_boundsDirty;
+        super::Update(fr,updateType);
+        m_boundsDirty = boundDirty;
         for( auto it = m_children.begin(); it != m_children.end(); ++it)
         {
-            (*it)->Update(dt);
+            (*it)->Update(fr,updateType);
         }
 
 
@@ -113,6 +116,4 @@ namespace LvEdEngine
             UpdateWorldAABB();                      
         }
     }
-
-   
 };

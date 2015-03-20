@@ -27,6 +27,9 @@ namespace LvEdEngine
 
         const ExpFog& GetFog() const {return m_fog;}
     private:
-        ExpFog m_fog;                
+        ExpFog m_fog;     
+    private:
+        typedef GameObjectGroup super;
+
 	};
 }

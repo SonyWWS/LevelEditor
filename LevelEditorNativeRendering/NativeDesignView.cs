@@ -10,14 +10,16 @@ using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;
 
 using LevelEditorCore;
-using LevelEditorCore.GameEngineProxy;
+
 
 using ViewTypes = Sce.Atf.Rendering.ViewTypes;
 
 namespace RenderingInterop
-{    
+{
+    
     [Export(typeof(ISnapSettings))]
     [Export(typeof(IDesignView))]
+    [Export(typeof(IGameLoop))]
     [Export(typeof(DesignView))]
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class NativeDesignView : DesignView
@@ -66,16 +68,7 @@ namespace RenderingInterop
         }
 
         private ISelectionContext m_selectionContext;
-
-        public override void Tick(FrameTime ft)
-        {
-            GameEngine.SetGameLevel(Context.Cast<NativeObjectAdapter>());
-            GameEngine.Update(ft.TotalTime, ft.ElapsedTime, false);
-            foreach (NativeDesignControl view in Views)
-            {                               
-                view.Render();
-            }
-        }                
+        
     }
 
 }

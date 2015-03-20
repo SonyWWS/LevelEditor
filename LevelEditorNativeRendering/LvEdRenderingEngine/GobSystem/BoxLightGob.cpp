@@ -7,6 +7,7 @@
 #include "../Renderer/LineRenderer.h"
 #include "../Renderer/TextureLib.h"
 #include "../Renderer/ShapeLib.h"
+#include "GameObjectComponent.h"
 
 namespace LvEdEngine
 {
@@ -16,6 +17,7 @@ BoxLightGob::BoxLightGob()
     // creates and registers a box light with the rendering sub-sytem.
     m_light = LightingState::Inst()->CreateBoxLight();
     assert(m_light != NULL);
+    m_localBounds = AABB(float3(-0.5f,-0.5f,-0.5f),float3(0.5f,0.5f,0.5f));
 }
 
 BoxLightGob::~BoxLightGob()
@@ -55,11 +57,17 @@ void BoxLightGob::SetAttenuation(const float3& atten)
     m_light->attenuation = float4(atten.x,atten.y,atten.z,1);
 }
 
-bool BoxLightGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+void BoxLightGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
 {     
     
-    if (!IsVisible(context->Cam().GetFrustum())) return false;   
+	if (!IsVisible(context->Cam().GetFrustum())) return;
 
+	// No need to call super::GetRenderables	
+	//super::GetRenderables(collector, context);
+	// need to call GetRenderables() for each component.
+	for (auto it = m_components.begin(); it != m_components.end(); ++it)
+		(*it)->GetRenderables(collector, context);
+	
     RenderableNode renderable;
     GameObject::SetupRenderable(&renderable,context);
     renderable.mesh = m_mesh;
@@ -74,36 +82,13 @@ bool BoxLightGob::GetRenderables(RenderableNodeCollector* collector, RenderConte
     
     RenderFlagsEnum flags = RenderFlags::Textured;
     collector->Add( renderable, flags, Shaders::BillboardShader );
-
-    if( context->selection.find(GetInstanceId()) != context->selection.end() )
-    {
-        /* RenderableNode cubeR;
-         GameObject::SetupRenderable(&cubeR,context);
-         cubeR.mesh = ShapeLibGetMesh( RenderShape::Cube);
-         cubeR.SetFlag( RenderableNode::kShadowCaster, false );
-         cubeR.SetFlag( RenderableNode::kShadowReceiver, false );
-         cubeR.SetFlag( RenderableNode::kNotPickable,true);
-         cubeR.diffuse = m_light->diffuse;         
-         cubeR.diffuse.w = 0.2f;
-         RenderFlagsEnum rflags  = (RenderFlagsEnum)(RenderFlags::Lit | RenderFlags::AlphaBlend | RenderFlags::DisableDepthWrite);         
-         collector->Add( cubeR, rflags, Shaders::TexturedShader );*/
-        LineRenderer::Inst()->DrawAABB(m_bounds,float4(1,1,1,1));
-    }
-
-    return true;    
 }
 
-void BoxLightGob::Update(float dt)
-{
-    UpdateWorldTransform();
-    if(m_boundsDirty)
-    {
-        m_localBounds = AABB(float3(-0.5f,-0.5f,-0.5f),float3(0.5f,0.5f,0.5f));        
-        UpdateWorldAABB();
-    }
+void BoxLightGob::Update(const FrameTime& fr, UpdateTypeEnum updateType)
+{    
+    super::Update(fr,updateType);
     m_light->min = m_bounds.Min();
     m_light->max = m_bounds.Max();
 }
-
 
 };

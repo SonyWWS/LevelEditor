@@ -260,8 +260,8 @@ namespace RenderingInterop
                 HitRecord? hr = (snap && ( snapFilter == null || snapFilter.CanSnapTo(ghost,hitnode))) ? hit : null;
                 ProjectGhost(ghost, rayw, hr);
             }
-            DesignView.Tick();
-            
+            DesignView.Update();
+            DesignView.Render();            
         }
         protected override void OnDragDrop(DragEventArgs drgevent)
         {
@@ -317,28 +317,17 @@ namespace RenderingInterop
             if (DesignView.Context == null || GameEngine.IsInError)
             {
                 e.Graphics.Clear(DesignView.BackColor);
-                if(GameEngine.IsInError)
+                if (GameEngine.IsInError)
                     e.Graphics.DrawString(GameEngine.CriticalError, Font, Brushes.Red, 1, 1);
                 return;
             }
 
-            FrameTime ft = DesignView.GetFrameTime();
-            GameEngine.SetGameLevel(DesignView.Context.Cast<NativeObjectAdapter>());
-            GameEngine.Update(ft.TotalTime, ft.ElapsedTime, false);
-            Render();
-            // draw selection
-            if (IsPicking)
-            {
-                Rectangle rect = MakeRect(FirstMousePoint, CurrentMousePoint);
-                if (rect.Width > 0 && rect.Height > 0)
-                {
-                    e.Graphics.DrawRectangle(s_marqueePen, rect);
-                }
-            }
+            DesignView.Update();            
+            Render();            
         }
       
         // render the scene.
-        public void Render()
+        public override void Render()
         {
             bool skipRender =
                 SurfaceId == 0
@@ -388,7 +377,20 @@ namespace RenderingInterop
                                   
             string str = string.Format("View Type: {0}   time-per-frame: {1:0.00} ms", ViewType, m_clk.Milliseconds);
             GameEngine.DrawText2D(str, Util3D.CaptionFont, 1,1, Color.White);          
-            GameEngine.End();                                    
+            GameEngine.End();
+
+            if (IsPicking)
+            {// todo: use Directx to draw marque.                
+                using (Graphics g = CreateGraphics())
+                {
+                    Rectangle rect = MakeRect(FirstMousePoint, CurrentMousePoint);
+                    if (rect.Width > 0 && rect.Height > 0)
+                    {
+                        g.DrawRectangle(s_marqueePen, rect);
+                    }
+                }
+            }
+            
         }
         
         private void RenderProperties(IEnumerable<object> objects, bool renderCaption, bool renderBound, bool renderPivot)

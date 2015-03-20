@@ -24,12 +24,12 @@ LightGob::~LightGob()
 
 // push Renderable nodes
 //virtual 
-bool LightGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+void LightGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
 {
-    if (!IsVisible(context->Cam().GetFrustum()))
-    {
-        return false;
-    }
+	if (!IsVisible(context->Cam().GetFrustum()))
+		return;
+    
+	super::GetRenderables(collector, context);
 
     RenderableNode renderable;
     GameObject::SetupRenderable(&renderable,context);
@@ -47,8 +47,6 @@ bool LightGob::GetRenderables(RenderableNodeCollector* collector, RenderContext*
     
     RenderFlagsEnum flags = RenderFlags::Textured;
     collector->Add( renderable, flags, Shaders::BillboardShader );
-    
-    return true;
 }
 
 }

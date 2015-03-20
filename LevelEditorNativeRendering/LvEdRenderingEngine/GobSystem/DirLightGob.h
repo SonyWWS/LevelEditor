@@ -22,5 +22,7 @@ namespace LvEdEngine
 
     protected:
         DirLight * m_light;
+    private:
+        typedef LightGob super;
     };
 }

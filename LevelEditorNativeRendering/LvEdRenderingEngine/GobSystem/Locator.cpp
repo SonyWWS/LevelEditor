@@ -25,16 +25,14 @@ namespace LvEdEngine
     }
 
     // ----------------------------------------------------------------------------------
-    bool Locator::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+	void Locator::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
     {  
-        if (!IsVisible(context->Cam().GetFrustum()) )
-        {
-            return false;
-        }        
+		if (!IsVisible(context->Cam().GetFrustum()))
+			return;
+		super::GetRenderables(collector, context);
+
         RenderFlagsEnum flags = (RenderFlagsEnum)(RenderFlags::Textured | RenderFlags::Lit);
         collector->Add( m_renderables.begin(), m_renderables.end(), flags, Shaders::TexturedShader );
-
-        return true;
     }
 
     void Locator::BuildRenderables()
@@ -96,16 +94,15 @@ namespace LvEdEngine
         AddResource(NULL, -1);
     }
 
+    void Locator::Update(const FrameTime& fr, UpdateTypeEnum updateType)
+    {               
+        super::Update(fr,updateType);
+		bool updatedBound = m_worldXformUpdated;
 
-
-    void Locator::Update(float dt)
-    {       
-        bool udpateXforms = m_worldDirty;
-        UpdateWorldTransform();
         Model* model = m_resource ? (Model*)m_resource->GetTarget() : NULL;                     
         if( model && model->IsReady())
         {
-            if(m_modelTransforms.empty() || udpateXforms)
+            if(m_modelTransforms.empty() || m_worldXformUpdated)
             {
                  const MatrixList& matrices = model->AbsoluteTransforms();
                  m_modelTransforms.resize(matrices.size());
@@ -113,11 +110,12 @@ namespace LvEdEngine
                  {
                      m_modelTransforms[i] = matrices[i] * m_world; // transform matrix array now holds complete world transform.
                  }
-                 BuildRenderables();
-                 m_boundsDirty = true;
+                 BuildRenderables(); 
+				 updatedBound = true;
             }                               
         }
 
+        m_boundsDirty = updatedBound;
         if(m_boundsDirty)        
         {                  
             if(!m_modelTransforms.empty())

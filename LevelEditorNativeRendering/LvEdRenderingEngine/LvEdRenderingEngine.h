@@ -27,6 +27,7 @@
 #include "Renderer/FontTypes.h"
 #include "Core/typedefs.h"
 #include "Renderer/RenderEnums.h"
+#include "FrameTime.h"
 #include <stdint.h>
 
 
@@ -323,7 +324,8 @@ extern "C" LVEDRENDERINGENGINE_API ObjectGUID __stdcall LvEd_GetGameLevel();
  * @param waitForPendingResources wait for all the pending resources to load.
  *
  */
-extern "C" LVEDRENDERINGENGINE_API void  __stdcall LvEd_Update(double t, float dt,bool waitForPendingResources);
+extern "C" LVEDRENDERINGENGINE_API void  __stdcall LvEd_Update(FrameTime* ft, UpdateTypeEnum updateType, bool waitForPendingResources);
+
 
 
 /**

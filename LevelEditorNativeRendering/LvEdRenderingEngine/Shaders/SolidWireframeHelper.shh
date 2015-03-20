@@ -24,8 +24,7 @@ void GSSolidWire( triangle GS_INPUT input[3],
     PS_INPUT_WIRE output;
 
     // cull if any vertex fails NearZ test.
-    bool cullTri  = (input[0].posH.z < 0) || (input[1].posH.z < 0) || (input[2].posH.z < 0); 
-    // If case is all vertices behind viewpoint (case = 7) then cull.
+    bool cullTri  = (input[0].posH.z < 0) || (input[1].posH.z < 0) || (input[2].posH.z < 0);     
     if (cullTri) return;
    
    // Transform position to window space
@@ -88,7 +87,6 @@ void GSSolidWire( triangle GS_INPUT input[3],
     output.EdgeA[1] = 0;
     output.EdgeA[2] = 0;    
     outStream.Append( output );
-   // outStream.RestartStrip();    
 }
 
 float evalMinDistanceToEdges(in PS_INPUT_WIRE input)
@@ -115,6 +113,5 @@ float4 PSSolidWire( PS_INPUT_WIRE input) : SV_Target
     dist *= dist;
     float alpha = exp2(-2*dist);
     
-    return float4(wirecolor.xyz, alpha);
-	//return float4(wirecolor.xyz, 1);
+    return float4(wirecolor.xyz, alpha);	
 }

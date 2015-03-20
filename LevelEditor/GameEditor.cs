@@ -71,9 +71,10 @@ namespace LevelEditor
             // Register palette items based on the schema file's annotations.
             foreach (DomNodeType nodeType in m_schemaLoader.TypeCollection.GetNodeTypes())
             {
-                NodeTypePaletteItem item = nodeType.GetTag<NodeTypePaletteItem>();
+                NodeTypePaletteItem item = nodeType.GetTagLocal<NodeTypePaletteItem>();
                 if (item != null)
-                {                    
+                {
+                    Console.WriteLine("reg: " + nodeType.Name);
                     m_paletteService.AddItem(nodeType, item.Category, this);
                 }
             }

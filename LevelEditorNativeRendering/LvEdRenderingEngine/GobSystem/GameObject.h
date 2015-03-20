@@ -9,10 +9,13 @@
 #include "../Renderer/RenderContext.h"
 #include "../Renderer/RenderState.h"
 #include "../Renderer/RenderableNodeSorter.h"
+#include "../FrameTime.h"
+
 
 namespace LvEdEngine
 {
     
+    class GameObjectComponent;
     class QueryFunctor
     {
     public:
@@ -43,35 +46,26 @@ namespace LvEdEngine
         void SetCastsShadows(bool castsShadows){m_castsShadows = castsShadows;}
         bool GetReceivesShadows(){return m_receivesShadows;}
         void SetReceivesShadows(bool receivesShadows){m_receivesShadows = receivesShadows;}
-
         GameObject* Parent(){return m_parent;}
 
-       
+        void AddComponent(GameObjectComponent* component, int index);
+        void RemoveComponent(GameObjectComponent* component);
 
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
-
+        virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
         virtual void SetupRenderable(RenderableNode* r, RenderContext* context);
 
 
         void UpdateWorldTransform();
         void UpdateWorldAABB();
-        virtual void Update(float dt);
-
-        
-
+        virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
         virtual void InvalidateBounds();
         virtual void InvalidateWorld();
 
-        // TODO: make this protected
         void SetParent(GameObject* parent);
-
-
         virtual void Query(QueryFunctor& func) { func(this);}
-
-        
-
     protected:
+
         GameObject * m_parent;
 		Matrix m_local;		
 		Matrix m_world;
@@ -81,10 +75,18 @@ namespace LvEdEngine
         bool m_boundsDirty;
         bool m_worldDirty;
 
+        // temp solution.
+        bool m_worldXformUpdated;
+        bool m_worldBoundUpdated;
+
+		std::vector<GameObjectComponent*> m_components;
+
     private:
         bool m_visible;
         bool m_castsShadows;
         bool m_receivesShadows;
+        
+        typedef Object super;
     };
 
 

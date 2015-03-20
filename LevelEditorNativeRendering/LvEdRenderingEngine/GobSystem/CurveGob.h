@@ -27,8 +27,8 @@ namespace LvEdEngine
         static const char* StaticClassName(){return "CurveGob";}
 
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);    
-        virtual void Update(float dt);
+        virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);    
+        virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
         
 
         void SetColor(int color) { m_color = color; };
@@ -51,5 +51,8 @@ namespace LvEdEngine
 
         std::vector<ControlPointGob*> m_points;       
         Mesh m_mesh;
+
+    private:
+        typedef GameObject super;
     };
 }

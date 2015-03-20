@@ -125,7 +125,9 @@ namespace LevelEditorCore
                     if (m_dragOverThreshold)
                     {
                         DesignView.Manipulator.OnDragging(this, e.Location);
-                        DesignView.Tick();
+                        DesignView.Update();
+                        DesignView.Render();
+
                         if (m_propEditor == null)
                             m_propEditor = Globals.MEFContainer.GetExportedValue<PropertyEditor>();
                         m_propEditor.PropertyGrid.RefreshProperties();

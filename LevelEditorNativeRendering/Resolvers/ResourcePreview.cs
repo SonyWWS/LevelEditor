@@ -101,6 +101,7 @@ namespace RenderingInterop
                 m_game = rootNode.Cast<IGame>();
                 IGameObjectFolder rootFolder = m_game.RootGameObjectFolder;
                 m_renderSurface.Game = m_game;
+                m_renderSurface.GameEngineProxy = m_gameEngine;
 
             }
             finally
@@ -133,6 +134,9 @@ namespace RenderingInterop
 
         [Import(AllowDefault = false)]
         private ControlHostService m_controlHostService = null;
+
+        [Import(AllowDefault = false)]
+        private IGameEngineProxy m_gameEngine;
 
         private NativeViewControl m_renderSurface;
         private IGame m_game;        
@@ -226,7 +230,7 @@ namespace RenderingInterop
                     }
                 };
 
-                this.ContextMenuStrip = cntx;
+                ContextMenuStrip = cntx;
                 #endregion
             }
 
@@ -236,6 +240,11 @@ namespace RenderingInterop
                 set;
             }
 
+            public IGameEngineProxy GameEngineProxy
+            {
+                get;
+                set;
+            }
             public IGame Game
             {
                 get;
@@ -295,7 +304,7 @@ namespace RenderingInterop
             }
 
             // render the scene.
-            public void Render()
+            public override void Render()
             {
                 if (GameEngine.IsInError
                     || SurfaceId == 0
@@ -312,8 +321,11 @@ namespace RenderingInterop
                     NativeObjectAdapter game = Game.As<NativeObjectAdapter>();
                     GameEngine.SetGameLevel(game);
                     GameEngine.SetRenderState(m_renderState);
-                    if(Game.RootGameObjectFolder.GameObjects.Count > 0)
-                        GameEngine.Update(0, 0, true);
+                    if (Game.RootGameObjectFolder.GameObjects.Count > 0)
+                    {
+                        FrameTime fr = new FrameTime(0, 0);
+                        GameEngineProxy.Update(fr, UpdateType.Paused, true);
+                    }
 
                     if (ResetCamera)
                     {

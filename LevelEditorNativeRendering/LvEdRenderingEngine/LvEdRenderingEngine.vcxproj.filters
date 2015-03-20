@@ -372,6 +372,16 @@
     <ClInclude Include="GobSystem\TorusGob.h">
       <Filter>GobSystem</Filter>
     </ClInclude>
+    <ClInclude Include="GobSystem\GameObjectComponent.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\MeshComponent.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\SpinnerComponent.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameTime.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -668,6 +678,15 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="GobSystem\TorusGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\GameObjectComponent.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\MeshComponent.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\SpinnerComponent.cpp">
       <Filter>GobSystem</Filter>
     </ClCompile>
   </ItemGroup>

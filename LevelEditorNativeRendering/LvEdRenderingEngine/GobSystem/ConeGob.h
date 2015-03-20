@@ -11,5 +11,8 @@ namespace LvEdEngine
         ConeGob() : PrimitiveShapeGob( RenderShape::Cone ) {}
         virtual const char* ClassName() const {return StaticClassName();}
         static const char* StaticClassName(){return "ConeGob";}
+
+    private:
+        typedef PrimitiveShapeGob super;
     };
 }

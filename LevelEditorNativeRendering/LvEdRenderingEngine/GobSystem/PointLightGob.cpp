@@ -48,9 +48,12 @@ void PointLightGob::SetRange(float r)
 }
 
 
-void PointLightGob::Update(float dt)
+void PointLightGob::Update(const FrameTime& fr, UpdateTypeEnum updateType)
 {
-    UpdateWorldTransform();
+    bool boundDirty = m_boundsDirty;
+    super::Update(fr,updateType);
+    
+    m_boundsDirty = boundDirty;
     if(m_boundsDirty)
     {
         m_localBounds = m_mesh->bounds;        

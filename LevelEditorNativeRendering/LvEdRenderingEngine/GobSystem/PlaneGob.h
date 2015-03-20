@@ -11,5 +11,7 @@ namespace LvEdEngine
         PlaneGob() : PrimitiveShapeGob( RenderShape::Quad) {}
         virtual const char* ClassName() const {return StaticClassName();}
         static const char* StaticClassName(){return "PlaneGob";}
+    private:
+        typedef PrimitiveShapeGob super;
     };
 }

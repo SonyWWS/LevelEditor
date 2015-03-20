@@ -74,8 +74,9 @@ to be able to save the changes?" context="" translation="ファイル
   <StringItem id="Edit user preferences" context="" translation="ユーザー設定を編集します。" />
   <StringItem id="Edit Vita Target in Neighborhood" context="" translation="Neighborhood で Vita ターゲットを編集。" />
   <StringItem id="Editing Commands" context="" translation="編集コマンド" />
-  <StringItem id="Enable source control" context="" translation="Enable source control" />
+  <StringItem id="empty" context="" translation="なし" />
   <StringItem id="Enable Source Control" context="" translation="Enable Source Control" />
+  <StringItem id="Enable source control" context="" translation="Enable source control" />
   <StringItem id="Error" context="" translation="エラー" />
   <StringItem id="Exit" context="Exit the application" translation="終了" />
   <StringItem id="Exit Application" context="" translation="アプリケーションを終了します。" />
@@ -92,8 +93,8 @@ to be able to save the changes?" context="" translation="ファイル
   <StringItem id="Front" context="the front side of the model that is being viewed" translation="前面" />
   <StringItem id="Get information about application" context="" translation="アプリケーションの情報を表示します。" />
   <StringItem id="Get latest version from source control" context="" translation="ソース管理から最新版を取得します。" />
-  <StringItem id="Group" context="Group the selection into a single item" translation="グループ" />
   <StringItem id="Group" context="" translation="グループ" />
+  <StringItem id="Group" context="Group the selection into a single item" translation="グループ" />
   <StringItem id="Group the selection into a single item" context="" translation="選択部分をグループとして 1 つにまとめます。" />
   <StringItem id="Help" context="this is the name of a menu" translation="ヘルプ" />
   <StringItem id="Help Commands" context="" translation="ヘルプコマンド" />
@@ -162,8 +163,8 @@ to be able to save the changes?" context="" translation="ファイル
   <StringItem id="Remove the split" context="" translation="分割を解除します。" />
   <StringItem id="Revert add or check out from source control" context="" translation="ソース管理への追加またはチェックアウトを元に戻します。" />
   <StringItem id="Right" context="the right side of the model that is being viewed" translation="右" />
-  <StringItem id="Save" context="Save the active file" translation="保存" />
   <StringItem id="Save" context="" translation="保存" />
+  <StringItem id="Save" context="Save the active file" translation="保存" />
   <StringItem id="Save All" context="Saves all open files" translation="すべて保存" />
   <StringItem id="Save all open files" context="" translation="開いているファイルをすべて保存します。" />
   <StringItem id="Save As ..." context="Save the active file under a new name" translation="名前を付けて保存..." />

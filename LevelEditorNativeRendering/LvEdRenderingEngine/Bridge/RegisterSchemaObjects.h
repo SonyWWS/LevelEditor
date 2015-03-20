@@ -22,7 +22,9 @@
 #include "../GobSystem/SkyDome.h"
 #include "../GobSystem/SphereGob.h"
 #include "../GobSystem/TorusGob.h"
-
+#include "../GobSystem/GameObjectComponent.h"
+#include "../GobSystem/MeshComponent.h"
+#include "../GobSystem/SpinnerComponent.h"
 #include "../GobSystem/Terrain/TerrainGob.h"
 #include "../GobSystem/Terrain/TerrainMap.h"
 #include "../GobSystem/Terrain/LayerMap.h"

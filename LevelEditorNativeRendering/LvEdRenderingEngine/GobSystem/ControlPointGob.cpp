@@ -11,18 +11,12 @@
 namespace LvEdEngine
 {
 
-
-void ControlPointGob::Update(float dt)
-{
-    UpdateWorldTransform();
-    UpdateWorldAABB();
-}
-
 // push Renderable nodes
 //virtual
-bool ControlPointGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
-{
-  
+void ControlPointGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+{  
+	super::GetRenderables(collector, context);
+
     Mesh* mesh = ShapeLibGetMesh(RenderShape::QuadLineStrip);
     m_localBounds = mesh->bounds;
 
@@ -66,10 +60,8 @@ bool ControlPointGob::GetRenderables(RenderableNodeCollector* collector, RenderC
     r.WorldXform = billboard;
     r.SetFlag(RenderableNode::kTestAgainstBBoxOnly, true);
     r.SetFlag(RenderableNode::kShadowCaster, false);
-    r.SetFlag(RenderableNode::kShadowReceiver, false);
-    
-    collector->Add(r, RenderFlags::None, Shaders::BasicShader);
-    return true;
+    r.SetFlag(RenderableNode::kShadowReceiver, false);    
+    collector->Add(r, RenderFlags::None, Shaders::BasicShader);    
 }
 
 

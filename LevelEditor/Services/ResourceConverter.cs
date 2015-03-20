@@ -4,7 +4,7 @@ using System.ComponentModel.Composition;
 using Sce.Atf;
 
 using LevelEditorCore;
-using LevelEditorCore.GameEngineProxy;
+
 using LevelEditor.DomNodeAdapters;
 
 namespace LevelEditor

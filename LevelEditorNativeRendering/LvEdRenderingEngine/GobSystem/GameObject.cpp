@@ -2,6 +2,8 @@
 
 #include <D3D11.h>
 #include "GameObject.h"
+#include "GameObjectComponent.h"
+#include <algorithm>
 
 namespace LvEdEngine
 {
@@ -22,6 +24,11 @@ namespace LvEdEngine
     //virtual
     GameObject::~GameObject()
     {
+         for(auto it = m_components.begin(); it != m_components.end(); it++)
+         {
+             delete (*it);
+         }
+         m_components.clear();
     }
 
     // ----------------------------------------------------------------------------------
@@ -79,6 +86,8 @@ namespace LvEdEngine
                 m_world = m_local;
             }
             m_worldDirty = false;
+            m_worldXformUpdated = true;
+        
         }
     }
 
@@ -90,11 +99,19 @@ namespace LvEdEngine
             m_bounds = m_localBounds;
             m_bounds.Transform(m_world);            
             m_boundsDirty = false;
+            m_worldBoundUpdated = true;
         }
     }
 
-    void GameObject::Update(float dt)
+    void GameObject::Update(const FrameTime& fr, UpdateTypeEnum updateType)
     {        
+        m_worldXformUpdated = false;
+        m_worldBoundUpdated = false;
+
+        for( auto it = m_components.begin(); it != m_components.end(); ++it)
+        {
+            (*it)->Update(fr,updateType);
+        }
         UpdateWorldTransform();
         UpdateWorldAABB();
     }
@@ -154,17 +171,14 @@ namespace LvEdEngine
    
     // ----------------------------------------------------------------------------------
     //virtual
-    bool GameObject::GetRenderables(RenderableNodeCollector* /*collector*/, RenderContext* context)
+	void GameObject::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
     {
-        if ( ! IsVisible(context->Cam().GetFrustum()) )
-            return false;
-
-        //
-        // Notice that this method doesn't add anything to the RenderableNodeCollector. See the
-        // Locator sub-class, for example, for a case where it makes sense for the GameObject
-        // to add to the RenderableNodeCollector list.
-        //
-        return true;
+		if (!IsVisible(context->Cam().GetFrustum()))
+			return;	
+		for (auto it = m_components.begin(); it != m_components.end(); ++it)
+		{
+			(*it)->GetRenderables(collector, context);
+		}
     }
 
     // -----------------------------------------------------------------------------------------------
@@ -177,6 +191,38 @@ namespace LvEdEngine
         r->SetFlag( RenderableNode::kShadowReceiver, GetReceivesShadows() );
         LightingState::Inst()->UpdateLightEnvironment( *r );
     }
+
+
+    void GameObject::AddComponent(GameObjectComponent* component, int index)
+    {
+        if(component)
+        {
+            component->SetOwner(this);
+            if(index == -1)
+            {
+                m_components.push_back(component);
+            }
+            else
+            {
+                m_components.insert(m_components.begin() + index, component);
+            }
+        }
+
+
+    }
+    void GameObject::RemoveComponent(GameObjectComponent* component)
+    {
+        if(component)
+        {
+            component->SetOwner(NULL);
+            auto it = std::find(m_components.begin(), m_components.end(), component);
+            m_components.erase(it);
+        }
+
+    }
+
+    //============================ GameObjectReference imple ========================
+
 
     // -----------------------------------------------------------------------------------------------
     GameObjectReference::GameObjectReference()

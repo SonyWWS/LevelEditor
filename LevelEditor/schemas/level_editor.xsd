@@ -8,6 +8,62 @@
   <xs:include schemaLocation="gap.xsd"/>
 
 
+    <!-- Render component, a game component that contains or generate renderable geometry-->
+    <xs:complexType name="renderComponentType" abstract="true">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="RenderComponent"/>
+                <LeGe.NativeProperty name="visible" nativeName="Visible" nativeType="bool" access="set"/>
+                <LeGe.NativeProperty name="castShadow" nativeName="CastShadow" nativeType="bool" access="set"/>
+                <LeGe.NativeProperty name="receiveShadow" nativeName="ReceiveShadow" nativeType="bool" access="set"/>
+                <LeGe.NativeProperty name="drawDistance" nativeName="DrawDistance" nativeType="float" access="set"/>
+            </xs:appinfo>
+        </xs:annotation>
+       <xs:complexContent>
+            <xs:extension base="transformComponentType">
+                <xs:attribute name="visible" type="xs:boolean" default="true"/>
+                <xs:attribute name="castShadow" type="xs:boolean" default="false"/>
+                <xs:attribute name="receiveShadow" type="xs:boolean" default="true"/>
+                <xs:attribute name="drawDistance" type="xs:float" default="2000"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+
+    <!-- example gameObject components -->
+    
+    <xs:complexType name="meshComponentType">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="MeshComponent"/>
+                <LeGe.NativeProperty name="ref" nativeName="Ref" nativeType="wchar_t*" access="set"/>                
+            </xs:appinfo>
+        </xs:annotation>
+        
+        <xs:complexContent>
+            <xs:extension base="renderComponentType">
+                <xs:attribute name="ref" type="xs:anyURI"/>
+                <!-- todo: add materail list -->
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="spinnerComponentType">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="SpinnerComponent"/>
+                <LeGe.NativeProperty name="rps" nativeName="RPS" nativeType="float3" access="set"/>                
+            </xs:appinfo>
+        </xs:annotation>
+        
+        <xs:complexContent>
+            <xs:extension base="gameObjectComponentType">
+                <xs:attribute name="rps" type="vector3Type" default="0 0 0"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+   
   <!-- reference for 3d models collada, atgi, etc  -->
   <xs:complexType name="modelReferenceType">
     <xs:annotation>
@@ -19,28 +75,28 @@
       <xs:extension base="resourceReferenceType">
         <xs:attribute name="tag" type="xs:string"/>
       </xs:extension>
-    </xs:complexContent>
-        
+    </xs:complexContent>        
   </xs:complexType>
-  
 
-  <xs:complexType name="locatorType">
-    <xs:annotation>
-      <xs:appinfo>
-        <LeGe.NativeType nativeName="Locator"/>
-        <LeGe.NativeElement name="resource" nativeName="Resource" nativeType="ResourceReference" />
-        <scea.dom.editors name="Locator" category="Level Tools" menuText="Game Objects/Locator" image="LevelEditorCore.Resources.locator.png" description="Locator"/>
-      </xs:appinfo>
-    </xs:annotation>
-    <xs:complexContent>
-      <xs:extension base="gameObjectType">
-        <xs:sequence>
-          <xs:element name="resource" type="modelReferenceType" minOccurs="0" maxOccurs="1"/>
-          <xs:element name="stmRef" type="stateMachineRefType" minOccurs="0" maxOccurs="1"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
+   
+
+    <xs:complexType name="locatorType">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="Locator"/>
+                <LeGe.NativeElement name="resource" nativeName="Resource" nativeType="ResourceReference" />
+                <scea.dom.editors name="Locator" category="Level Tools" menuText="Game Objects/Locator" image="LevelEditorCore.Resources.locator.png" description="Locator"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="gameObjectType">
+                <xs:sequence>
+                    <xs:element name="resource" type="modelReferenceType" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="stmRef" type="stateMachineRefType" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
   
   
     <!-- lights-->
@@ -129,7 +185,8 @@
   <xs:complexType name="controlPointType">
     <xs:annotation>
       <xs:appinfo>
-        <LeGe.NativeType nativeName="ControlPointGob"/>      
+        <LeGe.NativeType nativeName="ControlPointGob"/>
+        <scea.dom.editors name="ControlPoint"/>
       </xs:appinfo>
     </xs:annotation>
     <xs:complexContent>
@@ -147,7 +204,7 @@
         <LeGe.NativeProperty name="isClosed" nativeName="Closed" nativeType="bool" access="set"/>
         <LeGe.NativeProperty name="steps" nativeName="Steps" nativeType="int" access="set"/>
         <LeGe.NativeProperty name="interpolationType" nativeName="InterpolationType" nativeType="int" access="set"/>
-        <LeGe.NativeElement name="point" nativeName="Point" nativeType="ControlPointGob" access="set"/>
+        <LeGe.NativeElement name="point" nativeName="Point" nativeType="ControlPointGob"/>
         <scea.dom.editors name="PolyLine" category="Linears" image="LevelEditorCore.Resources.Polyline.png" description="Linear curve"/>
         <scea.dom.editors.attribute category="Linear" name="color" displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorEditor,Atf.Gui" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
         <scea.dom.editors.attribute category="Linear" name="isClosed" displayName="Is Closed" description="Whether curve has extra edge connection first and last points" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
@@ -223,6 +280,7 @@
           <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
           <LeGe.NativeProperty name="normal" nativeName="Normal" nativeType="wchar_t*" access="set"/>
           <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
+          <scea.dom.editors name="ShapeTest"/>
           <scea.dom.editors.attribute category="Shape" name="color"            displayName="Color" description="Object Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
           <scea.dom.editors.attribute category="Shape" name="emissive"         displayName="Emissive" description="Object emissive Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:false" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
           <scea.dom.editors.attribute category="Shape" name="specular"         displayName="specular" description="Object specular Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:false" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
@@ -542,7 +600,8 @@
         <LeGe.NativeProperty name="heightMap" nativeName="HeightMap" nativeType="wchar_t*" access="set"/>
         <LeGe.NativeElement name="layerMap" nativeName="LayerMap" nativeType="LayerMap" />
         <LeGe.NativeElement name="decorationMap" nativeName="DecorationMap" nativeType="DecorationMap" />
-          
+
+        <scea.dom.editors name="TerrainGob"/>
         <scea.dom.editors.attribute
           name="cellSize"
           displayName="CellSize"

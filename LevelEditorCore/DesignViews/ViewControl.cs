@@ -116,6 +116,12 @@ namespace LevelEditorCore
 
 
         /// <summary>
+        /// Render the scene</summary>
+        public virtual void Render()
+        {
+        }
+
+        /// <summary>
         /// project the v from 3d space to viewport space
         /// using the given wvp matrix.
         /// </summary>        

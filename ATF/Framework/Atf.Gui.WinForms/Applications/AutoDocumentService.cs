@@ -49,7 +49,7 @@ namespace Sce.Atf.Applications
             if (m_mainWindow == null)
                 throw new InvalidOperationException("Can't get main window");
 
-            m_mainWindow.Loading += mainWindow_Loaded;
+            m_mainWindow.Loaded += mainWindow_Loaded;
             m_mainWindow.Closing += mainWindow_Closing;
         }
 

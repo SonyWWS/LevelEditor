@@ -386,9 +386,11 @@ float TerrainGob::GetHeightAt(float u, float v) const
 
 // virtual
 
-void TerrainGob::Update(float dt)
-{
-    UpdateWorldTransform();
+void TerrainGob::Update(const FrameTime& fr, UpdateTypeEnum updateType)
+{    
+    bool boundDirty = m_boundsDirty;
+    super::Update(fr,updateType);
+    m_boundsDirty = boundDirty || m_worldBoundUpdated;
     if(m_boundsDirty)    
     {                
         if(m_renderableNodes.size() > 0)
@@ -480,8 +482,7 @@ void TerrainGob::RemoveLayerMap(LayerMap* map)
 }
 
 void TerrainGob::AddDecorationMap(DecorationMap* map, int index)
-{
-    
+{    
     if(map)
     {
         if(index == -1)

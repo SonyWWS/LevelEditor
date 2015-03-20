@@ -158,14 +158,13 @@ OrcGob::~OrcGob()
 }
 
 // ----------------------------------------------------------------------------------
-bool OrcGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* /*context*/)
+void OrcGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
 {   
-    if(!IsVisible())
-    {
-        return false;
-    }
+	if (!IsVisible())
+		return;
 
-    
+	super::GetRenderables(collector, context);
+
     RenderFlagsEnum flags = (RenderFlagsEnum) (RenderFlags::Textured | RenderFlags::Lit);
 
     if (!m_renderables.empty())
@@ -185,8 +184,6 @@ bool OrcGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* /
         LightingState::Inst()->UpdateLightEnvironment(r);
         collector->Add(r, flags, Shaders::TexturedShader);
     }
-
-    return true;
 }
 
 // ----------------------------------------------------------------------------------
@@ -235,50 +232,53 @@ void OrcGob::BuildRenderables()
 }
 
 
-void OrcGob::Update(float dt)
+void OrcGob::Update(const FrameTime& fr, UpdateTypeEnum updateType)
 {
-     bool udpateXforms = m_worldDirty;
-        UpdateWorldTransform();
-        Model* model = m_geometry ? (Model*)m_geometry->GetTarget() : NULL;                     
-        if( model && model->IsReady())
+    bool boundDirty = m_boundsDirty;
+    bool udpateXforms = m_worldDirty;
+    super::Update(fr,updateType);
+	udpateXforms |= m_worldXformUpdated;
+    Model* model = m_geometry ? (Model*)m_geometry->GetTarget() : NULL;                     
+    if( model && model->IsReady())
+    {
+        if(m_modelTransforms.empty() || udpateXforms)
         {
-            if(m_modelTransforms.empty() || udpateXforms)
-            {
-                 const MatrixList& matrices = model->AbsoluteTransforms();
-                 m_modelTransforms.resize(matrices.size());
-                 for( unsigned int i = 0; i < m_modelTransforms.size(); ++i)
-                 {
-                     m_modelTransforms[i] = matrices[i] * m_world; // transform matrix array now holds complete world transform.
-                 }
+             const MatrixList& matrices = model->AbsoluteTransforms();
+             m_modelTransforms.resize(matrices.size());
+             for( unsigned int i = 0; i < m_modelTransforms.size(); ++i)
+             {
+                 m_modelTransforms[i] = matrices[i] * m_world; // transform matrix array now holds complete world transform.
+             }
 
-                 BuildRenderables();
-                 m_boundsDirty = true;
-            }                               
+             BuildRenderables();
+             boundDirty = true;
+        }                               
+    }
+
+    m_boundsDirty = boundDirty;
+    if(m_boundsDirty)        
+    {                  
+        if(!m_modelTransforms.empty())
+        {                
+           // assert(model && model->IsReady());
+            m_localBounds = model->GetBounds();                                
+            if(m_parent) m_parent->InvalidateBounds();                
         }
-
-        if(m_boundsDirty)        
-        {                  
-            if(!m_modelTransforms.empty())
-            {                
-               // assert(model && model->IsReady());
-                m_localBounds = model->GetBounds();                                
-                if(m_parent) m_parent->InvalidateBounds();                
-            }
-            else
-            {
-                m_localBounds = AABB(float3(-0.5f,-0.5f,-0.5f), float3(0.5f,0.5f,0.5f));                
-            }      
-            this->UpdateWorldAABB();            
-        }
-
-        if(RenderContext::Inst()->LightEnvDirty)
+        else
         {
-            // update light env.
-            for(auto  renderNode = m_renderables.begin(); renderNode != m_renderables.end(); renderNode++)
-            {
-                LightingState::Inst()->UpdateLightEnvironment(*renderNode);
-            }
-        }       
+            m_localBounds = AABB(float3(-0.5f,-0.5f,-0.5f), float3(0.5f,0.5f,0.5f));                
+        }      
+        this->UpdateWorldAABB();            
+    }
+
+    if(RenderContext::Inst()->LightEnvDirty)
+    {
+        // update light env.
+        for(auto  renderNode = m_renderables.begin(); renderNode != m_renderables.end(); renderNode++)
+        {
+            LightingState::Inst()->UpdateLightEnvironment(*renderNode);
+        }
+    }       
 
 }
 

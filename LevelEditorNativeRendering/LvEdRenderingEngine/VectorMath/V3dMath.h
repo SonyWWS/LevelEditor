@@ -114,20 +114,20 @@ namespace LvEdEngine
 
         float3 &operator =(const float3 &v)
         {         
-		   x = v.x; y = v.y; z = v.z;
-		   return *this;
+           x = v.x; y = v.y; z = v.z;
+           return *this;
         }
 
         float3 &operator +=(const float3 &a) 
         {
-		   x += a.x; y += a.y; z += a.z;
-		   return *this;
+           x += a.x; y += a.y; z += a.z;
+           return *this;
         }
 
         float3 &operator -=(const float3 &a) 
         {
-		   x -= a.x; y -= a.y; z -= a.z;
-		   return *this;
+           x -= a.x; y -= a.y; z -= a.z;
+           return *this;
         }
 
         // multiply vector by a float
@@ -139,23 +139,23 @@ namespace LvEdEngine
 
         float3 &operator /=(float a) 
         {
-		   float	oneOverA = 1.0f / a;
-		   x *= oneOverA;
+           float	oneOverA = 1.0f / a;
+           x *= oneOverA;
            y *= oneOverA; 
            z *= oneOverA;
-		   return *this;
+           return *this;
         }
 
         // Check for equality
         bool operator ==(const float3 &v) const 
         {
-		   return x==v.x && y==v.y && z==v.z;
+           return x==v.x && y==v.y && z==v.z;
         }
 
         // Check for equality
         bool operator !=(const float3 &v) const 
         {
-		   return x!=v.x || y!=v.y || z!=v.z;
+           return x!=v.x || y!=v.y || z!=v.z;
         }
 
         // Unary minus returns the negative of the vector
@@ -165,14 +165,13 @@ namespace LvEdEngine
         // binary operators
         float3 operator +(const float3 &v) const 
         {
-		   return float3(x+v.x, y+v.y, z+v.z);
-	    }
-
+           return float3(x+v.x, y+v.y, z+v.z);
+        }
 
         float3 operator -(const float3 &v) const 
         {
-		   return float3(x - v.x, y - v.y, z - v.z);
-	    }
+           return float3(x - v.x, y - v.y, z - v.z);
+        }
 
         float3 operator *(const float3 &v) const 
         {
@@ -184,7 +183,6 @@ namespace LvEdEngine
             return float3(x*f, y*f, z*f);
         }
 
-     
         float3 operator *(const Matrix &m) const ;
         static float3 Transform(const float3 &v, const Matrix &m);
         static float3 TransformNormal(const float3 &v,const Matrix &m);
@@ -270,18 +268,18 @@ namespace LvEdEngine
          float4 operator +(const float4 &v) const 
          {
              return float4(x+v.x, y+v.y, z+v.z, w+v.w);
-	     }
+         }
 
 
          float4 operator -(const float4 &v) const 
          {
              return float4(x - v.x, y - v.y, z - v.z, w-v.w);
-	     }
+         }
 
          float4 operator *(const float4 &v) const 
          {
              return float4(x*v.x, y*v.y, z*v.z, w*v.w);
-	     }
+         }
 
          float4 operator *(float f) const 
          {
@@ -368,10 +366,6 @@ namespace LvEdEngine
         ,const float3 &p2
         ,const float3 &p3,
         float t);
-
-    
-
-
     class Matrix
     {
     public:
@@ -441,6 +435,39 @@ namespace LvEdEngine
 
     };
     typedef Matrix float4x4;
+    
+    class Transform
+    {
+    public:
+        const Vector3& Scale() const { return m_scale; }
+        void SetScale(const Vector3& scale) { m_scale = scale; }
+
+        const Vector3& Translation() { return m_translate; }
+        void SetTranslation(const Vector3& trans) { m_translate = trans; }
+
+        const Vector3& Rotation() { return m_rotate; }
+        void SetRotation(const Vector3& rotation) { m_rotate = rotation; }
+		const Matrix& GetMatrix();
+
+        Transform() : m_translate(0,0,0),
+            m_rotate(0,0,0),
+            m_scale(0,0,0),
+            m_needUpdate(false)	{m_matrix.MakeIdentity();}
+
+        Transform(const Vector3& scale, const Vector3& rotate, const Vector3& translate)
+        {
+			m_scale = scale;
+			m_rotate = rotate;
+			m_translate = translate;            
+            m_needUpdate = true;
+         }
+        private:
+            bool m_needUpdate;
+            Vector3 m_translate;
+            Vector3 m_rotate;
+            Vector3 m_scale;
+            Matrix m_matrix;
+    };
     //******************************* inline  float3 *************************************
     inline
     float3::operator float* ()
@@ -669,27 +696,27 @@ namespace LvEdEngine
     template <class T> 
     inline T clamp(T value, T low, T high)
     {
-	    if(value < low)
-	    {
-		    return low;
-	    }
-	
-	    if(value > high)
-	    {
-		    return high;
-	    } 
-		
-	    return value;
+        if(value < low)
+        {
+            return low;
+        }
+    
+        if(value > high)
+        {
+            return high;
+        } 
+        
+        return value;
     }
 
     // get random unit vector evenly distributed on a unit sphere.
     inline void GetRandomVector(float3 &out)
     {
-	    out.x = GetRandomFloat(-1.0f, 1.0f);
-	    float Ryz = sqrt(1- out.x * out.x);
-	    float Thetayz = GetRandomFloat(-Pi, Pi);
-	    out.y = Ryz * cosf(Thetayz);
-	    out.z = Ryz * sinf(Thetayz);
+        out.x = GetRandomFloat(-1.0f, 1.0f);
+        float Ryz = sqrt(1- out.x * out.x);
+        float Thetayz = GetRandomFloat(-Pi, Pi);
+        out.y = Ryz * cosf(Thetayz);
+        out.z = Ryz * sinf(Thetayz);
     }
 
     inline int FtoDW( float f ) { return *((int*)&f); }

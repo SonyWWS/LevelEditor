@@ -71,9 +71,7 @@ namespace LevelEditor
 
             // Billboard
             Schema.billboardTestType.Type.Define(new ExtensionInfo<Billboard>());
-            
-
-            
+                                   
             // terrain
             Schema.terrainGobType.Type.Define(new ExtensionInfo<TerrainGob>());
             Schema.layerMapType.Type.Define(new ExtensionInfo<LayerMap>());

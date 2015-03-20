@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LevelEditorCore.GameEngineProxy
+namespace LevelEditorCore
 {
     /// <summary>
     /// Main interface for communicating 
@@ -18,5 +18,42 @@ namespace LevelEditorCore.GameEngineProxy
         /// engine initilization.</summary>
         EngineInfo Info { get; }
 
+        /// <summary>
+        /// Sets active game world.</summary>
+        /// <param name="game">Game world to set</param>
+        void SetGameWorld(IGame game);
+
+        /// <summary>
+        /// Updates game world</summary>
+        /// <param name="time">Frame time</param>
+        /// <param name="updateType">Update type</param>
+        /// <param name="waitForPendingResources">
+        /// if true the update will not return until all the 
+        /// pending resources are loaded</param>
+        void Update(FrameTime time, UpdateType updateType, bool waitForPendingResources = false);
+    }
+
+
+    /// <summary>
+    /// Update types</summary>
+    public enum UpdateType
+    {
+        /// <summary>
+        /// Editing, in this mode physics and AI 
+        /// should not be updated.
+        /// While particle system and other editing related effects
+        /// should be updated</summary>
+        Editing,
+
+        /// <summary>
+        /// GamePlay, update all the subsystems.
+        /// Some editing related effects shoult not updated</summary>
+        GamePlay,
+
+        /// <summary>
+        /// Paused, none of the time based effects are simulated.
+        /// Delta time should be zero.
+        /// </summary>
+        Paused,
     }
 }

@@ -7,7 +7,6 @@ using System.IO;
 using Sce.Atf;
 
 using LevelEditorCore;
-using LevelEditorCore.GameEngineProxy;
 
 namespace RenderingInterop
 {    

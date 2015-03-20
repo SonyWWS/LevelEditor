@@ -11,5 +11,7 @@ namespace LvEdEngine
         TorusGob() : PrimitiveShapeGob( RenderShape::Torus ) {}     
         virtual const char* ClassName() const {return StaticClassName();}
         static const char* StaticClassName(){return "TorusGob";}
+    private:
+        typedef PrimitiveShapeGob super;
      };
 }; // namespace

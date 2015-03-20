@@ -16,8 +16,8 @@ namespace LvEdEngine
         static const char* StaticClassName(){return "OrcGob";}
 
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);       
-        virtual void Update(float dt);
+		virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
+        virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
 
         // orc functions
         void SetWeight(float w);
@@ -57,6 +57,7 @@ namespace LvEdEngine
         int m_color;
         int m_toeColor;
         std::vector<Matrix> m_modelTransforms;
-
+    private:
+        typedef GameObject super;
     };
 }

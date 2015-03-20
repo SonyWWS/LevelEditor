@@ -11,5 +11,7 @@ namespace LvEdEngine
         SphereGob() : PrimitiveShapeGob( RenderShape::Sphere ) {}     
         virtual const char* ClassName() const {return StaticClassName();}
         static const char* StaticClassName(){return "SphereGob";}
+    private:
+        typedef PrimitiveShapeGob super;        
      };
 }; // namespace

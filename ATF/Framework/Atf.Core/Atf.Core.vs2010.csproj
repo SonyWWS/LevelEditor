@@ -95,6 +95,7 @@
     <Compile Include="IObservableCollection.cs" />
     <Compile Include="IPropertyValueValidator.cs" />
     <Compile Include="LiveConnectService.cs" />
+    <Compile Include="LocalizedDescriptionAttribute.cs" />
     <Compile Include="MefUtil.cs" />
     <Compile Include="NumericUtil.cs" />
     <Compile Include="PropertyChangedEventArgsCollection.cs" />

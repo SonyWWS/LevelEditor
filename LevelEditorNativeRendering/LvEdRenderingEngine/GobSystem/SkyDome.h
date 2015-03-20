@@ -36,6 +36,7 @@ namespace LvEdEngine
         void Render( RenderContext* context);
 	private:
         Texture* m_texture;
+        typedef GameObject super;
 	};
 
 };

@@ -1,6 +1,7 @@
 ﻿//Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
 using System;
+using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Windows.Forms;
 using System.ComponentModel;
@@ -31,9 +32,10 @@ namespace LevelEditorCore
             QuadView = new QuadPanelControl();
             CameraController.LockOrthographic = true;
 
-            m_frequency = Stopwatch.Frequency;
-            m_baseTicks = Stopwatch.GetTimestamp();
-            m_lastTicks = m_baseTicks;            
+            // Initilize variables used by GameLoop.
+            m_lastUpdateTime = Timing.GetHiResCurrentTime() - UpdateStep;
+            m_lastRenderTime = m_lastUpdateTime;
+            UpdateType = UpdateType.Editing;
         }
         
         #region IDesignView Members
@@ -207,34 +209,7 @@ namespace LevelEditorCore
             foreach (DesignViewControl view in Views)
                 view.Invalidate();
         }
-      
-        /// <summary>
-        /// Advances update/render by the given frame time.</summary>
-        /// <param name="ft"></param>
-        public abstract void Tick(FrameTime ft);
-
-        /// <summary>
-        /// Computes frame time and calls
-        /// Tick(FrameTime ft) to advance
-        /// update/rendering by on tick.
-        /// </summary>
-        public void Tick()
-        {
-            FrameTime ft = GetFrameTime();
-            Tick(ft);
-        }
-
-        /// <summary>
-        /// Gets next frame time
-        /// Used by Tick() and OnPaint</summary>        
-        public FrameTime GetFrameTime()
-        {
-            long curTick = Stopwatch.GetTimestamp();
-            double dt = (double)(curTick - m_lastTicks) / m_frequency;
-            m_lastTicks = curTick;
-            double TotalTime = (double)(m_lastTicks - m_baseTicks) / m_frequency;
-            return  new FrameTime(TotalTime, (float)dt);            
-        }
+                 
         #endregion
 
         #region ISnapSettings Members
@@ -262,9 +237,6 @@ namespace LevelEditorCore
         }
 
         #endregion
-
-      
-       
 
         /// <summary>
         /// Distance to the camera's far clipping plane.</summary>        
@@ -317,11 +289,77 @@ namespace LevelEditorCore
         private float m_SnapAngle = (float)(5.0 * (Math.PI / 180.0f));
         private IManipulator m_manipulator;
         private IValidationContext m_validationContext;
-        
-        // update and render variables.
-        private double m_frequency;
-        private readonly long m_baseTicks;
-        private long m_lastTicks;
+                
         #endregion       
+    
+        #region IGameLoop Members
+
+        [Import(AllowDefault=false)]
+        private IGameEngineProxy m_gameEngine;
+
+        public UpdateType UpdateType 
+        { 
+            get; 
+            set;
+        }
+        public void Update()
+        {
+            if (Context == null) return;
+            m_gameEngine.SetGameWorld(Context.Cast<IGame>());
+            double lag = (Timing.GetHiResCurrentTime() - m_lastUpdateTime)
+                + m_updateLagRemainder;
+
+            // early return
+            if (lag < UpdateStep) return;
+
+            if (UpdateType == UpdateType.Paused)
+            {
+                m_lastUpdateTime = Timing.GetHiResCurrentTime();
+                FrameTime fr = new FrameTime(m_simulationTime, 0.0f);
+                m_gameEngine.Update(fr, UpdateType);
+                m_updateLagRemainder = 0.0;
+            }
+            else
+            {
+                // set upper limit of update calls 
+                const int MaxUpdates = 3;
+                int updateCount = 0;
+
+                while (lag >= UpdateStep
+                    && updateCount < MaxUpdates)
+                {
+                    m_lastUpdateTime = Timing.GetHiResCurrentTime();
+                    FrameTime fr = new FrameTime(m_simulationTime, (float)UpdateStep);
+                    m_gameEngine.Update(fr, UpdateType);
+                    m_simulationTime += UpdateStep;
+                    lag -= UpdateStep;
+                    updateCount++;
+                }
+
+                m_updateLagRemainder = MathUtil.Clamp(lag, 0, UpdateStep);
+                Debug.Assert(updateCount != 0);
+            }
+
+
+
+        }
+
+        public void Render()
+        {
+            // set upper limit of rendering to 1/UpdateStep
+            var rdt = Timing.GetHiResCurrentTime() - m_lastRenderTime;
+            if (rdt < UpdateStep) return;
+            m_lastRenderTime = Timing.GetHiResCurrentTime();
+            foreach (var view in Views)
+                view.Render();
+        }
+
+        private double m_simulationTime;
+        private double m_lastRenderTime;
+        private double m_lastUpdateTime;        
+        private double m_updateLagRemainder;
+        private const double UpdateStep = 1.0 / 60.0;
+
+        #endregion
     }
 }

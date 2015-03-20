@@ -111,8 +111,6 @@
     <Compile Include="Listers\ThumbnailService.cs" />
     <Compile Include="PropertyEditing\CustomPropertyEditingContext.cs" />
     <Compile Include="Rendering\FrameTime.cs" />
-    <Compile Include="Rendering\IRenderLoop.cs" />
-    <Compile Include="Rendering\RenderLoopService.cs" />
     <Compile Include="Interfaces\IControlPoint.cs" />
     <Compile Include="Interfaces\IGame.cs" />
     <Compile Include="Interfaces\ILayer.cs" />

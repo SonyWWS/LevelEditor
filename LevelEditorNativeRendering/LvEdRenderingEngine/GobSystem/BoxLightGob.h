@@ -22,11 +22,13 @@ namespace LvEdEngine
         float3 GetDirection();
         void SetAttenuation(const float3& atten);
 
-        virtual void Update(float dt);
+        virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
 
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
+        virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
      
     protected:
         BoxLight * m_light;
+    private:
+        typedef LightGob super;
     };
 }

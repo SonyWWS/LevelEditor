@@ -11,12 +11,13 @@ using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Linq;
 using System.Threading;
-using LevelEditorCore.GameEngineProxy;
+
 using Sce.Atf;
 using Sce.Atf.VectorMath;
 using Sce.Atf.Dom;
 using Sce.Atf.Adaptation;
 
+using LevelEditorCore;
 
 namespace RenderingInterop
 {
@@ -41,6 +42,27 @@ namespace RenderingInterop
             get { return m_engineInfo; }
         }
 
+        /// <summary>
+        /// Sets active game world.</summary>
+        /// <param name="game">Game world to set</param>
+        public void SetGameWorld(IGame game)
+        {
+            NativeObjectAdapter nobject = game.Cast<NativeObjectAdapter>();            
+            NativeSetGameLevel(nobject.InstanceId);
+        }
+
+        /// <summary>
+        /// Updates game world</summary>
+        /// <param name="ft">Frame time</param>
+        /// <param name="updateType">Update type</param>
+        /// <param name="waitForPendingResources">
+        /// if true the update will not return until all the 
+        /// pending resources are loaded</param>
+        public void Update(FrameTime ft, UpdateType updateType, bool waitForPendingResources)
+        {
+            NativeUpdate(&ft, updateType, waitForPendingResources);
+        }
+
         #endregion
 
         #region IInitializable Members
@@ -59,18 +81,6 @@ namespace RenderingInterop
             if (m_engineInfo != null) return;
             if (!string.IsNullOrWhiteSpace(engineInfoStr))
                 m_engineInfo = new EngineInfo(engineInfoStr);
-
-            //if (m_engineInfo != null)
-            //{
-            //    Console.WriteLine("Print EngineInfo:");
-            //    foreach (var res in m_engineInfo.SupportedResources)
-            //    {
-            //        Console.Write("\t {0}  {1} ", res.Type, res.Description);
-            //        foreach (string ext in res.FileExts)
-            //            Console.Write(ext + "  ");
-            //        Console.WriteLine();
-            //    }
-            //}
         }
         #region initialize and shutdown
 
@@ -248,11 +258,7 @@ namespace RenderingInterop
         #endregion
 
         #region update and rendering
-        public static void Update(double t, float dt, bool waitForPendingResources) 
-        {
-            NativeUpdate(t, dt,waitForPendingResources);
-        }
-
+        
         public static void SetRenderState(RenderState renderState)
         {
             GameEngine.NativeSetRenderState(renderState.InstanceId);
@@ -390,8 +396,7 @@ namespace RenderingInterop
             NativeObjectAddChild(typeId, listId, parentId, childId, index);
         }
 
-        public static void ObjectInsertChild(NativeObjectAdapter parent, NativeObjectAdapter child, uint listId,
-                                             int index)
+        public static void ObjectInsertChild(NativeObjectAdapter parent, NativeObjectAdapter child, uint listId,int index)
         {
             uint typeId = parent != null ? parent.TypeId : 0;
             ulong parentId = parent != null ? parent.InstanceId : 0;
@@ -797,9 +802,9 @@ namespace RenderingInterop
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_GetGameLevel", CallingConvention = CallingConvention.StdCall)]
         private static extern ulong NativeGetGameLevel();
-        
+
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Update", CallingConvention = CallingConvention.StdCall)]
-        private static extern void NativeUpdate(double t, float dt, bool waitForPendingResources);
+        private static extern void NativeUpdate(FrameTime* time, UpdateType updateType, bool waitForPendingResources);
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Begin", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeBegin(ulong renderSurface, float* viewxform, float* projxfrom);

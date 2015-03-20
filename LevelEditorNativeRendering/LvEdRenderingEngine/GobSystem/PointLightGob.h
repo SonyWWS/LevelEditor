@@ -19,8 +19,10 @@ namespace LvEdEngine
         void SetSpecular(int color);
         void SetAttenuation(const float3& atten);
         void SetRange(float r);
-        virtual void Update(float dt);
+        virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
     protected:
         PointLight* m_light;
+    private:        
+        typedef LightGob super;
     };
 }

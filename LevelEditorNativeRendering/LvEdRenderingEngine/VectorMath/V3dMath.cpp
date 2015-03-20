@@ -723,6 +723,31 @@ void ConvertColor( int color , float3* out)
         result.M44 = num;
     }
 
+	//================= Transform imple ==============================
+	const Matrix& Transform::GetMatrix()
+	{
+		if (m_needUpdate)
+		{
+			m_needUpdate = false;
+			m_matrix
+				= Matrix::CreateScale(m_scale) *
+				Matrix::CreateRotationX(m_rotate.x) *
+				Matrix::CreateRotationY(m_rotate.y) *
+				Matrix::CreateRotationZ(m_rotate.z) *
+				Matrix::CreateTranslation(m_translate);
+		}
+		return m_matrix;
+	}
+	//void Transform::SetMatrix(const Matrix& mtrx)
+	//{
+	//	// decompose mtrx to scale, translation and rotation.
+	//	m_scale.x = length(Vector3(&mtrx.M11));
+	//	m_scale.y = length(Vector3(&mtrx.M21));
+	//	m_scale.z = length(Vector3(&mtrx.M31));
+	//	m_translate.x = mtrx.M41;
+	//	m_translate.y = mtrx.M42;
+	//	m_translate.z = mtrx.M43;
+	//}
 }
 
     

@@ -51,4 +51,26 @@ namespace LevelEditorCore
         long m_stop;
     }
 
+    public static class Timing
+    {
+        //static Timing()
+        //{
+        //    s_frq = Stopwatch.Frequency;
+        //    s_start = Stopwatch.GetTimestamp();
+        //}
+
+        /// <summary>
+        /// Returns time in seconds since 
+        /// the application started.</summary>
+        /// <returns></returns>
+        public static double GetHiResCurrentTime()
+        {
+            long now = Stopwatch.GetTimestamp();
+            double t = (now - s_start) / s_frq;
+            return t;
+        }
+
+        private static readonly double s_frq = Stopwatch.Frequency;
+        private static readonly long s_start = Stopwatch.GetTimestamp();
+    }
 }

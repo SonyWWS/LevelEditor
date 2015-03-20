@@ -57,7 +57,7 @@ public:
      void RemoveDecorationMap(DecorationMap* map);
      
      // overrides     
-     virtual void Update(float dt);
+     virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
          
      bool RayPick(const Ray& rayw, float3& hitpos, float3& norm, float3& nearestVertex);
      float GetHeightAt(float u, float v) const;     
@@ -81,7 +81,8 @@ public:
     int32_t  GetPatchDim() const {return m_patchDim;}
     
 private:    
-    
+    typedef GameObject super;
+
     int32_t m_cols;
     int32_t m_rows;
     int32_t m_patchDim;

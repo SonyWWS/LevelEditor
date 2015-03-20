@@ -95,7 +95,7 @@ namespace Sce.Atf.Applications
                     throw new InvalidOperationException(
                         string.Format(
                             "Duplicate menu/command combination. CommandTag: {0}, MenuTag: {1}, GroupTag: {2}, MenuText: {3}",
-                            info.CommandTag, info.GroupTag, info.MenuTag, info.MenuText));
+                            info.CommandTag, info.MenuTag, info.GroupTag, info.MenuText));
                 }
 
                 RegisterCommandInfo(info);

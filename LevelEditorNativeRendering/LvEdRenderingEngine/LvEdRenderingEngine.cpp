@@ -54,7 +54,7 @@
 #include "GobSystem\Terrain\TerrainGob.h"
 #include "Renderer\TerrainShader.h"
 
-// to do use the following prim type decl
+// Use the following primitive types
 //int8_t;
 //int16_t;
 //int32_t;
@@ -206,7 +206,7 @@ void MyResourceListener::OnResourceLoaded(Resource* /*r*/)
 
 LVEDRENDERINGENGINE_API void __stdcall LvEd_Initialize(LogCallbackType logCallback, InvalidateViewsCallbackType invalidateCallback
     , const wchar_t** outEngineInfo)
-{    
+{
     // Enable run-time memory check for debug builds.
 #if defined(DEBUG) || defined(_DEBUG)
   //   _crtBreakAlloc = 925; //example break on alloc number 1027, change 
@@ -284,9 +284,6 @@ LVEDRENDERINGENGINE_API void __stdcall LvEd_Shutdown(void)
     EngineInfo::DestroyInstance();
     SAFE_DELETE(s_engineData);
     SAFE_DELETE(gD3D11);
-
-    
-
 }
 
 
@@ -782,13 +779,13 @@ LVEDRENDERINGENGINE_API ObjectGUID __stdcall LvEd_GetGameLevel()
     return s_engineData->GameLevel ? s_engineData->GameLevel->GetInstanceId() : 0;
 }
 
-LVEDRENDERINGENGINE_API void __stdcall LvEd_Update(double t, float dt,bool waitForPendingResources)
+LVEDRENDERINGENGINE_API void __stdcall LvEd_Update(FrameTime* ft, UpdateTypeEnum updateType, bool waitForPendingResources)
 {    
     ErrorHandler::ClearError();
     if(waitForPendingResources)
-        ResourceManager::Inst()->WaitOnPending();
+        ResourceManager::Inst()->WaitOnPending();       
 
-    s_engineData->GameLevel->Update(dt);  
+    s_engineData->GameLevel->Update(*ft, updateType);  
 }
 
 LVEDRENDERINGENGINE_API void __stdcall LvEd_Begin(ObjectGUID renderSurface, float viewxform[], float projxform[])

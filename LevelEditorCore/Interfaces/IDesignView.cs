@@ -9,7 +9,7 @@ namespace LevelEditorCore
 {
     /// <summary>
     /// Maintain a set of IDesigViewControls</summary>
-    public interface IDesignView
+    public interface IDesignView : IGameLoop
     {
         /// <summary>
         /// Gets the host control that is parent for 
@@ -95,19 +95,6 @@ namespace LevelEditorCore
             get;
             set;
         }
-        /// <summary>
-        /// Advance update and render by step</summary>
-        void Tick();
-
-        /// <summary>
-        /// Tick using the specified frame time.
-        /// </summary>        
-        void Tick(FrameTime ft);
-
-        /// <summary>
-        /// Gets next frame time.</summary>        
-        FrameTime GetFrameTime();
-
     }
 
     

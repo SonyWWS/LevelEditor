@@ -5,7 +5,7 @@ using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using LevelEditorCore.GameEngineProxy;
+using LevelEditorCore;
 using Sce.Atf;
 using Sce.Atf.Applications;
 

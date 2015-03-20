@@ -11,5 +11,8 @@ namespace LvEdEngine
         CylinderGob() : PrimitiveShapeGob( RenderShape::Cylinder ) {}
         virtual const char* ClassName() const {return StaticClassName();}
         static const char* StaticClassName(){return "CylinderGob";}
+
+    private:
+        typedef PrimitiveShapeGob super;
     };
 }

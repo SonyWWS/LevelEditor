@@ -13,10 +13,12 @@ namespace LvEdEngine
         static const char* StaticClassName(){return "BillboardGob";}
 
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
+		virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
         virtual void SetupRenderable(RenderableNode* r, RenderContext* context);
         void SetIntensity(float intensity){m_intensity = intensity;};
     protected:        
         float m_intensity;
+    private:
+        typedef PrimitiveShapeGob super;
     };
 }

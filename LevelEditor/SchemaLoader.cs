@@ -7,12 +7,15 @@ using System.ComponentModel.Composition;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
-using LevelEditorCore.GameEngineProxy;
+
 using Sce.Atf;
+using Sce.Atf.Adaptation;
 using Sce.Atf.Dom;
+using Sce.Atf.Controls.PropertyEditing;
 
 using LevelEditorCore;
 
+using PropertyDescriptor = System.ComponentModel.PropertyDescriptor;
 namespace LevelEditor
 {
     /// <summary>
@@ -23,15 +26,18 @@ namespace LevelEditor
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class SchemaLoader : XmlSchemaTypeLoader, ISchemaLoader
     {
-        public SchemaLoader()
+        [ImportingConstructor]
+        public SchemaLoader(IGameEngineProxy gameEngine)
         {
+            m_gameEngine = gameEngine;
             // set resolver to locate embedded .xsd file
             SchemaResolver = new ResourceStreamResolver(Assembly.GetExecutingAssembly(), "LevelEditor.schemas");
             Load("level_editor.xsd");           
         }
 
         protected override void OnSchemaSetLoaded(XmlSchemaSet schemaSet)
-        {           
+        {
+            m_typeCollection = null;
             foreach (XmlSchemaTypeCollection typeCollection in GetTypeCollections())
             {
                 m_namespace = typeCollection.TargetNamespace;
@@ -39,8 +45,164 @@ namespace LevelEditor
                 Schema.Initialize(typeCollection);
                 GameAdapters.Initialize(this);            
                 // the level editor schema defines only one type collection
-                //break;
-            }            
+                break;
+            }
+            if (m_typeCollection == null) return;
+
+            
+            Schema.gameObjectComponentType.Type.SetTag(
+                    new PropertyDescriptorCollection(
+                        new PropertyDescriptor[] {
+                            new AttributePropertyDescriptor(
+                                "Name".Localize(),
+                                Schema.gameObjectComponentType.nameAttribute,
+                                null,
+                                "Component name".Localize(),
+                                false),                            
+                            new AttributePropertyDescriptor(
+                                "Active".Localize(),
+                                Schema.gameObjectComponentType.activeAttribute,
+                                null,
+                                "Is this component active".Localize(),
+                                false,
+                                new BoolEditor())
+                }));
+
+            Schema.renderComponentType.Type.SetTag(
+                   new PropertyDescriptorCollection(
+                       new PropertyDescriptor[] {
+                            new AttributePropertyDescriptor(
+                                "Visible".Localize(),
+                                Schema.renderComponentType.visibleAttribute,
+                                null,
+                                "Component visiblity".Localize(),
+                                false,
+                                new BoolEditor()),                            
+                            new AttributePropertyDescriptor(
+                                "cast Shadow".Localize(),
+                                Schema.renderComponentType.castShadowAttribute,
+                                null,
+                                "Is component casts shadaw".Localize(),
+                                false,
+                                new BoolEditor()),
+                           new AttributePropertyDescriptor(
+                                "Receive Shadow".Localize(),
+                                Schema.renderComponentType.receiveShadowAttribute,
+                                null,
+                                "Is component receive  shadow".Localize(),
+                                false,
+                                new BoolEditor()),
+
+                           new AttributePropertyDescriptor(
+                                "Draw Distance".Localize(),
+                                Schema.renderComponentType.drawDistanceAttribute,
+                                null,
+                                "Minimum distance to draw the component".Localize(),
+                                false)
+                }));
+                     
+            Schema.spinnerComponentType.Type.SetTag(
+                   new PropertyDescriptorCollection(
+                       new PropertyDescriptor[] {
+                            new AttributePropertyDescriptor(
+                                "RPS".Localize(),
+                                Schema.spinnerComponentType.rpsAttribute,
+                                null,
+                                "Revolutions per second".Localize(),
+                                false,
+                                new NumericTupleEditor(typeof(float),new string[] { "x", "y", "z" })
+                                )
+                       }));
+
+
+
+            ResourceInfo resInfo = m_gameEngine.Info.ResourceInfos.GetByType(ResourceTypes.Model);
+            string filter = resInfo != null ? resInfo.Filter : null;
+            var refEdit = new FileUriEditor(filter);
+            Schema.meshComponentType.Type.SetTag(
+                   new PropertyDescriptorCollection(
+                       new PropertyDescriptor[] {
+                            new AttributePropertyDescriptor(
+                                "3d Model".Localize(),
+                                Schema.meshComponentType.refAttribute,
+                                null,
+                                "path to 3d model".Localize(),
+                                false,
+                                refEdit
+                                )}));
+
+
+
+            var collectionEditor = new EmbeddedCollectionEditor();
+
+            // the following  lambda's handles (add, remove, move ) items.
+            collectionEditor.GetItemInsertersFunc = (context) =>
+            {
+                var list = context.GetValue() as IList<DomNode>;
+                if (list == null) return EmptyArray<EmbeddedCollectionEditor.ItemInserter>.Instance;
+
+                // create ItemInserter for each component type.
+                var insertors = new EmbeddedCollectionEditor.ItemInserter[2];
+
+                insertors[0] = new EmbeddedCollectionEditor.ItemInserter("StaticMeshComponent",
+                    delegate
+                    {
+                        DomNode node = new DomNode(Schema.meshComponentType.Type);
+                        node.SetAttribute(Schema.gameObjectComponentType.nameAttribute, node.Type.Name);
+                        list.Add(node);
+                        return node;
+                    });
+
+
+                insertors[1] = new EmbeddedCollectionEditor.ItemInserter("SpinnerComponent",
+                    delegate
+                    {
+                        DomNode node = new DomNode(Schema.spinnerComponentType.Type);
+                        node.SetAttribute(Schema.gameObjectComponentType.nameAttribute, node.Type.Name);
+                        list.Add(node);
+                        return node;
+                    });
+
+                return insertors;                
+            };
+
+
+            collectionEditor.RemoveItemFunc = (context, item) =>
+            {
+                var list = context.GetValue() as IList<DomNode>;
+                if (list != null)
+                    list.Remove(item.Cast<DomNode>());
+            };
+
+
+            collectionEditor.MoveItemFunc = (context, item, delta) =>
+            {
+                var list = context.GetValue() as IList<DomNode>;
+                if (list != null)
+                {
+                    DomNode node = item.Cast<DomNode>();
+                    int index = list.IndexOf(node);
+                    int insertIndex = index + delta;
+                    if (insertIndex < 0 || insertIndex >= list.Count)
+                        return;
+                    list.RemoveAt(index);
+                    list.Insert(insertIndex, node);
+                }
+
+            };
+
+            // add child property descriptors gameObjectType
+            Schema.gameObjectType.Type.SetTag(
+                   new PropertyDescriptorCollection(
+                       new PropertyDescriptor[] {
+                            new ChildPropertyDescriptor(
+                                "Components".Localize(),
+                                Schema.gameObjectType.componentChild,
+                                null,
+                                "List of GameObject Components".Localize(),
+                                false,
+                                collectionEditor)
+                                }));                         
         }
 
         protected override void ParseAnnotations(
@@ -52,7 +214,7 @@ namespace LevelEditor
             foreach (var kv in annotations)
             {                               
                 DomNodeType nodeType = kv.Key as DomNodeType;
-                if (nodeType == null || kv.Value.Count == 0) continue;
+                if (kv.Value.Count == 0) continue;
 
                 // create a hash of hidden attributes                
                 HashSet<string> hiddenprops = new HashSet<string>();
@@ -133,9 +295,11 @@ namespace LevelEditor
                     string image = FindAttribute(xmlNode, "image");
                     string category = FindAttribute(xmlNode, "category");
                     string menuText = FindAttribute(xmlNode, "menuText");
-                    NodeTypePaletteItem item = new NodeTypePaletteItem(nodeType, name, description, image, category,
-                                                                       menuText);
-                    nodeType.SetTag<NodeTypePaletteItem>(item);
+                    if (!string.IsNullOrEmpty(category))
+                    {
+                        NodeTypePaletteItem item = new NodeTypePaletteItem(nodeType, name, description, image, category, menuText);
+                        nodeType.SetTag<NodeTypePaletteItem>(item);
+                    }
                 }
             }           
         }
@@ -210,9 +374,7 @@ namespace LevelEditor
         }      
  
         #endregion        
-
-
-        [Import(AllowDefault = true)]
+        
         private IGameEngineProxy m_gameEngine;
     }
 }

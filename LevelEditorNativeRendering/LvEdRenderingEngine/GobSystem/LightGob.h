@@ -11,10 +11,11 @@ namespace LvEdEngine
         LightGob();
         virtual ~LightGob();               
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
+		virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
 
     protected:        
         Mesh* m_mesh;
-
+    private:
+        typedef GameObject super;
     };
 }

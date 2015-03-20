@@ -27,10 +27,10 @@ namespace LvEdEngine
         void SetNormal(wchar_t* filename);
         void SetTextureTransform(const Matrix& xform){m_textureTransform = xform;}
 
-        virtual void Update(float dt);
+        virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
       
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
+		virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
         virtual void SetupRenderable(RenderableNode* r, RenderContext* context);
 
     protected:
@@ -42,6 +42,9 @@ namespace LvEdEngine
         ResourceReference m_normal;
         Matrix m_textureTransform;
         Mesh* m_mesh;
+    private:
+        typedef GameObject super;
+      
     };
 
 }

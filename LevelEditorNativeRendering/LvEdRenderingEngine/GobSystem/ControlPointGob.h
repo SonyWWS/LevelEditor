@@ -13,7 +13,8 @@ namespace LvEdEngine
         static const char* StaticClassName(){return "ControlPointGob";}
 		
         // push Renderable nodes
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
-        virtual void Update(float dt);
+        virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);        
+    private:
+        typedef GameObject super;
     };
 }

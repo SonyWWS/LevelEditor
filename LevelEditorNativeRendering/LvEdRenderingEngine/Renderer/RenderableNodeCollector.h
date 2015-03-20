@@ -19,7 +19,7 @@ namespace LvEdEngine
         virtual void    Add( RenderableNode& r, RenderFlagsEnum rf, ShadersEnum shaderIdPref) = 0;
         virtual void    Add( const RenderNodeList::iterator& listBegin, const RenderNodeList::iterator& listEnd, RenderFlagsEnum rf, ShadersEnum shaderIdPref) = 0;
 
-            // Remove any renderables we have stored.
+        // Remove any renderables we have stored.
         virtual void ClearLists() = 0;
 
         GlobalRenderFlagsEnum GetFlags()                          { return m_globalRenderFlags; }

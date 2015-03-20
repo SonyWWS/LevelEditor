@@ -19,19 +19,19 @@ namespace LvEdEngine
         Locator();
         virtual ~Locator();
 
-        virtual bool GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
+        virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
 
         void AddResource(ResourceReference * r, int index);
         void RemoveResource(ResourceReference * r);
 
-        void Update(float dt);       
+        void Update(const FrameTime& fr, UpdateTypeEnum updateType);
     protected:
         void BuildRenderables();
 
         ResourceReference* m_resource;
-        std::vector<Matrix> m_modelTransforms;
-        
-
+        std::vector<Matrix> m_modelTransforms;        
         RenderNodeList m_renderables;
+    private:
+        typedef GameObject super;
     };
 }

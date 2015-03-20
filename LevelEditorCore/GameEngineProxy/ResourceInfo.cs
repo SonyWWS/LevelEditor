@@ -2,9 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 
-namespace LevelEditorCore.GameEngineProxy
+namespace LevelEditorCore
 {    
     /// <summary>
     ///  Supported resourece (Asset) types.</summary>
@@ -109,11 +110,43 @@ namespace LevelEditorCore.GameEngineProxy
 
             exts = exts.ToLower();
             char[] sep = { ',' };
-            FileExts = exts.Split(sep, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string ext in FileExts)
+
+            string[] extArray = exts.Split(sep, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string ext in extArray)
                 m_extensions.Add(ext);
+            FileExts = extArray;
+
+            // compose filter pattern from file exts and
+            // description.
+            if (extArray.Length > 1)
+            {                
+                var filterStr = new StringBuilder();
+                var patternStr = new StringBuilder();
+                filterStr.AppendFormat("{0} (", Description);
+                for (int i = 0; i < extArray.Length - 1; i++)
+                {
+                    filterStr.AppendFormat("*{0}, ", extArray[i]);
+                    patternStr.AppendFormat("*{0};", extArray[i]);                    
+                }
+                patternStr.AppendFormat("*{0}", extArray[extArray.Length - 1]);
+                filterStr.AppendFormat("*{0})|{1}", extArray[extArray.Length - 1], patternStr);
+                Filter = filterStr.ToString();
+            }
+            else 
+            {
+                Filter = string.Format("{0} (*{1})|*{1}", Description, extArray[0]);
+            }
         }
 
+
+        /// <summary>
+        /// Gets filter pattern can be 
+        /// used for file dialog boxes.</summary>
+        public string Filter
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Gets resource type.

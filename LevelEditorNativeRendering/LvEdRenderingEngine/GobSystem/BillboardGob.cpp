@@ -15,14 +15,12 @@ namespace LvEdEngine
 // ---------------------------------------------------------------------------------------------
 // push Renderable nodes
 //virtual 
-bool BillboardGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+void BillboardGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
 {
-    if ( !IsVisible(context->Cam().GetFrustum()) )
-    {
-        return false;
-    }
-    
+		if (!IsVisible(context->Cam().GetFrustum()))
+			return;
 
+		super::GetRenderables(collector, context);
     RenderableNode renderable;
     SetupRenderable(&renderable, context);
 
@@ -39,7 +37,6 @@ bool BillboardGob::GetRenderables(RenderableNodeCollector* collector, RenderCont
 
     RenderFlagsEnum flags = RenderFlags::Textured;
     collector->Add( renderable, flags, Shaders::BillboardShader );
-    return true;
 }
 
 // ---------------------------------------------------------------------------------------------

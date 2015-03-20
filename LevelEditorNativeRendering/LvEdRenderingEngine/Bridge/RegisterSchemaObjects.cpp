@@ -70,8 +70,7 @@ void GameLevel_FogDensity_Set(ObjectGUID instanceId, void* data, int size)
 //-----------------------------------------------------------------------------
 Object* GameObject_Create(ObjectTypeGUID tid, void* data, int size)
 {
-    assert(0); // class GameObject is defined as abstract.
-    return NULL;
+    return new GameObject();
 }
 
 //-----------------------------------------------------------------------------
@@ -131,6 +130,49 @@ void GameObject_LocalBounds_Get(ObjectGUID instanceId, void** data, int* size)
 }
 
 //-----------------------------------------------------------------------------
+void GameObject_Component_Add(ObjectGUID parentId, ObjectGUID childId, int index)
+{
+    GameObject* parent = reinterpret_cast<GameObject*>(parentId);
+    GameObjectComponent* child = reinterpret_cast<GameObjectComponent*>(childId);
+    parent->AddComponent(child, index);
+}
+
+//-----------------------------------------------------------------------------
+void GameObject_Component_Remove(ObjectGUID parentId, ObjectGUID childId)
+{
+    GameObject* parent = reinterpret_cast<GameObject*>(parentId);
+    GameObjectComponent* child = reinterpret_cast<GameObjectComponent*>(childId);
+    parent->RemoveComponent(child);
+}
+
+//-----------------------------------------------------------------------------
+//GameObjectComponent
+//-----------------------------------------------------------------------------
+Object* GameObjectComponent_Create(ObjectTypeGUID tid, void* data, int size)
+{
+    assert(0); // class GameObjectComponent is defined as abstract.
+    return NULL;
+}
+
+//-----------------------------------------------------------------------------
+void GameObjectComponent_Name_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    GameObjectComponent* instance = reinterpret_cast<GameObjectComponent*>(instanceId);
+    wchar_t* localData = reinterpret_cast<wchar_t*>(data);
+    instance->SetName(localData);
+}
+
+//-----------------------------------------------------------------------------
+void GameObjectComponent_Active_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    GameObjectComponent* instance = reinterpret_cast<GameObjectComponent*>(instanceId);
+    bool localData = *reinterpret_cast<bool*>(data);
+    instance->SetActive(localData);
+}
+
+//-----------------------------------------------------------------------------
 //GameObjectReference
 //-----------------------------------------------------------------------------
 Object* GameObjectReference_Create(ObjectTypeGUID tid, void* data, int size)
@@ -165,6 +207,41 @@ void ResourceReference_Target_Set(ObjectGUID instanceId, void* data, int size)
 }
 
 //-----------------------------------------------------------------------------
+//TransformComponent
+//-----------------------------------------------------------------------------
+Object* TransformComponent_Create(ObjectTypeGUID tid, void* data, int size)
+{
+    return new TransformComponent();
+}
+
+//-----------------------------------------------------------------------------
+void TransformComponent_Translation_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    TransformComponent* instance = reinterpret_cast<TransformComponent*>(instanceId);
+    float3 localData = *reinterpret_cast<float3*>(data);
+    instance->SetTranslation(localData);
+}
+
+//-----------------------------------------------------------------------------
+void TransformComponent_Rotation_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    TransformComponent* instance = reinterpret_cast<TransformComponent*>(instanceId);
+    float3 localData = *reinterpret_cast<float3*>(data);
+    instance->SetRotation(localData);
+}
+
+//-----------------------------------------------------------------------------
+void TransformComponent_Scale_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    TransformComponent* instance = reinterpret_cast<TransformComponent*>(instanceId);
+    float3 localData = *reinterpret_cast<float3*>(data);
+    instance->SetScale(localData);
+}
+
+//-----------------------------------------------------------------------------
 //GameObjectGroup
 //-----------------------------------------------------------------------------
 Object* GameObjectGroup_Create(ObjectTypeGUID tid, void* data, int size)
@@ -186,6 +263,85 @@ void GameObjectGroup_Child_Remove(ObjectGUID parentId, ObjectGUID childId)
     GameObjectGroup* parent = reinterpret_cast<GameObjectGroup*>(parentId);
     GameObject* child = reinterpret_cast<GameObject*>(childId);
     parent->RemoveChild(child);
+}
+
+//-----------------------------------------------------------------------------
+//RenderComponent
+//-----------------------------------------------------------------------------
+Object* RenderComponent_Create(ObjectTypeGUID tid, void* data, int size)
+{
+    assert(0); // class RenderComponent is defined as abstract.
+    return NULL;
+}
+
+//-----------------------------------------------------------------------------
+void RenderComponent_Visible_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    RenderComponent* instance = reinterpret_cast<RenderComponent*>(instanceId);
+    bool localData = *reinterpret_cast<bool*>(data);
+    instance->SetVisible(localData);
+}
+
+//-----------------------------------------------------------------------------
+void RenderComponent_CastShadow_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    RenderComponent* instance = reinterpret_cast<RenderComponent*>(instanceId);
+    bool localData = *reinterpret_cast<bool*>(data);
+    instance->SetCastShadow(localData);
+}
+
+//-----------------------------------------------------------------------------
+void RenderComponent_ReceiveShadow_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    RenderComponent* instance = reinterpret_cast<RenderComponent*>(instanceId);
+    bool localData = *reinterpret_cast<bool*>(data);
+    instance->SetReceiveShadow(localData);
+}
+
+//-----------------------------------------------------------------------------
+void RenderComponent_DrawDistance_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    RenderComponent* instance = reinterpret_cast<RenderComponent*>(instanceId);
+    float localData = *reinterpret_cast<float*>(data);
+    instance->SetDrawDistance(localData);
+}
+
+//-----------------------------------------------------------------------------
+//MeshComponent
+//-----------------------------------------------------------------------------
+Object* MeshComponent_Create(ObjectTypeGUID tid, void* data, int size)
+{
+    return new MeshComponent();
+}
+
+//-----------------------------------------------------------------------------
+void MeshComponent_Ref_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    MeshComponent* instance = reinterpret_cast<MeshComponent*>(instanceId);
+    wchar_t* localData = reinterpret_cast<wchar_t*>(data);
+    instance->SetRef(localData);
+}
+
+//-----------------------------------------------------------------------------
+//SpinnerComponent
+//-----------------------------------------------------------------------------
+Object* SpinnerComponent_Create(ObjectTypeGUID tid, void* data, int size)
+{
+    return new SpinnerComponent();
+}
+
+//-----------------------------------------------------------------------------
+void SpinnerComponent_RPS_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    SpinnerComponent* instance = reinterpret_cast<SpinnerComponent*>(instanceId);
+    float3 localData = *reinterpret_cast<float3*>(data);
+    instance->SetRPS(localData);
 }
 
 //-----------------------------------------------------------------------------
@@ -975,6 +1131,11 @@ void InitGobBridge(GobBridge& bridge)
   bridge.RegisterProperty( "GameObject", "Visible", &GameObject_Visible_Set, &GameObject_Visible_Get );
   bridge.RegisterProperty( "GameObject", "Bounds", NULL, &GameObject_Bounds_Get );
   bridge.RegisterProperty( "GameObject", "LocalBounds", NULL, &GameObject_LocalBounds_Get );
+  bridge.RegisterChildList( "GameObject", "Component", &GameObject_Component_Add, &GameObject_Component_Remove);
+
+  bridge.RegisterObject( "GameObjectComponent", &GameObjectComponent_Create );
+  bridge.RegisterProperty( "GameObjectComponent", "Name", &GameObjectComponent_Name_Set, NULL );
+  bridge.RegisterProperty( "GameObjectComponent", "Active", &GameObjectComponent_Active_Set, NULL );
 
   bridge.RegisterObject( "GameObjectReference", &GameObjectReference_Create );
   bridge.RegisterProperty( "GameObjectReference", "Target", &GameObjectReference_Target_Set, NULL );
@@ -982,8 +1143,25 @@ void InitGobBridge(GobBridge& bridge)
   bridge.RegisterObject( "ResourceReference", &ResourceReference_Create );
   bridge.RegisterProperty( "ResourceReference", "Target", &ResourceReference_Target_Set, NULL );
 
+  bridge.RegisterObject( "TransformComponent", &TransformComponent_Create );
+  bridge.RegisterProperty( "TransformComponent", "Translation", &TransformComponent_Translation_Set, NULL );
+  bridge.RegisterProperty( "TransformComponent", "Rotation", &TransformComponent_Rotation_Set, NULL );
+  bridge.RegisterProperty( "TransformComponent", "Scale", &TransformComponent_Scale_Set, NULL );
+
   bridge.RegisterObject( "GameObjectGroup", &GameObjectGroup_Create );
   bridge.RegisterChildList( "GameObjectGroup", "Child", &GameObjectGroup_Child_Add, &GameObjectGroup_Child_Remove);
+
+  bridge.RegisterObject( "RenderComponent", &RenderComponent_Create );
+  bridge.RegisterProperty( "RenderComponent", "Visible", &RenderComponent_Visible_Set, NULL );
+  bridge.RegisterProperty( "RenderComponent", "CastShadow", &RenderComponent_CastShadow_Set, NULL );
+  bridge.RegisterProperty( "RenderComponent", "ReceiveShadow", &RenderComponent_ReceiveShadow_Set, NULL );
+  bridge.RegisterProperty( "RenderComponent", "DrawDistance", &RenderComponent_DrawDistance_Set, NULL );
+
+  bridge.RegisterObject( "MeshComponent", &MeshComponent_Create );
+  bridge.RegisterProperty( "MeshComponent", "Ref", &MeshComponent_Ref_Set, NULL );
+
+  bridge.RegisterObject( "SpinnerComponent", &SpinnerComponent_Create );
+  bridge.RegisterProperty( "SpinnerComponent", "RPS", &SpinnerComponent_RPS_Set, NULL );
 
   bridge.RegisterObject( "Locator", &Locator_Create );
   bridge.RegisterChildList( "Locator", "Resource", &Locator_Resource_Add, &Locator_Resource_Remove);

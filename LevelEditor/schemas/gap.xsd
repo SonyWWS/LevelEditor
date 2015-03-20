@@ -53,9 +53,40 @@
       </xs:annotation>
       <xs:attribute name="ref" type="xs:anyURI" />
   </xs:complexType>
+    
+    <!--  base type of all the components that can be added to game object-->
+    <xs:complexType name="gameObjectComponentType" abstract="true">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="GameObjectComponent"/>
+                <LeGe.NativeProperty name="name" nativeName="Name" nativeType="wchar_t*" access="set"/>
+                <LeGe.NativeProperty name="active" nativeName="Active" nativeType="bool" access="set"/>
+            </xs:appinfo>
+        </xs:annotation>        
+        <xs:attribute name="name" type="xs:string" default=""/>
+        <xs:attribute name="active" type="xs:boolean" default="true"/>
+    </xs:complexType>
 
-
-  <xs:complexType name="gameObjectType" abstract="true">
+    <!-- base type of all component that need to have transform -->
+    <xs:complexType name="transformComponentType">
+        <xs:annotation>
+            <xs:appinfo>
+                <LeGe.NativeType nativeName="TransformComponent"/>
+                <LeGe.NativeProperty name="translation" nativeName="Translation" nativeType="float3" access="set"/>
+                <LeGe.NativeProperty name="rotation" nativeName="Rotation" nativeType="float3" access="set"/>
+                <LeGe.NativeProperty name="scale" nativeName="Scale" nativeType="float3" access="set"/>
+            </xs:appinfo>
+        </xs:annotation>        
+        <xs:complexContent>
+            <xs:extension base="gameObjectComponentType">
+                <xs:attribute name="translation" type="vector3Type" default="0 0 0"/>
+                <xs:attribute name="rotation" type="vector3Type" default="0 0 0"/>
+                <xs:attribute name="scale" type="vector3Type" default="1 1 1"/>
+            </xs:extension>
+        </xs:complexContent>    
+    </xs:complexType>
+    
+    <xs:complexType name="gameObjectType">
     <xs:annotation>
       <xs:appinfo>
         <LeGe.NativeType nativeName="GameObject"/>
@@ -67,12 +98,16 @@
         <LeGe.NativeProperty name="visible" nativeName="Visible" nativeType="bool" access="set,get"/>
         <LeGe.NativeProperty nativeName="Bounds" nativeType="AABB" access="get"/>
         <LeGe.NativeProperty nativeName="LocalBounds" nativeType="AABB" access="get"/>
-
+        <LeGe.NativeElement  name="component" nativeName="Component" nativeType="GameObjectComponent" />
+        <scea.dom.editors name="GameObject" category="Level Tools" image="LevelEditorCore.Resources.gameObject.png" menuText="Game Object" description="Game Object"/>
         <scea.dom.editors.attribute name="name" displayName="Name" description="Unique name of Game Object" category="General"/>
         <scea.dom.editors.attribute name="locked" displayName="Locked" description="Lock this object" category="General" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
         <scea.dom.editors.attribute name="visible" displayName="Visibility" description="Whether item is visible in Design View" category="Display" editor="Sce.Atf.Controls.PropertyEditing.BoolEditor,Atf.Gui.WinForms"/>
       </xs:appinfo>
     </xs:annotation>
+    <xs:sequence>
+        <xs:element name="component" type="gameObjectComponentType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
     <xs:attribute name="transform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
     <xs:attribute name="translate" type="vector3Type" default="0 0 0"/>
     <xs:attribute name="rotate" type="vector3Type" default="0 0 0"/>

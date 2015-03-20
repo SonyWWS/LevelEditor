@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using LevelEditorCore.GameEngineProxy;
+
 using Sce.Atf;
 using Sce.Atf.Adaptation;
 using Sce.Atf.Applications;

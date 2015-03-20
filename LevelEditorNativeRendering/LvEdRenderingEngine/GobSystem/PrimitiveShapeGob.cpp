@@ -37,10 +37,12 @@ PrimitiveShapeGob::~PrimitiveShapeGob()
 //---------------------------------------------------------------------------
 // push Renderable nodes
 //virtual 
-bool PrimitiveShapeGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+void PrimitiveShapeGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
 {
     if ( IsVisible(context->Cam().GetFrustum()) )
     {
+		super::GetRenderables(collector, context);
+
         RenderableNode r;
         SetupRenderable(&r, context);
         
@@ -51,16 +53,16 @@ bool PrimitiveShapeGob::GetRenderables(RenderableNodeCollector* collector, Rende
             flags  = (RenderFlagsEnum)(flags | RenderFlags::AlphaBlend | RenderFlags::DisableDepthWrite);
         }
 
-        collector->Add( r, flags, Shaders::TexturedShader );
-        return true;
-    }
-    return false;
+        collector->Add( r, flags, Shaders::TexturedShader );        
+    }    
 }
 
 
-void PrimitiveShapeGob::Update(float dt)
+void PrimitiveShapeGob::Update(const FrameTime& fr, UpdateTypeEnum updateType)
 {
-    UpdateWorldTransform();
+    bool boundDirty = m_boundsDirty;
+    super::Update(fr,updateType);
+    m_boundsDirty |= m_worldBoundUpdated;    
     if(m_boundsDirty)
     {
         m_localBounds = m_mesh->bounds;        
@@ -81,6 +83,5 @@ void PrimitiveShapeGob::SetupRenderable(RenderableNode* r, RenderContext* contex
     r->TextureXForm = m_textureTransform;
     r->textures[TextureType::DIFFUSE] = (Texture*)m_diffuse.GetTarget();
     r->textures[TextureType::NORMAL] = (Texture*)m_normal.GetTarget();
-
 }
 

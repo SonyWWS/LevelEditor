@@ -94,12 +94,12 @@ void CurveGob::InvalidateWorld()
 //-----------------------------------------------------------------------------------------------------------------------------------
 // push Renderable nodes
 //virtual
-bool CurveGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
+void CurveGob::GetRenderables(RenderableNodeCollector* collector, RenderContext* context)
 {
-    if(!IsVisible(context->Cam().GetFrustum()) || m_points.size()<2 )
-    {
-        return false;
-    }
+	if (!IsVisible(context->Cam().GetFrustum()) || m_points.size() < 2)
+		return;
+    
+	super::GetRenderables(collector, context);
     
     RenderableNode r;
     r.mesh = &m_mesh;
@@ -116,16 +116,17 @@ bool CurveGob::GetRenderables(RenderableNodeCollector* collector, RenderContext*
     {
         (*it)->GetRenderables(collector,context);
     }
-    return true;
 }
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------
 
 bool useD3dX = true;
-void CurveGob::Update(float dt)
+void CurveGob::Update(const FrameTime& fr, UpdateTypeEnum updateType)
 {
-    UpdateWorldTransform();
+    bool boundDirty = m_boundsDirty;
+    super::Update(fr,updateType);
+    m_boundsDirty = boundDirty;
 
     if(!m_boundsDirty) return;
 
@@ -147,7 +148,7 @@ void CurveGob::Update(float dt)
     m_localBounds.Transform(m_points[0]->GetTransform());
     for( auto it = m_points.begin(); it != m_points.end(); ++it)
     {
-        (*it)->Update(dt);
+        (*it)->Update(fr,updateType);
         AABB local = (*it)->GetLocalBounds();
         local.Transform((*it)->GetTransform());
         m_localBounds.Extend(local);
