@@ -779,13 +779,16 @@ LVEDRENDERINGENGINE_API ObjectGUID __stdcall LvEd_GetGameLevel()
     return s_engineData->GameLevel ? s_engineData->GameLevel->GetInstanceId() : 0;
 }
 
-LVEDRENDERINGENGINE_API void __stdcall LvEd_Update(FrameTime* ft, UpdateTypeEnum updateType, bool waitForPendingResources)
-{    
-    ErrorHandler::ClearError();
-    if(waitForPendingResources)
-        ResourceManager::Inst()->WaitOnPending();       
+LVEDRENDERINGENGINE_API void __stdcall LvEd_WaitForPendingResources()
+{
+	ResourceManager::Inst()->WaitOnPending();
+}
 
+LVEDRENDERINGENGINE_API void __stdcall LvEd_Update(FrameTime* ft, UpdateTypeEnum updateType)
+{    
+    ErrorHandler::ClearError();    
     s_engineData->GameLevel->Update(*ft, updateType);  
+	ShaderLib::Inst()->Update(*ft, updateType);
 }
 
 LVEDRENDERINGENGINE_API void __stdcall LvEd_Begin(ObjectGUID renderSurface, float viewxform[], float projxform[])

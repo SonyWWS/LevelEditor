@@ -27,15 +27,15 @@ namespace LvEdEngine
         WireFrameShader(ID3D11Device* device);
         virtual ~WireFrameShader();
 
+		//overrde: 
+		virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType);
+
         virtual void Begin(RenderContext* rc);
         virtual void End();
         virtual void SetRenderFlag(RenderFlagsEnum rf);
         virtual void DrawNodes(const RenderNodeList& renderNodes);
-
-       
-       
-
     private:
+		typedef Shader super;
         struct CbPerFrame
         {
             Matrix viewXform;
@@ -67,7 +67,8 @@ namespace LvEdEngine
 
         RenderContext*         m_rcntx; // render context
 
-        
-
+		// pulsate wire-frame color for the selected object.
+		float m_diffuseModulator;
+		float m_theta;
     };
 }

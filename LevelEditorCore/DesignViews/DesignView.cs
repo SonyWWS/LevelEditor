@@ -31,13 +31,8 @@ namespace LevelEditorCore
         {            
             QuadView = new QuadPanelControl();
             CameraController.LockOrthographic = true;
-
-            // Initilize variables used by GameLoop.
-            m_lastUpdateTime = Timing.GetHiResCurrentTime() - UpdateStep;
-            m_lastRenderTime = m_lastUpdateTime;
-            UpdateType = UpdateType.Editing;
         }
-        
+
         #region IDesignView Members
 
         public Control HostControl
@@ -206,10 +201,12 @@ namespace LevelEditorCore
 
         public void InvalidateViews()
         {
-            foreach (DesignViewControl view in Views)
-                view.Invalidate();
+            if (m_gameLoop != null)
+            {
+                m_gameLoop.Update();
+                m_gameLoop.Render();
+            }
         }
-                 
         #endregion
 
         #region ISnapSettings Members
@@ -283,83 +280,16 @@ namespace LevelEditorCore
         protected readonly QuadPanelControl QuadView;
 
         #region private members
-                
+
+        [Import(AllowDefault = false)]
+        private IGameLoop m_gameLoop;
+
         private float m_cameraFarZ = 2048;
         private ControlSchemes m_controlScheme = ControlSchemes.Maya;
         private float m_SnapAngle = (float)(5.0 * (Math.PI / 180.0f));
         private IManipulator m_manipulator;
         private IValidationContext m_validationContext;
                 
-        #endregion       
-    
-        #region IGameLoop Members
-
-        [Import(AllowDefault=false)]
-        private IGameEngineProxy m_gameEngine;
-
-        public UpdateType UpdateType 
-        { 
-            get; 
-            set;
-        }
-        public void Update()
-        {
-            if (Context == null) return;
-            m_gameEngine.SetGameWorld(Context.Cast<IGame>());
-            double lag = (Timing.GetHiResCurrentTime() - m_lastUpdateTime)
-                + m_updateLagRemainder;
-
-            // early return
-            if (lag < UpdateStep) return;
-
-            if (UpdateType == UpdateType.Paused)
-            {
-                m_lastUpdateTime = Timing.GetHiResCurrentTime();
-                FrameTime fr = new FrameTime(m_simulationTime, 0.0f);
-                m_gameEngine.Update(fr, UpdateType);
-                m_updateLagRemainder = 0.0;
-            }
-            else
-            {
-                // set upper limit of update calls 
-                const int MaxUpdates = 3;
-                int updateCount = 0;
-
-                while (lag >= UpdateStep
-                    && updateCount < MaxUpdates)
-                {
-                    m_lastUpdateTime = Timing.GetHiResCurrentTime();
-                    FrameTime fr = new FrameTime(m_simulationTime, (float)UpdateStep);
-                    m_gameEngine.Update(fr, UpdateType);
-                    m_simulationTime += UpdateStep;
-                    lag -= UpdateStep;
-                    updateCount++;
-                }
-
-                m_updateLagRemainder = MathUtil.Clamp(lag, 0, UpdateStep);
-                Debug.Assert(updateCount != 0);
-            }
-
-
-
-        }
-
-        public void Render()
-        {
-            // set upper limit of rendering to 1/UpdateStep
-            var rdt = Timing.GetHiResCurrentTime() - m_lastRenderTime;
-            if (rdt < UpdateStep) return;
-            m_lastRenderTime = Timing.GetHiResCurrentTime();
-            foreach (var view in Views)
-                view.Render();
-        }
-
-        private double m_simulationTime;
-        private double m_lastRenderTime;
-        private double m_lastUpdateTime;        
-        private double m_updateLagRemainder;
-        private const double UpdateStep = 1.0 / 60.0;
-
-        #endregion
+        #endregion                 
     }
 }

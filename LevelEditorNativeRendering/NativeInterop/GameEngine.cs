@@ -54,15 +54,16 @@ namespace RenderingInterop
         /// <summary>
         /// Updates game world</summary>
         /// <param name="ft">Frame time</param>
-        /// <param name="updateType">Update type</param>
-        /// <param name="waitForPendingResources">
-        /// if true the update will not return until all the 
-        /// pending resources are loaded</param>
-        public void Update(FrameTime ft, UpdateType updateType, bool waitForPendingResources)
+        /// <param name="updateType">Update type</param>        
+        public void Update(FrameTime ft, UpdateType updateType)
         {
-            NativeUpdate(&ft, updateType, waitForPendingResources);
+            NativeUpdate(&ft, updateType);
         }
 
+        public void WaitForPendingResources()
+        {
+            NativeWaitForPendingResources();
+        }
         #endregion
 
         #region IInitializable Members
@@ -803,8 +804,11 @@ namespace RenderingInterop
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_GetGameLevel", CallingConvention = CallingConvention.StdCall)]
         private static extern ulong NativeGetGameLevel();
 
+        [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_WaitForPendingResources", CallingConvention = CallingConvention.StdCall)]
+        private static extern void NativeWaitForPendingResources();
+
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Update", CallingConvention = CallingConvention.StdCall)]
-        private static extern void NativeUpdate(FrameTime* time, UpdateType updateType, bool waitForPendingResources);
+        private static extern void NativeUpdate(FrameTime* time, UpdateType updateType);
 
         [DllImportAttribute("LvEdRenderingEngine", EntryPoint = "LvEd_Begin", CallingConvention = CallingConvention.StdCall)]
         private static extern void NativeBegin(ulong renderSurface, float* viewxform, float* projxfrom);

@@ -260,8 +260,9 @@ namespace RenderingInterop
                 HitRecord? hr = (snap && ( snapFilter == null || snapFilter.CanSnapTo(ghost,hitnode))) ? hit : null;
                 ProjectGhost(ghost, rayw, hr);
             }
-            DesignView.Update();
-            DesignView.Render();            
+
+            GameLoop.Update();
+            GameLoop.Render();            
         }
         protected override void OnDragDrop(DragEventArgs drgevent)
         {
@@ -314,16 +315,23 @@ namespace RenderingInterop
         }
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (DesignView.Context == null || GameEngine.IsInError)
+            try
             {
-                e.Graphics.Clear(DesignView.BackColor);
-                if (GameEngine.IsInError)
-                    e.Graphics.DrawString(GameEngine.CriticalError, Font, Brushes.Red, 1, 1);
-                return;
+                if (DesignView.Context == null || GameEngine.IsInError
+                    || GameLoop == null)
+                {
+                    e.Graphics.Clear(DesignView.BackColor);
+                    if (GameEngine.IsInError)
+                        e.Graphics.DrawString(GameEngine.CriticalError, Font, Brushes.Red, 1, 1);
+                    return;
+                }
+                GameLoop.Update();
+                Render();                
             }
-
-            DesignView.Update();            
-            Render();            
+            catch(Exception ex)
+            {
+                e.Graphics.DrawString(ex.Message, Font, Brushes.Red, 1, 1);
+            }            
         }
       
         // render the scene.
@@ -347,7 +355,6 @@ namespace RenderingInterop
             IGame game = DesignView.Context.As<IGame>();
             GridRenderer gridRender = game.Grid.Cast<GridRenderer>();
             gridRender.Render(Camera);
-
           
             GameEngine.RenderGame();
 
@@ -370,12 +377,11 @@ namespace RenderingInterop
                    RenderState.DisplayBound == DisplayFlagModes.Always,
                    RenderState.DisplayPivot == DisplayFlagModes.Always);
 
-
             GameEngine.SetRendererFlag(BasicRendererFlags.Foreground | BasicRendererFlags.Lit);            
             if (DesignView.Manipulator != null)
                 DesignView.Manipulator.Render(this);
                                   
-            string str = string.Format("View Type: {0}   time-per-frame: {1:0.00} ms", ViewType, m_clk.Milliseconds);
+            string str = string.Format("View Type: {0}   time per frame-render call: {1:0.00} ms", ViewType, m_clk.Milliseconds);
             GameEngine.DrawText2D(str, Util3D.CaptionFont, 1,1, Color.White);          
             GameEngine.End();
 

@@ -9,7 +9,7 @@ namespace LevelEditorCore
 {
     /// <summary>
     /// Maintain a set of IDesigViewControls</summary>
-    public interface IDesignView : IGameLoop
+    public interface IDesignView
     {
         /// <summary>
         /// Gets the host control that is parent for 

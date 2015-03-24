@@ -8,7 +8,9 @@ namespace LevelEditorCore
     /// <summary>
     /// Main interface for communicating 
     /// with game engine.
-    /// Implemented as MEF component 
+    /// It exposes a minimum Egnine API surface required for LevelEditing.
+    /// This interface is meant to be expanded to support more features.
+    /// It is implemented as MEF component 
     /// in a separate project</summary>
     public interface IGameEngineProxy
     {
@@ -26,11 +28,12 @@ namespace LevelEditorCore
         /// <summary>
         /// Updates game world</summary>
         /// <param name="time">Frame time</param>
-        /// <param name="updateType">Update type</param>
-        /// <param name="waitForPendingResources">
-        /// if true the update will not return until all the 
-        /// pending resources are loaded</param>
-        void Update(FrameTime time, UpdateType updateType, bool waitForPendingResources = false);
+        /// <param name="updateType">Update type</param>        
+        void Update(FrameTime time, UpdateType updateType);
+
+        /// <summary>
+        /// Wait until all the resources are loaded</summary>
+        void WaitForPendingResources();
     }
 
 

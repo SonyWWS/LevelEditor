@@ -106,8 +106,9 @@ namespace RenderingInterop
                 GameEngine.SetRenderState(m_renderState);
                 GameEngine.SetGameLevel(m_game.Cast<NativeObjectAdapter>());
 
+                m_gameEngine.WaitForPendingResources();
                 FrameTime fr = new FrameTime(0, 0);
-                m_gameEngine.Update(fr, UpdateType.Paused, true);
+                m_gameEngine.Update(fr, UpdateType.Paused);
 
                 IBoundable boundable = gob.Cast<IBoundable>();
                 Sphere3F sphere = boundable.BoundingBox.ToSphere();

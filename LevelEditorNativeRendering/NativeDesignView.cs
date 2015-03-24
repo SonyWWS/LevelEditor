@@ -18,8 +18,7 @@ namespace RenderingInterop
 {
     
     [Export(typeof(ISnapSettings))]
-    [Export(typeof(IDesignView))]
-    [Export(typeof(IGameLoop))]
+    [Export(typeof(IDesignView))]    
     [Export(typeof(DesignView))]
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class NativeDesignView : DesignView

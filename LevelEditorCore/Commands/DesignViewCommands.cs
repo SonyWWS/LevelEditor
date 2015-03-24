@@ -289,16 +289,6 @@ namespace LevelEditorCore.Commands
                 null,
                 CommandVisibility.Menu,
                 this);
-
-            m_updateTypeComboBox = new ToolStripComboBox();
-            m_updateTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            m_updateTypeComboBox.Name = "UpdateType".Localize();
-            m_updateTypeComboBox.ComboBox.DataSource = Enum.GetValues(typeof(UpdateType));
-            m_updateTypeComboBox.SelectedItem = m_designView.UpdateType;
-            m_updateTypeComboBox.SelectedIndexChanged += (sender, e) => m_designView.UpdateType = (UpdateType)m_updateTypeComboBox.SelectedItem;           
-            m_updateTypeComboBox.ToolTipText = "Update type".Localize();
-            MenuInfo editMenuInfo = MenuInfo.Edit;            
-            editMenuInfo.GetToolStrip().Items.Add(m_updateTypeComboBox);            
         }
 
         
@@ -310,8 +300,5 @@ namespace LevelEditorCore.Commands
         
         private ICommandService m_commandService;
         private IContextRegistry m_contextRegistry;
-
-
-        private ToolStripComboBox m_updateTypeComboBox;
     }
 }

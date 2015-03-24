@@ -33,6 +33,8 @@ namespace LevelEditorCore
             get;
             private set;
         }
+
+
   
      
         /// <summary>
@@ -49,6 +51,19 @@ namespace LevelEditorCore
             get { return m_mouseDownAction == MouseDownAction.Picking; }
         }
 
+
+        /// <summary>
+        /// Gets GameLoop</summary>
+        public IGameLoop GameLoop
+        {
+            get
+            {
+                if(m_gameLoop == null)
+                    m_gameLoop = Globals.MEFContainer.GetExportedValue<IGameLoop>();
+                return m_gameLoop;
+            }
+        }
+        private IGameLoop m_gameLoop;
         
 
         /// <summary>
@@ -125,8 +140,8 @@ namespace LevelEditorCore
                     if (m_dragOverThreshold)
                     {
                         DesignView.Manipulator.OnDragging(this, e.Location);
-                        DesignView.Update();
-                        DesignView.Render();
+                        GameLoop.Update();
+                        GameLoop.Render();
 
                         if (m_propEditor == null)
                             m_propEditor = Globals.MEFContainer.GetExportedValue<PropertyEditor>();

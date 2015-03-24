@@ -18,9 +18,14 @@ public:
     static void         InitInstance(ID3D11Device* device);
     static void         DestroyInstance(void);
     static ShaderLib*   Inst() { return s_Inst; }
-
     Shader*             GetShader(ShadersEnum shader);
-    
+
+	void Update(const FrameTime& fr, UpdateTypeEnum updateType)
+	{
+		for (int i = 0; i < Shaders::COUNT; i++)
+			m_shaders[i]->Update(fr, updateType);		
+	}
+
 private:
     ShaderLib();
     ~ShaderLib();

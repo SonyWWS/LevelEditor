@@ -324,7 +324,8 @@ namespace RenderingInterop
                     if (Game.RootGameObjectFolder.GameObjects.Count > 0)
                     {
                         FrameTime fr = new FrameTime(0, 0);
-                        GameEngineProxy.Update(fr, UpdateType.Paused, true);
+                        GameEngineProxy.WaitForPendingResources();
+                        GameEngineProxy.Update(fr, UpdateType.Paused);
                     }
 
                     if (ResetCamera)

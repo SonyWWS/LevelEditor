@@ -313,6 +313,11 @@ extern "C" LVEDRENDERINGENGINE_API void __stdcall LvEd_SetGameLevel(ObjectGUID i
  */ 
 extern "C" LVEDRENDERINGENGINE_API ObjectGUID __stdcall LvEd_GetGameLevel();
 
+/**
+* Wait until all the pending resources are loaded.
+*/
+extern "C" LVEDRENDERINGENGINE_API void  __stdcall LvEd_WaitForPendingResources();
+
 
 /**
  * Updates the game world.
@@ -320,11 +325,10 @@ extern "C" LVEDRENDERINGENGINE_API ObjectGUID __stdcall LvEd_GetGameLevel();
  * LevelEditor calls this function for each frame.
  *
  * @param t Total time since LevelEditor start, in seconds
- * @param dt Delta time since last update
- * @param waitForPendingResources wait for all the pending resources to load.
+ * @param dt Delta time since last update 
  *
  */
-extern "C" LVEDRENDERINGENGINE_API void  __stdcall LvEd_Update(FrameTime* ft, UpdateTypeEnum updateType, bool waitForPendingResources);
+ extern "C" LVEDRENDERINGENGINE_API void  __stdcall LvEd_Update(FrameTime* ft, UpdateTypeEnum updateType);
 
 
 

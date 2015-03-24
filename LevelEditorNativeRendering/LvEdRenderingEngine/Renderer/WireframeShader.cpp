@@ -1,7 +1,7 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
-#include "../Core/NonCopyable.h"
 #include "WireFrameShader.h"
+#include "../Core/NonCopyable.h"
 #include <D3D11.h>
 #include "Renderable.h"
 #include "RenderBuffer.h"
@@ -15,6 +15,13 @@
 using namespace LvEdEngine;
 
 
+void WireFrameShader::Update(const FrameTime& fr, UpdateTypeEnum updateType)
+{
+	m_theta += fr.ElapsedTime * TwoPi;
+	if (m_theta >= TwoPi) m_theta -= TwoPi;
+	else if (m_theta < 0.0f) m_theta += TwoPi;
+	m_diffuseModulator = 0.5f * sinf(m_theta) + 1.0f;
+}
 
 void WireFrameShader::Begin(RenderContext* context)
 {
@@ -73,8 +80,21 @@ void WireFrameShader::DrawNodes(const RenderNodeList& renderNodes)
     {
         
         const RenderableNode& r = (*it);
+		bool selected = (m_rcntx->selection.find(r.objectId) != m_rcntx->selection.end());
+		
         Matrix::Transpose(r.WorldXform,m_cbPerObject.Data.worldXform);   
-        m_cbPerObject.Data.color = r.diffuse;
+		m_cbPerObject.Data.color = r.diffuse;
+
+		if (selected)
+		{
+			//float f = Lerp(0.5f, 1.2f, m_diffuseModulator);
+			//float4 di = m_rcntx->State()->GetSelectionColor() * f;
+			float4 di = r.diffuse * m_diffuseModulator;
+			di.w = 1;			
+			m_cbPerObject.Data.color = di;
+		}
+
+
         m_cbPerObject.Update(d3dContext);        
         uint32_t stride = r.mesh->vertexBuffer->GetStride();
         uint32_t offset = 0;
@@ -84,8 +104,7 @@ void WireFrameShader::DrawNodes(const RenderNodeList& renderNodes)
         ID3D11Buffer* d3dvb  = r.mesh->vertexBuffer->GetBuffer();
         ID3D11Buffer* d3dib  = r.mesh->indexBuffer->GetBuffer();
 
-        d3dContext->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)r.mesh->primitiveType );    
-                   
+        d3dContext->IASetPrimitiveTopology( (D3D11_PRIMITIVE_TOPOLOGY)r.mesh->primitiveType );                       
         d3dContext->IASetVertexBuffers( 0, 1, &d3dvb, &stride, &offset );
         d3dContext->IASetIndexBuffer(d3dib,(DXGI_FORMAT) r.mesh->indexBuffer->GetFormat(),0);    
         d3dContext->DrawIndexed(indexCount,startIndex,startVertex);
@@ -97,6 +116,8 @@ WireFrameShader::WireFrameShader(ID3D11Device* device)
 {    
     m_rcntx = NULL;
     m_gsShader = NULL;
+	m_diffuseModulator = 0.0f;
+	m_theta = 0.0f;
 
     // create cbuffers.
     m_cbPerFrame.Construct(device);

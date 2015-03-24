@@ -13,6 +13,7 @@
 #include "Renderable.h"
 #include "RenderSurface.h"
 #include "../Core/NonCopyable.h"
+#include "../FrameTime.h"
 
 namespace Shaders
 {
@@ -51,6 +52,9 @@ namespace LvEdEngine
 
         ShadersEnum ShaderType() { return m_shaderEnum; }
             
+		// Update any time based effects.		
+		virtual void Update(const FrameTime& fr, UpdateTypeEnum updateType) {}
+			
 	    //  Called begin before drawing.
         //  Set up sampler states, shaders, connect constant buffers, etc.
         virtual void Begin(RenderContext* rc ) = 0;

@@ -259,7 +259,7 @@ namespace LvEdEngine
             w = v;
          }
 
-         float3 xyz()
+         float3 xyz() const
          {
              return float3(x,y,z);
          }
