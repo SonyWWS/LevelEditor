@@ -253,7 +253,7 @@ namespace Sce.Atf.Controls
         {
             get
             {
-                return ItemRenderer as TreeListItemRenderer;
+                return (TreeListItemRenderer)ItemRenderer;
             }
         }
 

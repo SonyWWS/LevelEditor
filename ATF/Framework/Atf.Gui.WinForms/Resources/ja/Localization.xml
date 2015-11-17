@@ -6,19 +6,20 @@
   <StringItem id="(none)" context="No flags" translation="(なし)" />
   <StringItem id="[{0} items]" context="a number of items" translation="[{0} 個のアイテム]" />
   <StringItem id="{0} commands currently do not use their default shortcuts." context="{0} is a number" translation="{0} 個のコマンドが、現在デフォルトのショートカットを使用していません。" />
-  <StringItem id="&lt; Clean State &gt;" context="" translation="&lt; Clean State &gt;" />
+  <StringItem id="&lt; Clean State &gt;" context="The '&lt;' and '&gt;' indicate that this is not a command name, but is the state of the document before any commands have been run." translation="&lt; クリーンな状態 &gt;" />
   <StringItem id="About" context="" translation="バージョン情報" />
   <StringItem id="About this Application" context="" translation="このアプリケーションについて" />
   <StringItem id="Activate Window" context="" translation="ウィンドウをアクティブにします。" />
   <StringItem id="Add" context="" translation="追加" />
   <StringItem id="Add {0}" context="" translation="{0} を追加" />
-  <StringItem id="Add array element" context="" translation="Add array element" />
   <StringItem id="add array element" context="" translation="add array element" />
+  <StringItem id="Add array element" context="" translation="Add array element" />
   <StringItem id="Add Control Point" context="" translation="制御点を追加" />
   <StringItem id="Add document {0} to version control?" context="" translation="ドキュメント {0} をバージョン管理に追加しますか?" />
   <StringItem id="Add document to Version Control" context="" translation="ドキュメントをバージョン管理に追加します。" />
-  <StringItem id="Add External Template Folder" context="" translation="" />
+  <StringItem id="Add External Template Folder" context="" translation="外部テンプレートフォルダーを追加" />
   <StringItem id="Add Layer" context="" translation="レイヤーを追加" />
+  <StringItem id="Add New {0}" context="" translation="新規 {0} を追加" />
   <StringItem id="Add Point" context="" translation="制御点を追加" />
   <StringItem id="Add Target" context="" translation="ターゲットを追加" />
   <StringItem id="Add Template Folder" context="" translation="テンプレートフォルダーを追加" />
@@ -34,7 +35,7 @@
   <StringItem id="An application built using the Authoring Tools Framework" context="" translation="Authoring Tools Framework (ATF) を使用して構築されたアプリケーション" />
   <StringItem id="Analysis" context="" translation="解析" />
   <StringItem id="Application" context="" translation="アプリケーション" />
-  <StringItem id="Authoring Tools Framework (ATF {0}), by Ron Little, Jianhua Shen, Julianne Harrington, Alan Beckus, Matt Mahony, Pat O'Leary, Paul Skibitzke, and Max Elliott. Copyright © 2014 Sony Computer Entertainment America LLC" context="{0} is the version number" translation="このプロパティをリセット" />
+  <StringItem id="Authoring Tools Framework (ATF {0}), by Alan Beckus, Matt Mahony, Pat O'Leary, Paul Skibitzke, and Max Elliott. Copyright © 2014 Sony Computer Entertainment America LLC" context="{0} is the version number" translation="Authoring Tools Framework (ATF {0}), by Alan Beckus, Matt Mahony, Pat O'Leary, Paul Skibitzke, and Max Elliott. Copyright © 2014 Sony Computer Entertainment America LLC" />
   <StringItem id="Auto New Document" context="Create a new empty document on application startup" translation="新しいドキュメントを自動作成" />
   <StringItem id="Auto-load Documents" context="" translation="ドキュメントの自動読み込み" />
   <StringItem id="Basic" context="" translation="基本" />
@@ -75,7 +76,7 @@
   <StringItem id="Copies the OSC address of this property to the clipboard" context="" translation="このプロパティの OSC アドレスをクリップボードにコピーします。" />
   <StringItem id="Copies this property's value to the to local clipboard" context="" translation="プロパティの値をクリップボードに貼り付けます。" />
   <StringItem id="Copy All" context="" translation="すべてをコピー" />
-  <StringItem id="Copy All" context="Copies all properties to the local clipboard" translation="コピー" />
+  <StringItem id="Copy All" context="Copies all properties to the local clipboard" translation="すべてをコピー" />
   <StringItem id="Copy Full Path" context="" translation="フルパスをコピー" />
   <StringItem id="Copy items from the document and paste them here to create layers whose visibility can be controlled by clicking on a check box." context="" translation="ドキュメントからアイテムをコピーしてここに貼り付け、レイヤーを作成します。レイヤーの表示はチェックボックスで制御します。" />
   <StringItem id="Copy items from the document and paste them here to create prototypes that can be dragged and dropped onto a canvas." context="" translation="ドキュメントからアイテムをコピーしてここに貼り付け、プロトタイプを作成します。プロトタイプはキャンバスにドラッグアンドドロップできます。" />
@@ -156,19 +157,20 @@
   <StringItem id="Group" context="a verb" translation="グループ" />
   <StringItem id="Help" context="" translation="ヘルプ" />
   <StringItem id="Hex must be a hex value between 00000000 and FFFFFFFF" context="" translation="Hex は 00000000 ～ FFFFFFFF の間の 16 進数である必要があります。" />
+  <StringItem id="History" context="" translation="履歴" />
   <StringItem id="https://github.com/SonyWWS/ATF/search?utf8=%E2%9C%93&amp;q=DomRecorder+or+Recorder" context="" translation="https://github.com/SonyWWS/ATF/search?utf8=%E2%9C%93&amp;q=DomRecorder+or+Recorder" />
   <StringItem id="https://github.com/SonyWWS/ATF/search?utf8=%E2%9C%93&amp;q=PaletteService+or+Palette" context="" translation="https://github.com/SonyWWS/ATF/search?utf8=%E2%9C%93&amp;q=PaletteService+or+Palette" />
   <StringItem id="https://github.com/SonyWWS/ATF/wiki/Property-Editing-in-ATF" context="" translation="https://github.com/SonyWWS/ATF/wiki/Property-Editing-in-ATF" />
   <StringItem id="https://github.com/SonyWWS/ATF/wiki/Scripting-Applications-with-Python" context="" translation="https://github.com/SonyWWS/ATF/wiki/Scripting-Applications-with-Python" />
   <StringItem id="Hue must be a number between 0 and 360" context="" translation="色合いは 0 ～ 360 の間の数である必要があります。" />
   <StringItem id="Import settings" context="" translation="設定をインポート" />
-  <StringItem id="Import Templates from Document" context="" translation="" />
-  <StringItem id="Import Templates from Document..." context="" translation="" />
+  <StringItem id="Import Templates from Document" context="" translation="ドキュメントからテンプレートをインポート" />
+  <StringItem id="Import Templates from Document..." context="" translation="ドキュメントからテンプレートをインポート…" />
   <StringItem id="In Tangent" context="" translation="イン接線" />
   <StringItem id="Info" context="" translation="情報" />
   <StringItem id="Info" context="Label for informative message" translation="情報" />
-  <StringItem id="Input Mode" context="" translation="Input Mode" />
   <StringItem id="Input mode" context="" translation="Input mode" />
+  <StringItem id="Input Mode" context="" translation="Input Mode" />
   <StringItem id="Insert child" context="" translation="子を挿入" />
   <StringItem id="Insert Control Point" context="" translation="制御点を挿入" />
   <StringItem id="Invalid port number" context="" translation="ポート番号が不正です。" />
@@ -181,8 +183,8 @@
   <StringItem id="Load or Save Settings..." context="" translation="@設定を読み込み/保存..." />
   <StringItem id="Load previously open documents on application startup" context="" translation="アプリケーションの起動時に前回開いていたドキュメントを読み込みます。" />
   <StringItem id="Load Skin..." context="Load and apply a skin file." translation="スキンを読み込み..." />
-  <StringItem id="Lock origin" context="This is the name of a command. Lock is a verb. Origin is like the origin of a graph." translation="Lock origin" />
   <StringItem id="Lock Origin" context="This is the name of a command. Lock is a verb. Origin is like the origin of a graph." translation="Lock Origin" />
+  <StringItem id="Lock origin" context="This is the name of a command. Lock is a verb. Origin is like the origin of a graph." translation="Lock origin" />
   <StringItem id="Lock UI Layout" context="" translation="UI レイアウトをロック" />
   <StringItem id="Magenta must be a number between 0 and 100" context="" translation="マゼンタは 0 ～ 100 の間の数である必要があります。" />
   <StringItem id="Manage layouts..." context="" translation="レイアウトを管理します。" />
@@ -255,7 +257,7 @@
   <StringItem id="Rename selected objects" context="" translation="選択したオブジェクトの名前を変更します。" />
   <StringItem id="Rename..." context="Rename selected objects" translation="名前を変更..." />
   <StringItem id="Report bug or request feature" context="" translation="バグ報告または機能要望" />
-  <StringItem id="Rescan Template Documents" context="" translation="" />
+  <StringItem id="Rescan Template Documents" context="" translation="テンプレートドキュメントを再スキャン" />
   <StringItem id="Reset active skin to the default skin." context="" translation="アクティブなスキンをデフォルトスキンにリセットします。" />
   <StringItem id="Reset All" context="Reset all properties to their default values" translation="すべてのプロパティをリセット" />
   <StringItem id="Reset all commands to the default shortcuts?" context="" translation="ショートカットをリセット" />
@@ -320,7 +322,7 @@
   <StringItem id="Targets" context="" translation="ターゲット" />
   <StringItem id="Templates" context="" translation="テンプレート" />
   <StringItem id="The destination port number or IP address are not correctly formatted." context="" translation="送信先ポート番号または IP アドレスが正しくフォーマットされていません。" />
-  <StringItem id="The most recent version is {0}" context="" translation="最新のバージョンは、{0} です。" />
+  <StringItem id="The most recent version is {0}." context="" translation="最新のバージョンは、{0} です。" />
   <StringItem id="The performance report is in the clipboard" context="" translation="パフォーマンスレポートはクリップボードにあります" />
   <StringItem id="The receiving port number or IP address are not correctly formatted." context="" translation="受信ポート番号または IP アドレスが正しくフォーマットされていません。" />
   <StringItem id="There is a newer version of this program available." context="" translation="このプログラムは、新しいバージョンが利用可能です。" />
@@ -335,6 +337,7 @@
   <StringItem id="Type of Selected Curve(s)" context="" translation="選択された曲線の種類" />
   <StringItem id="UI Settings" context="" translation="UI 設定" />
   <StringItem id="Undo" context="" translation="元に戻す" />
+  <StringItem id="Undo/Redo stack" context="" translation="元に戻す/やり直しスタック" />
   <StringItem id="Ungroup" context="a verb" translation="グループ化解除" />
   <StringItem id="Unify Tangents" context="" translation="接線を統合" />
   <StringItem id="Unlock UI Layout" context="" translation="UI レイアウトのロックを解除" />
@@ -354,5 +357,5 @@
   <StringItem id="Would you like to save the changes?" context="" translation="変更を保存しますか?" />
   <StringItem id="Yellow" context="" translation="黄" />
   <StringItem id="Yellow must be a number between 0 and 100" context="" translation="黄色は 0 ～ 100 の間の数である必要があります。" />
-  <StringItem id="Your version is {0}" context="" translation="使用中のバージョンは、{0} です。" />
+  <StringItem id="Your version is {0}." context="" translation="使用中のバージョンは、{0} です。" />
 </StringLocalizationTable>

@@ -636,12 +636,12 @@ namespace Sce.Atf.Direct2D
                 = new SharpDX.DirectWrite.TextLayout(D2dFactory.NativeDwFactory,
                     text, textFormat.NativeTextFormat, rtsize.Width, rtsize.Height))
             {
+                layout.TextAlignment = SharpDX.DirectWrite.TextAlignment.Leading;
+                layout.ParagraphAlignment = SharpDX.DirectWrite.ParagraphAlignment.Near;
                 if (textFormat.Underlined)
-                    layout.SetUnderline(true,
-                                        new SharpDX.DirectWrite.TextRange(0, text.Length));
+                    layout.SetUnderline(true,new SharpDX.DirectWrite.TextRange(0, text.Length));
                 if (textFormat.Strikeout)
-                    layout.SetStrikethrough(true,
-                                            new SharpDX.DirectWrite.TextRange(0, text.Length));
+                    layout.SetStrikethrough(true,new SharpDX.DirectWrite.TextRange(0, text.Length));
                 m_renderTarget.DrawTextLayout(upperLeft.ToSharpDX(),
                     layout,
                     brush.NativeBrush,
@@ -670,9 +670,7 @@ namespace Sce.Atf.Direct2D
         /// <param name="brush">The brush used to paint the text</param>
         public void DrawText(string text, D2dTextFormat textFormat, RectangleF layoutRect, D2dBrush brush)
         {
-            using (var layout
-                = new SharpDX.DirectWrite.TextLayout(D2dFactory.NativeDwFactory
-                    , text, textFormat.NativeTextFormat, layoutRect.Width, layoutRect.Height))
+            using (var layout = new SharpDX.DirectWrite.TextLayout(D2dFactory.NativeDwFactory, text, textFormat.NativeTextFormat, layoutRect.Width, layoutRect.Height))
             {
                 if (textFormat.Underlined)
                     layout.SetUnderline(true, new SharpDX.DirectWrite.TextRange(0, text.Length));
@@ -1332,14 +1330,24 @@ namespace Sce.Atf.Direct2D
         /// Pixel format is set to 32 bit ARGB with premultiplied alpha</summary>      
         /// <param name="width">Width of the bitmap in pixels</param>
         /// <param name="height">Height of the bitmap in pixels</param>
+        /// <param name="createBackupBitmap">If true a GDI bitmap is created and used
+        /// to recreate this D2dBitmap when needed</param>
         /// <returns>A new D2dBitmap</returns>
-        public D2dBitmap CreateBitmap(int width, int height)
+        public D2dBitmap CreateBitmap(int width, int height, bool createBackupBitmap = true)
         {
             if (width < 1 || height < 1)
                 throw new ArgumentOutOfRangeException("Width and height must be greater than zero");
-
-            var bmp = new System.Drawing.Bitmap(width, height, GdiPixelFormat.Format32bppPArgb);
-            return new D2dBitmap(this, bmp);
+            D2dBitmap  d2dBmp = null;
+            if(createBackupBitmap)
+            {
+                System.Drawing.Bitmap gdiBmp = new System.Drawing.Bitmap(width, height, GdiPixelFormat.Format32bppPArgb);
+                d2dBmp = new D2dBitmap(this, gdiBmp);
+            }
+            else
+            {
+                d2dBmp = new D2dBitmap(this,width,height);
+            }
+            return d2dBmp;
         }
 
         /// <summary>

@@ -101,37 +101,13 @@ namespace Sce.Atf.Applications
             get { return !m_dockPanel.AllowEndUserDocking; }
             set
             {
-                m_dockPanel.AllowEndUserDocking = !value;
-                var cmdService = m_commandService as CommandServiceBase;
-                if (cmdService != null )
-                {
-                    if (cmdService.UserSelectedImageSize == CommandServiceBase.ImageSizes.Size16x16)
-                    {
-                        m_uiLockImage = ResourceUtil.GetImage16(Resources.LockUIImage);
-                        m_uiUnlockImage = ResourceUtil.GetImage16(Resources.UnlockUIImage);
-                    }
-                    else if (cmdService.UserSelectedImageSize == CommandServiceBase.ImageSizes.Size32x32)
-                    {
-                        m_uiLockImage = ResourceUtil.GetImage32(Resources.LockUIImage);
-                        m_uiUnlockImage = ResourceUtil.GetImage32(Resources.UnlockUIImage);
-                    }
-                }
-
-                if ((RegisteredCommands & CommandRegister.UILock) == CommandRegister.UILock)
-                {
-                    CommandInfo.UILock.GetButton().Image = value ? m_uiLockImage : m_uiUnlockImage;
-                    CommandInfo.UILock.GetButton().ToolTipText = value
-                                                                     ? "Unlock UI Layout".Localize()
-                                                                     : "Lock UI Layout".Localize();
-                }
-
+                m_dockPanel.AllowEndUserDocking = !value;                
                 if (m_toolStripContainer != null)
                 {
                     var toolStrips = m_toolStripContainer.TopToolStripPanel.Controls.AsIEnumerable<ToolStrip>()
                         .Concat(m_toolStripContainer.BottomToolStripPanel.Controls.AsIEnumerable<ToolStrip>())
                         .Concat(m_toolStripContainer.LeftToolStripPanel.Controls.AsIEnumerable<ToolStrip>())
                         .Concat(m_toolStripContainer.RightToolStripPanel.Controls.AsIEnumerable<ToolStrip>());
-
                     foreach (var toolStrip in toolStrips)
                     {
                         toolStrip.GripStyle = value ? ToolStripGripStyle.Hidden : ToolStripGripStyle.Visible;
@@ -194,13 +170,7 @@ namespace Sce.Atf.Applications
                 m_settingsService.RegisterSettings(this,
                    new BoundPropertyDescriptor(this, () => UILocked, "UILocked", null, null));
             }
-
-            // Turn off the CommandService's polling of these commands.
-            CommandInfo.UILock.EnableCheckCanDoEvent(this);
-            CommandInfo.WindowTileHorizontal.EnableCheckCanDoEvent(this);
-            CommandInfo.WindowTileVertical.EnableCheckCanDoEvent(this);
-            CommandInfo.WindowTileTabbed.EnableCheckCanDoEvent(this);
-
+           
             if (m_commandService != null)
             {
                 if ((RegisteredCommands & CommandRegister.UILock) == CommandRegister.UILock)
@@ -557,7 +527,8 @@ namespace Sce.Atf.Applications
             if (control != null)
             {
                 DockContent dockContent = FindContent(control);
-                if (dockContent.Visible && !dockContent.IsHidden)
+                if (dockContent.Visible && !dockContent.IsHidden
+                    && !IsAutoHideState(dockContent))
                     dockContent.Hide();
                 else
                     dockContent.Show();
@@ -597,13 +568,25 @@ namespace Sce.Atf.Applications
                 string menuText = GetControlMenuText(control);
                 state.Text = menuText;
                 DockContent dockContent = FindContent(control);
-                state.Check = dockContent.Visible && !dockContent.IsHidden;
+                state.Check = dockContent.Visible && !dockContent.IsHidden
+                    && !IsAutoHideState(dockContent);
             }
             else if (commandTag is StandardCommand)
             {
                 if ( (StandardCommand) commandTag == StandardCommand.UILock)
                 {
                     state.Text = UILocked ? "Unlock UI Layout".Localize() : "Lock UI Layout".Localize();
+                    var cmdService = m_commandService as CommandServiceBase;
+                    if (cmdService != null)
+                    {
+                        string lockImgName = UILocked ? Resources.LockUIImage : Resources.UnlockUIImage;
+                        if (CommandInfo.UILock.ImageName != lockImgName)
+                        {
+                            CommandInfo.UILock.ImageName = lockImgName;
+                            cmdService.RefreshImage(CommandInfo.UILock);                            
+                            CommandInfo.UILock.GetButton().ToolTipText = state.Text;
+                        }
+                    }
                 }
             }
         }
@@ -718,6 +701,15 @@ namespace Sce.Atf.Applications
             set { DockPaneStripBase.MouseOverTabSwitchDelay = value; }
         }
 
+        private bool IsAutoHideState(DockContent dockContent)
+        {
+            DockState dockState = dockContent.DockState;
+            return dockState == DockState.DockBottomAutoHide
+                || dockState == DockState.DockLeftAutoHide
+                || dockState == DockState.DockRightAutoHide
+                || dockState == DockState.DockTopAutoHide;
+        }
+
         private void mainForm_Load(object sender, EventArgs e)
         {
             m_formLoaded = true;
@@ -787,15 +779,15 @@ namespace Sce.Atf.Applications
                 if (m_activeDockContent != null &&
                     m_activeDockContent.Controls.Count > 0)
                 {
-                    DockPaneStripBase dockPaneStrip = GetDockPaneStripBase(m_activeDockContent);
-                    if (dockPaneStrip != null)
-                        dockPaneStrip.MouseUp -= dockPaneStrip_MouseUp;
+                    m_activeDockContent.DockStateChanged -= ActiveDockContentStateChanged;
+                    SetActiveDockPaneStripBase(null);
                     DeactivateClient(m_activeDockContent.Controls[0]);
                 }
 
                 if (activeContent != null &&
                     activeContent.Controls.Count > 0)
                 {
+                    activeContent.DockStateChanged += ActiveDockContentStateChanged;
                     ActivateClient(activeContent.Controls[0]);
 
                     ControlInfo activeControlInfo = FindControlInfo(activeContent.Controls[0]);
@@ -810,12 +802,29 @@ namespace Sce.Atf.Applications
                         controlInfo.InActiveGroup = activePane.Contains(controlInfo.HostControl);
 
                     DockPaneStripBase dockPaneStrip = GetDockPaneStripBase(activeContent);
-                    if (dockPaneStrip != null)
-                        dockPaneStrip.MouseUp += dockPaneStrip_MouseUp;
+                    SetActiveDockPaneStripBase(dockPaneStrip);
                 }
 
                 m_activeDockContent = activeContent;
             }
+        }
+
+        private void SetActiveDockPaneStripBase(DockPaneStripBase newDockPaneStripBase)
+        {
+            if (m_activeDockPaneStripBase != newDockPaneStripBase)
+            {
+                if (m_activeDockPaneStripBase != null)
+                    m_activeDockPaneStripBase.MouseUp -= dockPaneStrip_MouseUp;
+                m_activeDockPaneStripBase = newDockPaneStripBase;
+                if (m_activeDockPaneStripBase != null)
+                    m_activeDockPaneStripBase.MouseUp += dockPaneStrip_MouseUp;
+            }
+        }
+
+        private void ActiveDockContentStateChanged(object sender, EventArgs e)
+        {
+            DockPaneStripBase dockPaneStrip = GetDockPaneStripBase(m_activeDockContent);
+            SetActiveDockPaneStripBase( dockPaneStrip);
         }
 
         private DockPaneStripBase GetDockPaneStripBase(DockContent dockContent)
@@ -859,7 +868,12 @@ namespace Sce.Atf.Applications
             if (controlInfo.Client.Close(control))
             {
                 // unregister center controls for the client if they haven't already done it
-                if (IsCenterGroup(controlInfo.Group))
+                bool unregisterOnClose =
+                    controlInfo.UnregisterOnClose.HasValue ?
+                    controlInfo.UnregisterOnClose.Value :
+                    IsCenterGroup(controlInfo.Group);
+
+                if (unregisterOnClose)
                 {
                     UnregisterControl(control);
                     if (m_activeDockContent == dockContent)
@@ -956,7 +970,7 @@ namespace Sce.Atf.Applications
             if (!string.IsNullOrEmpty(dockContent.Text))
                 m_uniqueNamer.Retire(dockContent.Text);
 
-            string displayName = info.Name;
+            string displayName = info.DisplayName;
             if (info.IsDocument.HasValue && info.IsDocument.Value)
             {
                 dockContent.Text = displayName;
@@ -1087,7 +1101,7 @@ namespace Sce.Atf.Applications
         private string GetControlMenuText(Control control)
         {
             ControlInfo info = FindControlInfo(control);
-            string name = info.Name;
+            string name = info.DisplayName;
             string label = name;
             if (name.StartsWith("@")) // literal control name
             {
@@ -1111,16 +1125,19 @@ namespace Sce.Atf.Applications
         {
             if (m_commandService != null)
             {
-                bool isDocument;
-                if (info.IsDocument.HasValue)
-                    isDocument = info.IsDocument.Value;
+                object groupTag;
+                if (info.MenuGroupTag != null)
+                    groupTag = info.MenuGroupTag;
+                else if ((info.IsDocument.HasValue && info.IsDocument.Value) ||
+                         info.Client is IDocumentClient)
+                    groupTag = StandardCommandGroup.WindowDocuments;
                 else
-                    isDocument = info.Client is IDocumentClient;
+                    groupTag = StandardCommandGroup.WindowGeneral;
 
                 var commandInfo = new CommandInfo(
                     info.Control,
                     StandardMenu.Window,
-                    isDocument ? StandardCommandGroup.WindowDocuments : StandardCommandGroup.WindowGeneral,
+                    groupTag,
                     text,
                     "Activate Window".Localize());
 
@@ -1209,39 +1226,48 @@ namespace Sce.Atf.Applications
                     writer.Flush();
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    // The dock panel must be cleared of all contents before deserializing.
-                    foreach (ControlInfo info in m_controls)
+                    m_dockPanel.SuspendLayout(true);
+                    try
                     {
-                        DockContent dockContent = FindContent(info);
-                        //It's important to set DockState to Unknown before setting DockPanel to null,
-                        //  to avoid a crash.
-                        dockContent.DockState = DockState.Unknown;
-                        dockContent.DockPanel = null;
-                        dockContent.FloatPane = null;
-                        dockContent.Pane = null;
-                    }
-
-                    DeserializeDockContent deserializer = StringToDockContent;
-                    m_dockPanel.LoadFromXml(stream, deserializer, true);
-
-                    // Put back any docking content that had no persisted state.
-                    // We iterate through m_dockContent rather than m_controls because m_controls can get
-                    //  modified inside the loop, when calling ShowDockContent.
-                    foreach (var pair in m_dockContent)
-                    {
-                        DockContent dockContent = pair.Value;
-                        if (dockContent.DockPanel == null)
+                        // The dock panel must be cleared of all contents before deserializing.
+                        var contents = new IDockContent[m_dockPanel.Contents.Count];
+                        m_dockPanel.Contents.CopyTo(contents, 0);
+                        for (int i = 0; i < contents.Length; i++)
                         {
-                            ControlInfo info = pair.Key;
-                            UpdateDockContent(dockContent, info);
-                            ShowDockContent(dockContent, info);
+                            var dockContent = (DockContent)contents[i];
+                            // Setting DockState causes a crash when hiding unregistered DockContents below.
+                            // DockPanelSuite's DockSample simply sets DockPanel to null, but inside the
+                            //  SuspendLayout and ResumeLayout pair.
+                            //dockContent.DockState = DockState.Unknown;
+                            dockContent.DockPanel = null;
+                        }
+
+                        DeserializeDockContent deserializer = StringToDockContent;
+                        m_dockPanel.LoadFromXml(stream, deserializer, true);
+
+                        // Put back any docking content that had no persisted state.
+                        // We iterate through m_dockContent rather than m_controls because m_controls can get
+                        //  modified inside the loop, when calling ShowDockContent.
+                        foreach (var pair in m_dockContent)
+                        {
+                            DockContent dockContent = pair.Value;
+                            if (dockContent.DockPanel == null)
+                            {
+                                ControlInfo info = pair.Key;
+                                UpdateDockContent(dockContent, info);
+                                ShowDockContent(dockContent, info);
+                            }
+                        }
+
+                        // Hide these unregistered DockContents until client code calls RegisterControl().
+                        foreach (DockContent unregisteredContent in m_unregisteredContents)
+                        {
+                            unregisteredContent.Hide();
                         }
                     }
-
-                    // Hide these unregistered DockContents until client code calls RegisterControl().
-                    foreach (DockContent unregisteredContent in m_unregisteredContents)
+                    finally
                     {
-                        unregisteredContent.Hide();
+                        m_dockPanel.ResumeLayout(true, true);
                     }
                 }
             }
@@ -1535,6 +1561,7 @@ namespace Sce.Atf.Applications
 
         private readonly DockPanel m_dockPanel;
         private DockContent m_activeDockContent;
+        private DockPaneStripBase m_activeDockPaneStripBase;
         private ToolStripContainer m_toolStripContainer;
         private string m_dockPanelState;
         private bool m_formLoaded;

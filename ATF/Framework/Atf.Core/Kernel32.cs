@@ -1,5 +1,6 @@
 //Copyright © 2014 Sony Computer Entertainment America LLC. See License.txt.
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace Sce.Atf
@@ -17,15 +18,19 @@ namespace Sce.Atf
         /// If the function fails, the return value is zero.
         /// If the buffer is too small, the function fails and the last error code is ERROR_INSUFFICIENT_BUFFER.</returns>
         /// <remarks>For more information, see the MSDN article at http://msdn.microsoft.com/en-us/library/windows/desktop/aa365461(v=vs.85).aspx </remarks>
-        [DllImport("kernel32.dll", EntryPoint = "QueryDosDeviceW")]
+        [DllImport("kernel32.dll", EntryPoint = "QueryDosDeviceW", CharSet = CharSet.Unicode)]
         public static extern uint QueryDosDeviceW(
             [In] [MarshalAsAttribute(UnmanagedType.LPWStr)] string lpDeviceName,
             [Out] [MarshalAsAttribute(UnmanagedType.LPWStr)] System.Text.StringBuilder lpTargetPath,
             uint ucchMax);
 
 
+        // This is public only to allow NativeTestHelpers to access it.
+        // Making this 'internal' and marking this assembly with InternalsVisibleToAttribute
+        //  would not work with Visual Studio's test runner and there are probably compile
+        //  dependency problems, too.
         [StructLayout(LayoutKind.Sequential)]
-        private class MEMORYSTATUSEX
+        public class MEMORYSTATUSEX
         {
             #pragma warning disable 169 //disable unused field warning
             public uint dwLength = 64;
@@ -40,7 +45,7 @@ namespace Sce.Atf
             #pragma warning restore 169
         }
 
-        [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [DllImport("Kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern bool GlobalMemoryStatusEx(MEMORYSTATUSEX lpBuffer);
 
         /// <summary>
@@ -53,6 +58,15 @@ namespace Sce.Atf
             GlobalMemoryStatusEx(memoryStatus);
             return (int)(memoryStatus.ullTotalPhys / (1024 * 1024));// convert bytes to megabytes
         }
+
+        /// <summary>
+        /// Copies a block of memory from one location to another.</summary>
+        /// <param name="dest">A pointer to the starting address of the copied block's destination.</param>
+        /// <param name="src">A pointer to the starting address of the block of memory to copy.</param>
+        /// <param name="count">The size of the block of memory to copy, in bytes.</param>
+        [DllImport("kernel32.dll", EntryPoint = "RtlCopyMemory", ExactSpelling = true, CharSet = CharSet.Unicode)]
+        public static extern void CopyMemory(IntPtr dest, IntPtr src, UIntPtr count);
+
     }
 }
 

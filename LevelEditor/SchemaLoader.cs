@@ -262,11 +262,11 @@ namespace LevelEditor
 
 
                 // process annotations resourceReferenceTypes.
-                XmlNode rfNode = FindElement(kv.Value, Annotations.ReferenceConstraint.Name);
+                XmlNode rfNode = FindElement(kv.Value, LevelEditorCore.Annotations.ReferenceConstraint.Name);
                 if (rfNode != null)
                 {
                     HashSet<string> extSet = null;
-                    string exts = FindAttribute(rfNode, Annotations.ReferenceConstraint.ValidResourceFileExts);
+                    string exts = FindAttribute(rfNode, LevelEditorCore.Annotations.ReferenceConstraint.ValidResourceFileExts);
                     if (!string.IsNullOrWhiteSpace(exts))
                     {
                         exts = exts.ToLower();
@@ -276,14 +276,14 @@ namespace LevelEditor
                     }
                     else if(m_gameEngine != null)
                     {
-                        string restype = FindAttribute(rfNode, Annotations.ReferenceConstraint.ResourceType);
+                        string restype = FindAttribute(rfNode, LevelEditorCore.Annotations.ReferenceConstraint.ResourceType);
                         ResourceInfo resInfo = m_gameEngine.Info.ResourceInfos.GetByType(restype);
                         if (resInfo != null)
                             extSet = new HashSet<string>(resInfo.FileExts);
                     }
 
                     if(extSet != null)
-                        nodeType.SetTag(Annotations.ReferenceConstraint.ValidResourceFileExts, extSet);
+                        nodeType.SetTag(LevelEditorCore.Annotations.ReferenceConstraint.ValidResourceFileExts, extSet);
                 }
                              
                 // todo use schema annotation to mark  Palette types.                    

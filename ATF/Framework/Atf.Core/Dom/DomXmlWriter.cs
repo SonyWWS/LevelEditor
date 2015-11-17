@@ -164,38 +164,45 @@ namespace Sce.Atf.Dom
             }
             else
             {
+                // not the root, so all schema namespaces have been defined
+                m_elementPrefix = writer.LookupPrefix(m_elementNS);
+
                 ChildInfo actualChildInfo = node.ChildInfo;
 
-                var substitutionGroupRule = node.ChildInfo.Rules.OfType<SubstitutionGroupChildRule>().FirstOrDefault();
-                if (substitutionGroupRule != null)
+                // Check for substitutions. They're not mandatory if the node type is an exact match to the child info type.
+                // http://www.w3schools.com/schema/schema_complex_subst.asp
+                if (node.Type != node.ChildInfo.Type)
                 {
-                    var substituteChildInfo = substitutionGroupRule.Substitutions.FirstOrDefault(x => x.Type.IsAssignableFrom(node.Type));
-                    if (substituteChildInfo == null)
+                    var substitutionGroupRule = node.ChildInfo.Rules.OfType<SubstitutionGroupChildRule>().FirstOrDefault();
+                    if (substitutionGroupRule != null)
                     {
-                        throw new InvalidOperationException("No suitable Substitution Group found for node " + node);
+                        ChildInfo substituteChildInfo =
+                            node.Type.Lineage.Join(substitutionGroupRule.Substitutions,
+                                n => n.Name,
+                                s => s.Type.Name,
+                                (n, s) => s
+                            ).FirstOrDefault();
+                        if (substituteChildInfo == null)
+                        {
+                            throw new InvalidOperationException("No suitable Substitution Group found for node " + node);
+                        }
+
+                        actualChildInfo = substituteChildInfo;
+                        m_elementNS = m_typeCollection.TargetNamespace;
+
+                        index = substituteChildInfo.Type.Name.LastIndexOf(':');
+                        if (index >= 0)
+                            m_elementNS = substituteChildInfo.Type.Name.Substring(0, index);
+
+                        // It is possible that an element of this namespace has not
+                        // yet been written.  If the lookup fails then get the prefix from
+                        // the type collection.
+                        m_elementPrefix = writer.LookupPrefix(m_elementNS);
+                        if (m_elementPrefix == null)
+                        {
+                            m_elementPrefix = m_typeCollection.GetPrefix(m_elementNS);
+                        }
                     }
-
-                    actualChildInfo = substituteChildInfo;
-                    m_elementNS = m_typeCollection.TargetNamespace;
-
-                    index = substituteChildInfo.Type.Name.LastIndexOf(':');
-                    if (index >= 0)
-                        m_elementNS = substituteChildInfo.Type.Name.Substring(0, index);
-
-                    // It is possible that an element of this namspace has not
-                    // yet been written.  If the lookup fails then get the prefix from
-                    // the type collection
-                    m_elementPrefix = writer.LookupPrefix(m_elementNS);
-                    if (m_elementPrefix == null)
-                    {
-                        m_elementPrefix = m_typeCollection.GetPrefix(m_elementNS);
-                    }
-
-                }
-                else
-                {
-                    // not the root, so all schema namespaces have been defined
-                    m_elementPrefix = writer.LookupPrefix(m_elementNS);
                 }
 
                 if (m_elementPrefix == null)

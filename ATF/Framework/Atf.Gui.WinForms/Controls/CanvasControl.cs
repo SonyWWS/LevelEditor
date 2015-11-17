@@ -60,8 +60,15 @@ namespace Sce.Atf.Controls
         /// client coordinates</summary>
         public virtual Matrix Transform
         {
-            get { return Sce.Atf.GdiUtil.GetTransform(m_scroll, m_xZoom, m_yZoom); }
+            get
+            {
+                m_transform.Reset();
+                m_transform.Translate(m_scroll.X, m_scroll.Y);
+                m_transform.Scale(m_xZoom, m_yZoom);
+                return m_transform;
+            }
         }
+        private readonly Matrix m_transform = new Matrix();
 
         /// <summary>
         /// Gets whether interactive zooming is uniform on x and y axes</summary>
@@ -71,7 +78,7 @@ namespace Sce.Atf.Controls
         }
 
         /// <summary>
-        /// Gets and sets zoom, for uniform zooming</summary>
+        /// Gets and sets zoom, for uniform zooming. Updates ScrollPosition.</summary>
         /// <remarks>Should be considered write-only if non-uniform zoom is used</remarks>
         public float Zoom
         {
@@ -83,7 +90,7 @@ namespace Sce.Atf.Controls
         }
 
         /// <summary>
-        /// Gets and sets zoom in the x-direction</summary>
+        /// Gets and sets zoom in the x-direction. Updates ScrollPosition.</summary>
         public float XZoom
         {
             get { return m_xZoom; }
@@ -95,7 +102,7 @@ namespace Sce.Atf.Controls
         }
 
         /// <summary>
-        /// Gets and sets zoom in the y-direction</summary>
+        /// Gets and sets zoom in the y-direction. Updates ScrollPosition.</summary>
         public float YZoom
         {
             get { return m_yZoom; }
@@ -369,6 +376,40 @@ namespace Sce.Atf.Controls
         }
 
         /// <summary>
+        /// Sets the zoom factors directly, without setting ScrollPosition.
+        /// The zoom factors will be capped to the minimum and maximum values.</summary>
+        /// <param name="xZoom">The x zoom.</param>
+        /// <param name="yZoom">The y zoom.</param>
+        public void SetZoom(float xZoom, float yZoom)
+        {
+            xZoom = Math.Max(m_minXZoom, xZoom);
+            xZoom = Math.Min(m_maxXZoom, xZoom);
+
+            yZoom = Math.Max(m_minYZoom, yZoom);
+            yZoom = Math.Min(m_maxYZoom, yZoom);
+
+            if (xZoom == m_xZoom &&
+                yZoom == m_yZoom)
+            {
+                return;
+            }
+
+            if (UniformZoom)
+            {
+                m_xZoom = m_yZoom = xZoom;
+            }
+            else
+            {
+                m_xZoom = xZoom;
+                m_yZoom = yZoom;
+            }
+
+            OnZoom();
+
+            Invalidate();
+        }
+
+        /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown"></see> event</summary>
         /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs"></see> that contains the event data</param>
         protected override void OnMouseDown(MouseEventArgs e)
@@ -417,14 +458,12 @@ namespace Sce.Atf.Controls
                 if (m_autoScroll && !VisibleClientRectangle.Contains(m_currentPoint) && !m_autoScrollTimer.Enabled)
                     m_autoScrollTimer.Start();
 
-                if (m_isMultiSelecting)
+                if (m_isMultiSelecting && DrawSelectionRectangleUsingGdi)
                 {
-                    Rectangle rect;
-
-                    rect = MakeSelectionRect(m_last, m_firstPoint);
+                    Rectangle rect = MakeSelectionRect(LastMouseDragPoint, FirstMouseDragPoint);
                     ControlPaint.DrawReversibleFrame(rect, BackColor, FrameStyle.Dashed);
 
-                    rect = MakeSelectionRect(m_currentPoint, m_firstPoint);
+                    rect = MakeSelectionRect(CurrentMouseDragPoint, FirstMouseDragPoint);
                     ControlPaint.DrawReversibleFrame(rect, BackColor, FrameStyle.Dashed);
                 }
                 else if (m_isScrolling)
@@ -451,6 +490,37 @@ namespace Sce.Atf.Controls
 
             base.OnMouseMove(e);
         }
+
+        /// <summary>
+        /// Gets the current mouse cursor position during a drag operation, in client coordinates
+        /// (relative to the upper left corner of the form). Comes from MouseEventArgs.</summary>
+        protected Point CurrentMouseDragPoint
+        {
+            get { return m_currentPoint; }
+        }
+
+        /// <summary>
+        /// Gets the previous mouse cursor position during a drag operation, in client coordinates
+        /// (relative to the upper left corner of the form). Comes from MouseEventArgs.</summary>
+        protected Point LastMouseDragPoint
+        {
+            get { return m_last; }
+        }
+
+        /// <summary>
+        /// Gets the first mouse cursor position during a drag operation, in client coordinates
+        /// (relative to the upper left corner of the form). Comes from MouseEventArgs.</summary>
+        protected Point FirstMouseDragPoint
+        {
+            get { return m_firstPoint; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether this class should draw the selection rectangle, which will be
+        /// done with GDI calls. If a derived class uses Direct2D, then set this property to
+        /// false and make use of IsMultiSelecting, FirstMouseDragPoint, and CurrentMouseDragPoint
+        /// to draw the selection rectangle during a paint event.</summary>
+        protected bool DrawSelectionRectangleUsingGdi = true;
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp"></see> event</summary>
@@ -637,7 +707,7 @@ namespace Sce.Atf.Controls
             m_autoScrollTimer.Stop();
             if (!VisibleClientRectangle.Contains(m_currentPoint))
             {
-                if (m_isMultiSelecting)
+                if (m_isMultiSelecting && DrawSelectionRectangleUsingGdi)
                 {
                     Rectangle selectionRect = MakeSelectionRect(m_currentPoint, m_firstPoint);
                     ControlPaint.DrawReversibleFrame(selectionRect, BackColor, FrameStyle.Dashed);
@@ -669,42 +739,13 @@ namespace Sce.Atf.Controls
                 OnAutoScroll();
                 base.Update(); // without this, the selection rect doesn't draw correctly
 
-                if (m_isMultiSelecting)
+                if (m_isMultiSelecting && DrawSelectionRectangleUsingGdi)
                 {
                     Rectangle rect = MakeSelectionRect(m_currentPoint, m_firstPoint);
                     ControlPaint.DrawReversibleFrame(rect, BackColor, FrameStyle.Dashed);
                 }
                 m_autoScrollTimer.Start();
             }
-        }
-
-        private void SetZoom(float xZoom, float yZoom)
-        {
-            xZoom = Math.Max(m_minXZoom, xZoom);
-            xZoom = Math.Min(m_maxXZoom, xZoom);
-
-            yZoom = Math.Max(m_minYZoom, yZoom);
-            yZoom = Math.Min(m_maxYZoom, yZoom);
-
-            if (xZoom == m_xZoom &&
-                yZoom == m_yZoom)
-            {
-                return;
-            }
-
-            if (UniformZoom)
-            {
-                m_xZoom = m_yZoom = xZoom;
-            }
-            else
-            {
-                m_xZoom = xZoom;
-                m_yZoom = yZoom;
-            }
-
-            OnZoom();
-
-            Invalidate();
         }
 
         private void ZoomAboutCenter(float xZoom, float yZoom)

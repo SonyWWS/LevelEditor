@@ -365,7 +365,7 @@ namespace Sce.Atf.Applications.NetworkTargetServices
             m_userControl.AutoSize = true;
 
             m_addTargetButton = new SplitButton();
-            m_addTargetButton.Text = AddString.Localize();
+            m_addTargetButton.Text = "Add Target".Localize();
             m_addTargetButton.Location = new Point(m_userControl.Margin.Left,
                 m_userControl.Height - m_userControl.Margin.Bottom - m_addTargetButton.Height - m_addTargetButton.Margin.Size.Height);
 
@@ -412,7 +412,7 @@ namespace Sce.Atf.Applications.NetworkTargetServices
             foreach (var targetProvider in TargetProviders)
             {
                 if (targetProvider.CanCreateNew)
-                    m_addTargetButton.ContextMenuStrip.Items.Add(AddNewString + targetProvider.Name);
+                    m_addTargetButton.ContextMenuStrip.Items.Add(GetAddNewTargetString(targetProvider.Name));
             }
             m_addTargetButton.ContextMenuStrip.ItemClicked += ContextMenuStrip_ItemClicked;
             if (m_addTargetButton.ContextMenuStrip.Items.Count ==1)
@@ -421,21 +421,21 @@ namespace Sce.Atf.Applications.NetworkTargetServices
                 ToolStripItem onlyItem = m_addTargetButton.ContextMenuStrip.Items[0];
                 m_addTargetButton.Text = onlyItem.Text;
                 m_addTargetButton.Click += delegate
-                                               {
-                                                   foreach (var targetProvider in TargetProviders)
-                                                   {
-                                                       if (AddNewString + targetProvider.Name == m_addTargetButton.Text)
-                                                       {
-                                                           targetProvider.AddTarget(targetProvider.CreateNew());
-                                                           break;
-                                                       }
-                                                   }
-                                               };
+                {
+                    foreach (var targetProvider in TargetProviders)
+                    {
+                        if (GetAddNewTargetString(targetProvider.Name) == m_addTargetButton.Text)
+                        {
+                            targetProvider.AddTarget(targetProvider.CreateNew());
+                            break;
+                        }
+                    }
+                };
             }
 
             m_userControl.Name = "Targets".Localize();
 
-              return m_userControl;
+            return m_userControl;
         }
 
      
@@ -447,7 +447,7 @@ namespace Sce.Atf.Applications.NetworkTargetServices
         {
             foreach (var targetProvider in TargetProviders)
             {
-                if (AddNewString+ targetProvider.Name == e.ClickedItem.Text)
+                if (GetAddNewTargetString(targetProvider.Name) == e.ClickedItem.Text)
                 {
                     targetProvider.AddTarget(targetProvider.CreateNew());
                     break;
@@ -601,8 +601,36 @@ namespace Sce.Atf.Applications.NetworkTargetServices
                 ListViewSelectTargets(itemsToSelect, true);
         }
 
+        /// <summary>
+        /// Sets which targets are selected (as indicated by a checked radio button) and clears
+        /// previously selected targets.</summary>
+        /// <param name="targets">The targets to indicate as being selected / checked.</param>
+        /// <param name="valueEqual">If 'true', then the given TargetInfos will be tested for
+        /// equivalency with existing TargetInfo objects but will not replace them.</param>
         private void ListViewSelectTargets(IEnumerable<TargetInfo> targets, bool valueEqual)
         {
+            //--------------------------------------------------------------------------------------------------
+            // The list returned by SelectedTargets is based on the checked states in the list view.
+            //
+            // When the user clicks a radio button in the GUI to set a new target, the previous selection
+            // is un-checked. (See listView_ItemChecked.) As a result, there is only ever 1 item in the
+            // SelectedTargets list. Client code assumes this, and uses SelectedTargets.FirstOrDefault() to
+            // get the (presumed) one and only selected target.
+            //
+            // But when client code sets SelectedTargets by hand, the previous selected item in the list
+            // control is not automatically un-checked. As a result, SelectedTargets returns 2 items!
+            // If the previously selected item happened to be first in the list control, SelectedTargets
+            // will have the old, supposedly de-selected, item at the head of the list. SelectedTargets.FirstOrDefault()
+            // will yield the wrong item, and the client will attempt to connect to the wrong device.
+            //
+            // So, we need to clear all the checked states in the list control before setting a new selection.
+            //--------------------------------------------------------------------------------------------------
+            foreach (ListViewItem item in m_listView.Items)
+            {
+                if ((item != null) && item.Checked)
+                    item.Checked = false;
+            }
+
             List<TargetInfo> targetsToSelect = null; 
             if (valueEqual)
             {
@@ -654,9 +682,10 @@ namespace Sce.Atf.Applications.NetworkTargetServices
             }
         }
 
-        private const string AddString = "Add Target";
-        private const string AddNewString = "Add New ";
-       
+        private string GetAddNewTargetString(string targetName)
+        {
+            return string.Format("Add New {0}".Localize(), targetName);
+        }
 
         private IControlHostService m_controlHostService;
         private SortableBindingList<TargetInfo> m_targets = new SortableBindingList<TargetInfo>();

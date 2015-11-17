@@ -423,7 +423,7 @@ namespace LevelEditor.Terrain
             RadioButton button = (RadioButton)sender;
             m_selectedBrush = button.Checked ? (TerrainBrush)button.Tag : null;
             if (m_selectedBrush == null)
-                m_brushProps.Bind(new object());                            
+                m_brushProps.Bind(null);                            
             else
                 m_brushProps.Bind(m_selectedBrush);            
             

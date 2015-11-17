@@ -56,7 +56,8 @@ namespace Sce.Atf.Applications
 
         /// <summary>
         /// Gets or sets the control's name, which may be displayed as the title of
-        /// a hosting control or form</summary>
+        /// a hosting control or form, and used to identify the control when persisting
+        /// the windows layout.</summary>
         public string Name
         {
             get { return m_name; }
@@ -66,6 +67,28 @@ namespace Sce.Atf.Applications
                 {
                     Changing.Raise(this, EventArgs.Empty);
                     m_name = value;
+                    Changed.Raise(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the optional display name. By default, it is always the same value as
+        /// Name. It is used as the title of the hosting Control or Form.</summary>
+        public string DisplayName
+        {
+            get
+            {
+                if (m_displayName != null)
+                    return m_displayName;
+                return Name;
+            }
+            set
+            {
+                if (value != m_displayName)
+                {
+                    Changing.Raise(this, EventArgs.Empty);
+                    m_displayName = value;
                     Changed.Raise(this, EventArgs.Empty);
                 }
             }
@@ -172,9 +195,33 @@ namespace Sce.Atf.Applications
         }
 
         /// <summary>
-        /// Gets or sets whether this control should be considered a document in the menu, and thus
-        /// separated from other general windows. Is only applicable if ShowInMenu is true.
-        /// This System.Nullable.HasValue is false by default.</summary>
+        /// Gets or sets an object that will be used to group together menu commands in the
+        /// Windows menu. Is only meaningful if ShowInMenu is true. If null, the group tag
+        /// will be either StandardCommandGroup.WindowDocuments (if the control is a document)
+        /// or StandardCommandGroup.WindowGeneral.</summary>
+        public object MenuGroupTag { get; set; }
+
+        /// <summary>
+        /// If this nullable has a value, then that value will determine the behavior when the user
+        /// clicks on the 'X' to close the Control. If Value is true, the Control will be unregistered
+        /// and the corresponding menu item will be removed. If Value is false, then the Control will
+        /// be hidden and the corresponding menu item will be unchecked.
+        /// If this nullable does not have a value (the default) then when a Form/Control is closed
+        /// because the user clicked on the 'X' button, the Control is unregistered if the Control is
+        /// in the center group (either StandardControlGroup.Center or StandardControlGroup.CenterPermanent),
+        /// otherwise the Control is simply hidden.</summary>
+        public bool? UnregisterOnClose
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets whether this control should be considered a document. If HasValue is true
+        /// and if Value is true, then the following special behavior occurs: 1) The Window layout
+        /// will be preserved if the document is eventually opened. 2) The Description will be used
+        /// in the menu name instead of DockContent.Text. 3) The menu command will appear in a separate
+        /// group (StandardCommandGroup.WindowDocuments). This System.Nullable.HasValue is false by default.</summary>
         /// <remarks>Description for a document control by convention is the full path of the document.</remarks>
         public bool? IsDocument
         {
@@ -241,6 +288,7 @@ namespace Sce.Atf.Applications
         private Control m_control;
         private Control m_hostControl;
         private string m_name;
+        private string m_displayName;
         private string m_description;
         private StandardControlGroup m_group;
         private Image m_image;

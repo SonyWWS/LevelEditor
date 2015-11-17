@@ -49,13 +49,16 @@ namespace Sce.Atf.Controls.PropertyEditing
             m_propertyGridView.DragDrop += propertyGrid_DragDrop;
             m_propertyGridView.MouseHover += propertyGrid_MouseHover;
             m_propertyGridView.MouseLeave += propertyGrid_MouseLeave;
-            m_propertyGridView.DescriptionSetter = p =>
+            if (m_descriptionTextBox != null)
             {
-                if (p != null)
-                    m_descriptionTextBox.SetDescription(p.DisplayName, p.Description);
-                else
-                    m_descriptionTextBox.ClearDescription();
-            };
+                m_propertyGridView.DescriptionSetter = p =>
+                {
+                    if (p != null)
+                        m_descriptionTextBox.SetDescription(p.DisplayName, p.Description);
+                    else
+                        m_descriptionTextBox.ClearDescription();
+                };
+            }
 
             m_toolStrip = new ToolStrip();
             m_toolStrip.GripStyle = ToolStripGripStyle.Hidden;
@@ -410,7 +413,8 @@ namespace Sce.Atf.Controls.PropertyEditing
         /// is displayed and replaces any description that may have been set previously.</remarks>
         public void SetDescription(string name, string description)
         {
-            m_descriptionTextBox.SetDescription(name, description);
+            if (m_descriptionTextBox != null)
+                m_descriptionTextBox.SetDescription(name, description);
         }
 
         #region Overrides
@@ -493,14 +497,17 @@ namespace Sce.Atf.Controls.PropertyEditing
 
         private void propertyGrid_SelectedRowChanged(object sender, EventArgs e)
         {
-            PropertyDescriptor descriptor = m_propertyGridView.SelectedPropertyDescriptor;
-            if (descriptor != null)
+            if (m_descriptionTextBox != null)
             {
-                m_descriptionTextBox.SetDescription(descriptor.DisplayName, descriptor.Description);
-            }
-            else
-            {
-                m_descriptionTextBox.ClearDescription();
+                PropertyDescriptor descriptor = m_propertyGridView.SelectedPropertyDescriptor;
+                if (descriptor != null)
+                {
+                    m_descriptionTextBox.SetDescription(descriptor.DisplayName, descriptor.Description);
+                }
+                else
+                {
+                    m_descriptionTextBox.ClearDescription();
+                }
             }
         }
 
@@ -835,7 +842,7 @@ namespace Sce.Atf.Controls.PropertyEditing
 			    public byte		bReserved1;
 		    }
 
-		    [DllImport("user32.dll", CharSet=CharSet.Auto)]
+            [DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		    private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
 		    private const int WM_USER			 = 0x0400;
