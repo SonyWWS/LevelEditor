@@ -19,19 +19,21 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\lib\Debug\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFIronPython\Debug\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;CS_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IntermediateOutputPath>..\..\tmp\ATFIronPython\Debug\</IntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\lib\Release\</OutputPath>
-    <IntermediateOutputPath>..\..\tmp\ATFIronPython\Release\</IntermediateOutputPath>
     <DefineConstants>TRACE;CS_4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile></DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IntermediateOutputPath>..\..\tmp\ATFIronPython\Release\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IronPython, Version=2.7.0.40, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
