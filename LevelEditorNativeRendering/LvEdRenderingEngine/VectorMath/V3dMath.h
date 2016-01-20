@@ -1010,16 +1010,12 @@ inline float4 select( const float4& a, const float4& b, const float4& c)
     return t;
 }
 
-inline void OrthoNormalize( float3* a, float3* b )
+inline void OrthoNormalize( float3& a, float3& b )
 {
-    *a = normalize(*a);
-    float3 tmp;
-    tmp = (*a) * dot(*a, *b);
-    *b = (*b) - tmp;
-    *b = normalize(*b);
+    a = normalize(a);
+    float3 tmp = dot(a, b) * a;    
+    b = normalize(b - tmp);
 }
-
-
 
 // COLOR
 void ConvertColor( int color, float4* out );

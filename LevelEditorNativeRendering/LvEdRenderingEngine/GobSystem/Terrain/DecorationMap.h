@@ -6,7 +6,7 @@
 #include "../../VectorMath/CollisionPrimitives.h"
 #include "../../Core/Utils.h"
 #include <vector>
-#include <hash_set>
+#include <set>
 
 namespace LvEdEngine
 {
@@ -62,8 +62,8 @@ private:
     VertexBuffer*  m_decoDynVB; // dynamic vertex buffer used for rendering decoration maps.
 
     // temp to holds terrain patch ids that need to be udpated.
-    std::hash_set<int32_t> m_tmpPatchSet;
-    //std::hash_set<int32_t> temp;
+    std::set<int32_t> m_tmpPatchSet;
+    
     static int32_t s_instId;
     int32_t m_instId;
 };

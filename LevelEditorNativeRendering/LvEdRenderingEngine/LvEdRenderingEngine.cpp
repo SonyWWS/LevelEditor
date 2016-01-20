@@ -5,7 +5,7 @@
 #include <crtdbg.h>
 #include "LvEdRenderingEngine.h"
 #include <stdio.h>
-#include <hash_set>
+#include <set>
 #include <algorithm>
 #include <D3D11.h>
 #include "Core/Logger.h"

@@ -6,7 +6,7 @@
 #include "LayerMap.h"
 #include "DecorationMap.h"
 #include <vector>
-#include <hash_set>
+#include <set>
 namespace LvEdEngine
 {  
 
@@ -30,7 +30,7 @@ public:
 typedef std::vector<TerrainPatch> TerrainPatchList;
 typedef std::vector<LayerMap*> LayerMapList;
 typedef std::vector<DecorationMap*> DecorationMapList;
-//typedef std::hash_set<int32_t> PatchSet;
+
 class TerrainGob : public GameObject
 {
 public:
@@ -108,7 +108,7 @@ private:
     std::vector<float3> m_pickPosT;
 
     std::vector<float> tempBrushdata;
-    std::hash_set<int32_t> m_tmpPatchSet;
+    std::set<int32_t> m_tmpPatchSet;
     
     // Apply dirty region to heightmap texture.
     void ApplyDirtyRegion(const Bound2di& box);

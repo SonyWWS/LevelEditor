@@ -421,10 +421,10 @@ namespace LvEdEngine
         // R(t) = p - t·N //
         // N·X + D = 0;  // plance equation
         // N · (p-tN)+D = 0; 
-        // N·P - tN·N + D = 0; ==> t = N·P - D;
+        // N·P - tN·N + D = 0; ==> t = N·P + D;
         // R(t) = p - (N·P - D)·N;
 
-        float t = dot(plane.normal, p) - plane.d;
+        float t = dot(plane.normal, p) + plane.d;
         float3 R = p - t * plane.normal;
         return p;
     }

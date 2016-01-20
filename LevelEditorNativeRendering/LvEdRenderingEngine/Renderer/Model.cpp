@@ -84,7 +84,7 @@ void Mesh::ComputeTangents()
     {
         float3 n = nor[a];
         float3 t = tan1[a];
-        OrthoNormalize(&n,&t);
+        OrthoNormalize(n,t);
         tan[a].x = t.x;
         tan[a].y = t.y;
         tan[a].z = t.z;

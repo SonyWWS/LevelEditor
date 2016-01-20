@@ -10,9 +10,9 @@
 #include <map>
 #include "Lights.h"
 #include "../VectorMath/Camera.h"
-#include <hash_set>
+#include <set>
 
-typedef std::hash_set<ObjectGUID> Selection;
+typedef std::set<ObjectGUID> Selection;
 
 namespace LvEdEngine
 {

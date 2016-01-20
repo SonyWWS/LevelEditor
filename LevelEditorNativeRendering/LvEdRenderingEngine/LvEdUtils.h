@@ -3,12 +3,12 @@
 #pragma once
 
 #include "Renderer\RenderableNodeSet.h"
-#include <hash_set>
+#include <set>
 #include "Core/Object.h"
 
 using namespace LvEdEngine;
 
-typedef std::hash_set<ObjectGUID> Selection;
+typedef std::set<ObjectGUID> Selection;
 typedef std::vector<Object*> ObjectList;
 
 class FindGobsByType : public QueryFunctor
