@@ -1,0 +1,742 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="rapidxml-1.13\license.txt">
+      <Filter>rapidxml</Filter>
+    </None>
+    <None Include="rapidxml-1.13\manual.html">
+      <Filter>rapidxml</Filter>
+    </None>
+    <None Include="Shaders\BasicShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\WireframeShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapGen.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\FontShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Lighting.shh">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\SkyDome.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\SkySphere.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\TexturedShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Billboard.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DirectX\DirectXTex\DirectXTex.inl">
+      <Filter>DirectX\DirectXTex</Filter>
+    </None>
+    <None Include="DirectX\DirectXTex\ReadMe.txt">
+      <Filter>DirectX\DirectXTex</Filter>
+    </None>
+    <None Include="Resources\Light.png">
+      <Filter>Shaders\Resources</Filter>
+    </None>
+    <None Include="Shaders\LineShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\TerrainShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\NormalsShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\SolidWireframeHelper.shh">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Fog.shh">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BasicRenderer.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LvEdRenderingEngine.h" />
+    <ClInclude Include="GobSystem\GameLevel.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\GameObject.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\Locator.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\CubeGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\GameObjectGroup.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\SphereGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\ConeGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorMath\V3dMath.h">
+      <Filter>VectorMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Model3d\Model3dBuilder.h">
+      <Filter>Model3d</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\ResourceManager.h">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Renderable.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderState.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\typedefs.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\WinHeaders.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderBuffer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderEnums.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Texture.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\CylinderGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="LvEdUtils.h" />
+    <ClInclude Include="VectorMath\CollisionPrimitives.h">
+      <Filter>VectorMath</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager\TextureFactory.h">
+      <Filter>ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Utils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\PerfTimer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml-1.13\rapidxml.hpp">
+      <Filter>rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml-1.13\rapidxml_iterators.hpp">
+      <Filter>rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml-1.13\rapidxml_print.hpp">
+      <Filter>rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml-1.13\rapidxml_utils.hpp">
+      <Filter>rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Model3d\rapidxmlhelpers.h">
+      <Filter>Model3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Resource.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Model.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Object.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Bridge\GobBridge.h">
+      <Filter>Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="Bridge\RegisterRuntimeObjects.h">
+      <Filter>Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="Bridge\RegisterSchemaObjects.h">
+      <Filter>Bridge</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\DeviceManager.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\SwapChain.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="GobSystem\SkyDome.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Lights.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\OrcGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Font.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\FontTypes.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\FontRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\BillboardGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\ControlPointGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\CurveGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorMath\Camera.h">
+      <Filter>VectorMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\NonCopyable.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\PointLightGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\BoxLightGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\DirLightGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderableNodeSorter.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderableNodeCollector.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderableNodeSet.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ShaderLib.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\SkyDomeShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\Shader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\TexturedShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\WireFrameShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\BasicRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\PrimitiveShapeGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\LightGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\BasicShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ShadowMapGen.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ShapeLib.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\TextureLib.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ShadowMaps.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\ScreenMsgPrinter.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\PlaneGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderUtil.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\BillboardShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\StringBlob.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderContext.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Hasher.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Model3d\AtgiModelFactory.h">
+      <Filter>Model3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Model3d\ColladaModelFactory.h">
+      <Filter>Model3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\FileUtils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\RenderSurface.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\TextureRenderSurface.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DXUtil.h">
+      <Filter>DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DDSTextureLoader\DDSTextureLoader.h">
+      <Filter>DirectX\DDSTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\WICTextureLoader\WICTextureLoader.h">
+      <Filter>DirectX\WICTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DirectXTex\BC.h">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DirectXTex\DDS.h">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DirectXTex\DirectXTex.h">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DirectXTex\DirectXTexP.h">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectX\DirectXTex\scoped.h">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ResUtil.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Logger.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Model3d\XmlModelFactory.h">
+      <Filter>Model3d</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\CustomDataAttribute.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ImageData.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\LineRenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ErrorHandler.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\TerrainShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\NormalsShader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\Terrain\TerrainMap.h">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\Terrain\LayerMap.h">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\Terrain\TerrainGob.h">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\Terrain\DecorationMap.h">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorMath\MeshUtil.h">
+      <Filter>VectorMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\StringUtils.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer\GpuResourceFactory.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\TorusGob.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\GameObjectComponent.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\MeshComponent.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="GobSystem\SpinnerComponent.h">
+      <Filter>GobSystem</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="LvEdRenderingEngine.cpp" />
+    <ClCompile Include="GobSystem\GameObject.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\Locator.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorMath\V3dMath.cpp">
+      <Filter>VectorMath</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorMath\CollisionPrimitives.cpp">
+      <Filter>VectorMath</Filter>
+    </ClCompile>
+    <ClCompile Include="Model3d\Model3dBuilder.cpp">
+      <Filter>Model3d</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\ResourceManager.cpp">
+      <Filter>ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderBuffer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Texture.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\ConeGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\CubeGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\CylinderGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\GameLevel.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\GameObjectGroup.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\SphereGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager\TextureFactory.cpp">
+      <Filter>ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Model3d\rapidxmlhelpers.cpp">
+      <Filter>Model3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Model.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Object.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderState.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Resource.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Bridge\GobBridge.cpp">
+      <Filter>Bridge</Filter>
+    </ClCompile>
+    <ClCompile Include="Bridge\RegisterRuntimeObjects.cpp">
+      <Filter>Bridge</Filter>
+    </ClCompile>
+    <ClCompile Include="Bridge\RegisterSchemaObjects.cpp">
+      <Filter>Bridge</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\DeviceManager.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\SwapChain.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\SkyDome.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\OrcGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Font.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\FontRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\BillboardGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\ControlPointGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\CurveGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorMath\Camera.cpp">
+      <Filter>VectorMath</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\PointLightGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\BoxLightGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\DirLightGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderableNodeSorter.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderableNodeSet.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ShaderLib.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\SkyDomeShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\TexturedShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\WireFrameShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\BasicRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\PrimitiveShapeGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\LightGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\BasicShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ShadowMapGen.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\Lights.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ShapeLib.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\TextureLib.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ShadowMaps.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\ScreenMsgPrinter.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\PlaneGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderUtil.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\BillboardShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderContext.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Hasher.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Model3d\AtgiModelFactory.cpp">
+      <Filter>Model3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Model3d\ColladaModelFactory.cpp">
+      <Filter>Model3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\FileUtils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\RenderSurface.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\TextureRenderSurface.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DDSTextureLoader\DDSTextureLoader.cpp">
+      <Filter>DirectX\DDSTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\WICTextureLoader\WICTextureLoader.cpp">
+      <Filter>DirectX\WICTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\BC.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\BC4BC5.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\BC6HBC7.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexCompress.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexConvert.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexD3D11.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexDDS.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexFlipRotate.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexImage.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexMipmaps.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexMisc.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexNormalMaps.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexResize.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexTGA.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexUtil.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DirectXTex\DirectXTexWIC.cpp">
+      <Filter>DirectX\DirectXTex</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ResUtil.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Logger.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Model3d\XmlModelFactory.cpp">
+      <Filter>Model3d</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\CustomDataAttribute.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ImageData.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectX\DXUtil.cpp">
+      <Filter>DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\LineRenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ErrorHandler.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\TerrainShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\NormalsShader.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\Terrain\TerrainMap.cpp">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\Terrain\LayerMap.cpp">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\Terrain\TerrainGob.cpp">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\Terrain\DecorationMap.cpp">
+      <Filter>GobSystem\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorMath\MeshUtil.cpp">
+      <Filter>VectorMath</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\StringUtils.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer\GpuResourceFactory.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\TorusGob.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\GameObjectComponent.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\MeshComponent.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="GobSystem\SpinnerComponent.cpp">
+      <Filter>GobSystem</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="GobSystem">
+      <UniqueIdentifier>{d4598033-840a-4484-ad4c-e4912fb2e4b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VectorMath">
+      <UniqueIdentifier>{98d6d434-aa0b-4b5e-b24d-6712e9a57df8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ResourceManager">
+      <UniqueIdentifier>{20e0684a-5f53-4632-aa6f-ba387aa4abc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{c28af9ce-924c-4396-b1ce-ecf84f65e1eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{797d0c4f-07b0-4a86-9885-f677dde00416}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rapidxml">
+      <UniqueIdentifier>{76f9f5f9-f906-49f4-a78f-a5be71ecccc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bridge">
+      <UniqueIdentifier>{f47678a3-f156-4604-a165-7a26fee62197}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{36c6ca7c-cd0c-42ed-bd3a-f68228b9625b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Resources">
+      <UniqueIdentifier>{5c6a44de-1903-45e7-85c0-5bda2d1f80f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Model3d">
+      <UniqueIdentifier>{a47b972d-a8cf-42bd-a828-ab2f3b5a0123}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX">
+      <UniqueIdentifier>{1263be77-1aca-4923-b5ac-97247aed4a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\DirectXTex">
+      <UniqueIdentifier>{4c584ceb-41f6-4b21-8a22-e274d65b43c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\DDSTextureLoader">
+      <UniqueIdentifier>{7713ef91-f3d7-467b-b12a-ec666cd2723a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DirectX\WICTextureLoader">
+      <UniqueIdentifier>{57d42e0d-4fab-4a9d-980f-2c1a410d8dc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GobSystem\Terrain">
+      <UniqueIdentifier>{1ab0b10e-56aa-40bd-a684-d2f80ce18c59}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+</Project>
