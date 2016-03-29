@@ -381,10 +381,12 @@
       <xs:appinfo>
         <LeGe.NativeType nativeName="BillboardGob"/>
         <LeGe.NativeProperty name="intensity" nativeName="Intensity" nativeType="float" access="set"/>
+        <LeGe.NativeProperty name="color" nativeName="Color" nativeType="int" access="set"/>
         <LeGe.NativeProperty name="diffuse" nativeName="Diffuse" nativeType="wchar_t*" access="set"/>
         <LeGe.NativeProperty name="textureTransform" nativeName="TextureTransform" nativeType="Matrix" access="set"/>
         <scea.dom.editors name="BillboardTest" category="Examples" menuText="Game Objects/BillboardTest" description="Test Billboard"/>
         <scea.dom.editors.attribute category="Billboard" name="intensity" displayName="Intensity" description = "billboard intensity" />
+        <scea.dom.editors.attribute category="Billboard" name="color"   displayName="Color" description="Billboard Color" editor="Sce.Atf.Controls.PropertyEditing.ColorPickerEditor,Atf.Gui.WinForms:true" converter="Sce.Atf.Controls.PropertyEditing.IntColorConverter" />
         <scea.dom.editors.attribute category="Billboard" name="diffuse" displayName="Diffuse" description = "diffuse texture" editor="Sce.Atf.Controls.PropertyEditing.FileUriEditor,Atf.Gui.WinForms:Texture (*.png, *.dds, *.bmp, *.tga, *.tif)|*.png;*.dds;*.bmp;*.tga;*.tif" />
         <scea.dom.editors.attribute category="Billboard" name="textureTransform" displayName="Texture Transform" description="Transform for texture coordinates" editor="Sce.Atf.Controls.PropertyEditing.NumericMatrixEditor,Atf.Gui.WinForms"/>
       </xs:appinfo>
@@ -392,6 +394,7 @@
     <xs:complexContent>
         <xs:extension base="gameObjectType" >
             <xs:attribute name="intensity" type="xs:float" default="1"/>
+            <xs:attribute name="color" type="xs:int" default="-1"/>
             <xs:attribute name="diffuse" type="xs:anyURI"/>
             <xs:attribute name="textureTransform" type="matrixType" default="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
         </xs:extension>

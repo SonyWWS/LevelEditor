@@ -2,6 +2,7 @@
 
 #pragma once
 #include "PrimitiveShapeGob.h"
+#include "../VectorMath/V3dMath.h"
 
 namespace LvEdEngine
 {
@@ -15,7 +16,10 @@ namespace LvEdEngine
         // push Renderable nodes
 		virtual void GetRenderables(RenderableNodeCollector* collector, RenderContext* context);
         virtual void SetupRenderable(RenderableNode* r, RenderContext* context);
-        void SetIntensity(float intensity){m_intensity = intensity;};
+        void SetIntensity(float intensity)
+        {
+            m_intensity = clamp(intensity, 0.0f, 1.0f);
+        };
     protected:        
         float m_intensity;
     private:

@@ -750,6 +750,15 @@ void BillboardGob_Intensity_Set(ObjectGUID instanceId, void* data, int size)
 }
 
 //-----------------------------------------------------------------------------
+void BillboardGob_Color_Set(ObjectGUID instanceId, void* data, int size)
+{
+    assert((data && size > 0) || (!data && size == 0));
+    BillboardGob* instance = reinterpret_cast<BillboardGob*>(instanceId);
+    int localData = *reinterpret_cast<int*>(data);
+    instance->SetColor(localData);
+}
+
+//-----------------------------------------------------------------------------
 void BillboardGob_Diffuse_Set(ObjectGUID instanceId, void* data, int size)
 {
     assert((data && size > 0) || (!data && size == 0));
@@ -1221,6 +1230,7 @@ void InitGobBridge(GobBridge& bridge)
 
   bridge.RegisterObject( "BillboardGob", &BillboardGob_Create );
   bridge.RegisterProperty( "BillboardGob", "Intensity", &BillboardGob_Intensity_Set, NULL );
+  bridge.RegisterProperty( "BillboardGob", "Color", &BillboardGob_Color_Set, NULL );
   bridge.RegisterProperty( "BillboardGob", "Diffuse", &BillboardGob_Diffuse_Set, NULL );
   bridge.RegisterProperty( "BillboardGob", "TextureTransform", &BillboardGob_TextureTransform_Set, NULL );
 

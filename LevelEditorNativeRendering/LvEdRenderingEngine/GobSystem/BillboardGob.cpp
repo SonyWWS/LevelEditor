@@ -55,10 +55,12 @@ void BillboardGob::SetupRenderable(RenderableNode* r, RenderContext* context)
         billboard = scaleM * b;
     }
    
+    m_intensity = clamp(m_intensity, 0.0f, 1.0f);
     PrimitiveShapeGob::SetupRenderable(r, context);    
     r->WorldXform = billboard;
-    r->diffuse = float4(m_intensity, m_intensity, m_intensity, m_intensity);
-
+    float3 color = m_color.xyz() * m_intensity;
+    color = saturate(color);   
+    r->diffuse = float4(color,m_color.w);
     // special case compute AABB
     m_localBounds = AABB(float3(-0.5f,-0.5f,-0.5f),float3(0.5f,0.5f,0.5f));
     m_bounds = m_localBounds;

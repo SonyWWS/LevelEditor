@@ -503,6 +503,7 @@ namespace LevelEditor
             billboardTestType.lockedAttribute = billboardTestType.Type.GetAttributeInfo("locked");
             billboardTestType.transformationTypeAttribute = billboardTestType.Type.GetAttributeInfo("transformationType");
             billboardTestType.intensityAttribute = billboardTestType.Type.GetAttributeInfo("intensity");
+            billboardTestType.colorAttribute = billboardTestType.Type.GetAttributeInfo("color");
             billboardTestType.diffuseAttribute = billboardTestType.Type.GetAttributeInfo("diffuse");
             billboardTestType.textureTransformAttribute = billboardTestType.Type.GetAttributeInfo("textureTransform");
             billboardTestType.componentChild = billboardTestType.Type.GetChildInfo("component");
@@ -1206,6 +1207,7 @@ namespace LevelEditor
             public static AttributeInfo lockedAttribute;
             public static AttributeInfo transformationTypeAttribute;
             public static AttributeInfo intensityAttribute;
+            public static AttributeInfo colorAttribute;
             public static AttributeInfo diffuseAttribute;
             public static AttributeInfo textureTransformAttribute;
             public static ChildInfo componentChild;

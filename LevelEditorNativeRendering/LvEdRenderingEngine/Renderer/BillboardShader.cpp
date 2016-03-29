@@ -138,7 +138,7 @@ void BillboardShader::Draw(const RenderableNode& r)
 
     Matrix::Transpose(r.WorldXform,m_cbPerDraw.Data.worldXform);
     Matrix::Transpose(r.TextureXForm, m_cbPerDraw.Data.textureXForm);
-    m_cbPerDraw.Data.intensity = r.diffuse.x;
+    m_cbPerDraw.Data.color = r.diffuse;
     m_cbPerDraw.Update(dc);
     
     ID3D11ShaderResourceView* diffuseMap[1] = {NULL};    

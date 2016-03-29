@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Linq; 
 
 using Sce.Atf;
 using Sce.Atf.Adaptation;
@@ -179,7 +180,18 @@ namespace LevelEditor
                 catalogs.Add(new AssemblyCatalog(stmPlgAssem));
             }
 
-            
+            // load all dlls in \MEFPlugin  
+            string mefpluginDir = pluginDir + "\\MEFPlugin";
+            if (Directory.Exists(mefpluginDir))
+            {
+                var filepaths = Directory.GetFiles(mefpluginDir).Where(path => path.EndsWith(".dll"));
+                foreach (var filepath in filepaths)
+                {
+                    Assembly filepathAssembly = Assembly.LoadFrom(filepath);
+                    catalogs.Add(new AssemblyCatalog(filepathAssembly));
+                }
+            }
+
             AggregateCatalog catalog = new AggregateCatalog(catalogs);
                
                       

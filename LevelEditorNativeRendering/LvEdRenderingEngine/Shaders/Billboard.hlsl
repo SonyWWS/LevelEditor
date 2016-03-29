@@ -13,7 +13,7 @@ cbuffer ConstantBufferPerDraw : register( b1 )
 {
     float4x4   world;
     float4x4   textureTrans;
-    float      intensity;  // 0 to 1
+    float4      color;
 };
 
 
@@ -71,6 +71,6 @@ float4 PSMain( PS_INPUT input ) : SV_TARGET
 {
    float4 fc = diffuseTex.Sample( diffuseSampler, input.tex0 );
    clip(fc.a - 0.5);
-   fc.xyz = fc.xyz * intensity;
+   fc.xyz = fc.xyz * color.xyz;
    return fc;
 }
