@@ -206,7 +206,7 @@ namespace LevelEditor.Terrain
         // current memory usage by undo/redo stack measured in bytes.
         private int m_memUsage;
 
-        // Amout of memory allowed to be used by undo/redo
+        // Amount of memory allowed to be used by undo/redo
         private const int MemoryQuota = 256 * 1024 * 1024;
     }
 }

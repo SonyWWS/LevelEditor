@@ -7,6 +7,7 @@ using Sce.Atf;
 using Sce.Atf.Applications;
 using Sce.Atf.Dom;
 using Sce.Atf.VectorMath;
+using Sce.Atf.Adaptation;
 
 namespace LevelEditor.DomNodeAdapters
 {
@@ -15,7 +16,17 @@ namespace LevelEditor.DomNodeAdapters
     /// <remarks>Game objects have a transformation (translation/rotation/scale) and a bounding box
     /// The can be rendered in the DesignView and listed in the ProjectLister tree view.</remarks>
     public class GameObject : DomNodeAdapter, IGameObject
-    {              
+    {
+        #region IGameObject Members
+        /// <summary>  
+        /// Gets the game that owns this game object.</summary>  
+        /// <returns>The game that owns this game object, or null if this object isn't owned.</returns>  
+        public IGame GetGame()
+        {            
+            return DomNode.GetRoot().As<IGame>();            
+        }
+        #endregion  
+        
         #region INameable
 
         /// <summary>
@@ -159,6 +170,7 @@ namespace LevelEditor.DomNodeAdapters
         }
       
         #endregion          
+           
     }
    
 }

@@ -440,13 +440,25 @@ namespace LvEdEngine
     {
     public:
         const Vector3& Scale() const { return m_scale; }
-        void SetScale(const Vector3& scale) { m_scale = scale; }
+        void SetScale(const Vector3& scale) 
+        {
+            m_scale = scale; 
+            m_needUpdate = true;
+        }
 
         const Vector3& Translation() { return m_translate; }
-        void SetTranslation(const Vector3& trans) { m_translate = trans; }
+        void SetTranslation(const Vector3& trans) 
+        { 
+            m_translate = trans; 
+            m_needUpdate = true;
+        }
 
         const Vector3& Rotation() { return m_rotate; }
-        void SetRotation(const Vector3& rotation) { m_rotate = rotation; }
+        void SetRotation(const Vector3& rotation) 
+        { 
+            m_rotate = rotation; 
+            m_needUpdate = true;
+        }
 		const Matrix& GetMatrix();
 
         Transform() : m_translate(0,0,0),

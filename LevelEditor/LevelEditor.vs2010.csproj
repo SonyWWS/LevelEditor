@@ -103,7 +103,6 @@
     <Compile Include="LevelEditorApplication.cs" />
     <Compile Include="Listers\BookmarkLister.cs" />
     <Compile Include="Listers\GameProjectLister.cs" />
-    <Compile Include="OSC\OscClient.cs" />
     <Compile Include="PickFilters\GobPickFilter.cs" />
     <Compile Include="PickFilters\SnapFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
