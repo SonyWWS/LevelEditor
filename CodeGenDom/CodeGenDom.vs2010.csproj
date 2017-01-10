@@ -95,7 +95,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ATF\Framework\Atf.Core\Atf.Core.vs2010.csproj">
+    <ProjectReference Include="..\..\wws_atf\Framework\Atf.Core\Atf.Core.vs2010.csproj">
       <Project>{9D1835B6-D1C2-44BA-BAE1-05C6EC442D2F}</Project>
       <Name>Atf.Core.vs2010</Name>
     </ProjectReference>
